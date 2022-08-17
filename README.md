@@ -1,3 +1,6 @@
+# blazor-monaco-ide
+Web IDE for the SE Basic IV Programming Language based on picat-blazor-monaco-ide (Blazor and Monaco) based on:
+
 # picat-blazor-monaco-ide
 Web IDE for the Picat programming language based on .net Blazor and Monaco. It provides common moder code editor features like syntax highlighting, code completion with documentation preview (CTRL+Space), indentation helpers, occurences highlighting, search, etc. and compilation/execution of code via an associated compiler wrapper service.
 
