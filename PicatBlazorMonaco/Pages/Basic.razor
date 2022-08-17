@@ -1,0 +1,545 @@
+﻿@page "/basic"
+
+<table>
+    <tr>
+        <th>
+            <SfButton @ref="LoadBASFile" @onclick="onLoadFile" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Load .bas File</SfButton>
+        </th>
+        <th>
+            <SfButton @ref="SaveBASFile" @onclick="onSaveFile" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Save .bas File</SfButton>
+        </th>
+        <th>
+            <SfButton @ref="SaveBASFileAs" @onclick="onSaveFileAs" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Save .bas File As</SfButton>
+        </th>
+        <th>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+        </th>
+        <th>
+            <SfButton @ref="CheckSyntax" @onclick="onCheckSyntax" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Check Syntax</SfButton>
+        </th>
+        <th>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+        </th>
+        <th>
+            <SfButton @ref="SwapTheme" @onclick="onSwapTheme" CssClass="e-custom1" IsToggle="true" IsPrimary="true" Content="@Theme"></SfButton>
+        </th>
+    </tr>
+</table>
+<br />
+<br />
+<label>SE Basic IV Code (NB: To enable Hint popups, press 'CTRL + SPACE' when you have selected a Command):</label>
+<div class="row">
+    <div class="column left">
+        <MonacoEditor @ref="_editorBasic"
+                      Id="sebasiceditor"
+                      ConstructionOptions="EditorConstructionOptions"
+                      OnDidInit="EditorOnDidInit"
+                      OnKeyDown="OnKeyDown"
+                      OnKeyUp="OnKeyUp" />
+        <label>Output:</label>
+        <textarea @bind="Output" @ref="outputElement" @ondblclick="OutputDoubleClick" style="width:100%;height:200px" readonly="readonly" />
+    </div>
+</div>
+<div class="column right"></div>
+<div class="col-lg-12 control-section toast-default-section">
+    <SfToast ID="toast_default" @ref="ToastObj" Title="@toastTitle" Content="@toastContent" Timeout="2500" CssClass="@toastClass" Icon="@toastIcon">
+        <ToastPosition X="@toastPosition"></ToastPosition>
+    </SfToast>
+</div>
+<SfSpinner @ref="SpinnerObj" @bind-Visible="@VisibleProperty"></SfSpinner>
+
+<style>
+    .e-custom1 {
+        width: 200px;
+        height: 50px;
+    }
+
+    @@font-face {
+        font-family: 'Toast_icons';
+        src: url(data:application/x-font-ttf;charset=utf-8;base64,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) format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    #toast_types button {
+        margin: 5px;
+        min-width: 160px;
+        max-width: 160px;
+    }
+
+    .toast-icons {
+        font-family: 'Toast_icons' !important;
+        speak: none;
+        font-size: 55px;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    #toast_type .e-toast-icon.e-icons {
+        height: auto;
+        font-size: 30px;
+    }
+        
+    .bootstrap5 #toast_type .e-toast-icon.e-icons,
+    .bootstrap5-dark #toast_type .e-toast-icon.e-icons {
+        height: 25px;
+    }
+
+    .toast-icons.e-error::before {
+        content: "\e700";
+    }
+
+    .toast-icons.e-info::before {
+        content: "\e704";
+    }
+</style>
+
+@using Antlr4.Runtime.Tree
+@using Ast2
+@using PicatBlazorMonaco.Antlr
+@using PicatBlazorMonaco.Ast
+@using System.Net
+@using System.Net.Http
+@using System.Threading.Tasks
+@using Microsoft.AspNetCore.WebUtilities;
+@using BlazorMonaco;
+@using System.Timers;
+@using Syncfusion.Blazor.Buttons;
+@using Syncfusion.Blazor.Notifications;
+@using Syncfusion.Blazor.Spinner;
+
+@inject HttpClient Http
+@inject NavigationManager NavManager
+@inject myText iText
+@inject FileSystemAccessService FileSystemAccessService;
+
+@code {
+    SfButton LoadBASFile;
+    SfButton SaveBASFile;
+    SfButton SaveBASFileAs;
+    SfButton CheckSyntax;
+    SfButton SwapTheme;
+    SfToast ToastObj;
+    SfSpinner SpinnerObj;
+    private string toastTitle = "";
+    private string toastPosition = "Right";
+    private string toastContent = "";
+    private string toastClass = "";
+    private string toastIcon = "";
+    private bool VisibleProperty { get; set; } = false;
+
+    public ElementReference outputElement { get; set; }
+    private bool _initializedSuggestionDetail = false;
+    private string StatusColor { get; set; }
+    private string Output { get; set; }
+    private Ast2Editor _astEditorBasic { get; set; }
+    private MonacoEditor _editorBasic { get; set; }
+    [Inject] IJSRuntime _jsRuntime { get; set; }
+    private DotNetObjectReference<Basic> objRef;
+    private Timer aTimer;
+    private string _oldProgramUserStopTyping;
+    private string ValueToSet { get; set; }
+    private string myTheme = "sebasicivThemeL";
+    private string Theme = "Dark Theme";
+    private FileSystemFileHandle fileHandle = null;
+
+    [JSInvokable]
+    public async Task<BlazorMonaco.Range> GetDefinitionRange(Position pos) => await this._astEditorBasic.GetDefinition(pos);
+
+    private StandaloneEditorConstructionOptions EditorConstructionOptions(MonacoEditor editor)
+    {
+        return Ast2Editor.GetEditorOptions();
+    }
+
+    private async Task EditorOnDidInit(MonacoEditorBase editor)
+    {
+        this.VisibleProperty = true;
+        aTimer = new Timer(1000);
+        aTimer.Elapsed += OnUserFinish;
+        aTimer.AutoReset = false;
+
+        await _jsRuntime.InvokeVoidAsync(@"setTheme", myTheme);
+
+        objRef = DotNetObjectReference.Create(this);
+        await _jsRuntime.InvokeVoidAsync(@"setDotNetHelper", objRef);
+
+        string builtins = await Http.GetStringAsync("builtins_basic.txt");
+        BuiltIns.InitializeFunctions(builtins);
+
+        this._astEditorBasic = new Ast2Editor(_editorBasic, _jsRuntime);
+        await this._astEditorBasic.Init();
+
+        await this._astEditorBasic.SetValue(iText.inputText);
+        StateHasChanged();
+        //        string abc = await this._astEditorBasic.GetValue();
+        this.VisibleProperty = false;
+    }
+
+    private async Task onLoadFile(MouseEventArgs mouse)
+    {
+        FileSystemFileHandle fileHandle = null;
+
+        try
+        {
+            OpenFilePickerOptionsStartInWellKnownDirectory options = new()
+            {
+                Types = new FilePickerAcceptType[] {
+                    new FilePickerAcceptType() {
+                        Description = "Basic Files",
+                        Accept = new() { { "text/plain", new string[] { ".bas" } } }
+                    }
+                },
+                Multiple = false,
+                StartIn = WellKnownDirectory.Downloads,
+                ExcludeAcceptAllOption = true
+            };
+
+            var fileHandles = await FileSystemAccessService.ShowOpenFilePickerAsync(options);
+            fileHandle = fileHandles.Single();
+        }
+        catch (JSException ex)
+        {
+            iText.inputText = "";
+
+            toastTitle = "Information";
+            toastContent = "No File Selected.";
+            toastClass = "e.toast-info";
+            toastIcon = "e-info toast-icons";
+            StateHasChanged();
+            await Task.Delay(100);
+            await this.ToastObj.ShowAsync();
+        }
+        finally
+        {
+            if (fileHandle is not null)
+            {
+                this.VisibleProperty = true;
+                var file = await fileHandle.GetFileAsync();
+                string fName = file.Name.Substring(file.Name.Length - 3);
+
+                if (fName != "bas")
+                {
+                    this.VisibleProperty = false;
+                    toastTitle = "Error";
+                    toastClass = "e.toast-danger";
+                    toastContent = "You did not select a .bas file\nPlease try again.";
+                    toastIcon = "e-error toast-icons";
+                    StateHasChanged();
+                    await Task.Delay(100);
+                    await this.ToastObj.ShowAsync();
+                }
+                else
+                {
+                    iText.inputText = await file.TextAsync();
+                    this.VisibleProperty = false;
+                    StateHasChanged();
+
+                    toastTitle = "Information";
+                    toastContent = "File Loaded.";
+                    toastClass = "e.toast-info";
+                    toastIcon = "e-info toast-icons";
+                    StateHasChanged();
+                    await Task.Delay(100);
+                    await this.ToastObj.ShowAsync();
+                }
+            }
+        }
+    }
+
+    private async Task onSaveFile(MouseEventArgs mouse)
+    {
+        if (fileHandle is null)
+        {
+            try
+            {
+                fileHandle = await FileSystemAccessService.ShowSaveFilePickerAsync();
+            }
+            catch (JSException ex)
+            {
+                toastTitle = "Information";
+                toastContent = "Save Cancelled.";
+                toastClass = "e.toast-info";
+                toastIcon = "e-info toast-icons";
+                StateHasChanged();
+                await Task.Delay(100);
+                await this.ToastObj.ShowAsync();
+            }
+            finally
+            {
+                if (fileHandle != null)
+                {
+                    this.VisibleProperty = true;
+                    var file = await fileHandle.GetFileAsync();
+
+                    if (file.Name.Substring(file.Name.Length - 3) != "bas")
+                    {
+
+                    }
+                    var writable = await fileHandle.CreateWritableAsync();
+                    string fText = await this._astEditorBasic.GetValue();
+                    await writable.WriteAsync(fText);
+                    await writable.CloseAsync();
+                    this.VisibleProperty = false;
+
+                    toastTitle = "Information";
+                    toastContent = "File Saved.";
+                    toastClass = "e.toast-info";
+                    toastIcon = "e-info toast-icons";
+                    StateHasChanged();
+                    await Task.Delay(100);
+                    await this.ToastObj.ShowAsync();
+                }
+            }
+        }
+        else
+        {
+            this.VisibleProperty = true;
+            var file = await fileHandle.GetFileAsync();
+            var writable = await fileHandle.CreateWritableAsync();
+            string fText = await this._astEditorBasic.GetValue();
+            await writable.WriteAsync(fText);
+            await writable.CloseAsync();
+            this.VisibleProperty = false;
+
+            toastTitle = "Information";
+            toastContent = "File Saved.";
+            toastClass = "e.toast-info";
+            toastIcon = "e-info toast-icons";
+            StateHasChanged();
+            await Task.Delay(100);
+            await this.ToastObj.ShowAsync();
+        }
+    }
+
+    private async Task onSaveFileAs(MouseEventArgs mouse)
+    {
+        FileSystemFileHandle fileHandleOld = fileHandle;
+
+        try
+        {
+            fileHandle = await FileSystemAccessService.ShowSaveFilePickerAsync();
+        }
+        catch (JSException ex)
+        {
+            toastTitle = "Information";
+            toastContent = "Save As Cancelled.";
+            toastClass = "e.toast-info";
+            toastIcon = "e-info toast-icons";
+            StateHasChanged();
+            await Task.Delay(100);
+            await this.ToastObj.ShowAsync();
+            fileHandle = fileHandleOld;
+        }
+        finally
+        {
+            if (fileHandle != null)
+            {
+                this.VisibleProperty = true;
+                var file = await fileHandle.GetFileAsync();
+                var writable = await fileHandle.CreateWritableAsync();
+                string fText = await this._astEditorBasic.GetValue();
+                await writable.WriteAsync(fText);
+                await writable.CloseAsync();
+                this.VisibleProperty = false;
+
+                toastTitle = "Information";
+                toastContent = "File Saved.";
+                toastClass = "e.toast-info";
+                toastIcon = "e-info toast-icons";
+                StateHasChanged();
+                await Task.Delay(100);
+                await this.ToastObj.ShowAsync();
+            }
+        }
+    }
+
+    private async Task onSwapTheme()
+    {
+        if (myTheme == "sebasicivThemeL")
+        {
+            myTheme = "sebasicivThemeD";
+            Theme = "Light Theme";
+        }
+        else
+        {
+            myTheme = "sebasicivThemeL";
+            Theme = "Dark Theme";
+        }
+
+        await _jsRuntime.InvokeVoidAsync(@"setTheme", myTheme);
+
+        toastTitle = "Information";
+        toastContent = "Theme Changed.";
+        toastClass = "e.toast-info";
+        toastIcon = "e-info toast-icons";
+        StateHasChanged();
+        await Task.Delay(100);
+        await this.ToastObj.ShowAsync();
+    }
+
+    private async Task OnKeyDown(KeyboardEvent keyboard)
+    {
+        if (keyboard.CtrlKey && keyboard.KeyCode == KeyCode.Space)
+        {
+            await this._astEditorBasic.RefreshCompletions();
+        }
+
+        if (!_initializedSuggestionDetail)
+        {
+            _initializedSuggestionDetail = true;
+            await Task.Delay(1000);
+            using JsonDocument doc2 = JsonDocument.Parse(@"{}");
+            JsonElement root2 = doc2.RootElement;
+            await _editorBasic.Trigger("api", "toggleSuggestionDetails", root2);
+        }
+    }
+
+    private async Task OnKeyUp(KeyboardEvent keyboard)
+    {
+        aTimer.Stop();
+        aTimer.Start();
+    }
+
+    private async Task OutputDoubleClick(MouseEventArgs mouse)
+    {
+        // TODO: MoveToError NOT WORKING?
+        int pos = await _astEditorBasic.GetSelectionStart(this.outputElement);
+        var lineIndex = this.Output.Take(pos).Count(c => c == '\n');
+        string[] lines = this.Output.Split("\n");
+        await _astEditorBasic.MoveToError(lines[lineIndex]);
+    }
+
+    private void OnUserFinish(Object source, ElapsedEventArgs e)
+    {
+        InvokeAsync(async () =>
+        {
+            try
+            {
+                string program = await _editorBasic.GetValue();
+
+                if (this._oldProgramUserStopTyping == program)
+                {
+                    return;
+                }
+
+                this._oldProgramUserStopTyping = program;
+                await this._astEditorBasic.UpdateDeclarations(program);
+            }
+            catch (Exception ex)
+            {
+                this.StatusColor = "red";
+                await this._astEditorBasic.ConsoleError(ex.Message);
+            }
+            finally
+            {
+                StateHasChanged();
+            }
+        });
+    }
+
+    public readonly struct SyntaxError
+    {
+        public readonly IRecognizer Recognizer;
+        public readonly IToken OffendingSymbol;
+        public readonly int Line;
+        public readonly int CharPositionInLine;
+        public readonly string Message;
+        public readonly RecognitionException Exception;
+
+        public SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line,
+            int charPositionInLine, string message, RecognitionException exception)
+        {
+            Recognizer = recognizer;
+            OffendingSymbol = offendingSymbol;
+            Line = line;
+            CharPositionInLine = charPositionInLine;
+            Message = message;
+            Exception = exception;
+        }
+    }
+
+    public class SyntaxErrorListener : BaseErrorListener
+    {
+        public readonly List<SyntaxError> Errors = new List<SyntaxError>();
+
+        public override void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg,
+            RecognitionException e)
+        {
+            Errors.Add(new SyntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e));
+        }
+    }
+
+    private async Task onCheckSyntax(MouseEventArgs mouse)
+    {
+        this.VisibleProperty = true;
+        Output = "";
+        ITokenStream tokens;
+        IParseTree tree;
+
+        parserErrorListener parserErrorListener = new parserErrorListener();
+        lexerErrorListener lexerErrorListener = new lexerErrorListener();
+
+        string fText = await this._astEditorBasic.GetValue();
+        Lexer lexer = new SEBASICIVLexer(new AntlrInputStream(fText));
+        lexer.RemoveErrorListeners();
+        lexer.AddErrorListener(lexerErrorListener);
+        tokens = new CommonTokenStream(lexer);
+
+        SEBASICIVParser parser = new SEBASICIVParser(tokens);
+        parser.RemoveErrorListeners();
+        parser.AddErrorListener(parserErrorListener);
+        parser.BuildParseTree = true;
+
+        try
+        {
+            tree = parser.prog();
+
+            List<string> pErrors = parserErrorListener.getSyntaxErrors();
+            List<string> lErrors = lexerErrorListener.getSyntaxErrors();
+            this.VisibleProperty = false;
+
+            if (pErrors.Count == 0 && lErrors.Count == 0)
+            {
+                Output = "No Lexer or Parser Errors Found!";
+                toastTitle = "Information";
+                toastContent = Output;
+                toastClass = "e.toast-info";
+                toastIcon = "e-info toast-icons";
+                StateHasChanged();
+                await Task.Delay(100);
+                await this.ToastObj.ShowAsync();
+            }
+            else
+            {
+                for (int i = 0; i < pErrors.Count; i++)
+                    Output = Output + pErrors[i] + "\n";
+
+                for (int i = 0; i < lErrors.Count; i++)
+                    Output = Output + lErrors[i] + "\n";
+
+                toastTitle = "Error";
+                toastClass = "e.toast-danger";
+                toastContent = "Lexer and/or Parser Errors Found!";
+                toastIcon = "e-error toast-icons";
+                StateHasChanged();
+                await Task.Delay(100);
+                await this.ToastObj.ShowAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            toastTitle = "Error";
+            toastClass = "e.toast-danger";
+            toastContent = ex.Message;
+            toastIcon = "e-error toast-icons";
+            StateHasChanged();
+            await Task.Delay(100);
+            await this.ToastObj.ShowAsync();
+        }
+    }
+}

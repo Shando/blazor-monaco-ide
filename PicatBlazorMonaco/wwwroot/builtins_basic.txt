@@ -1,0 +1,2884 @@
+﻿-----
+Basic
+BEEP: To sound the speaker at 800 Hz(800 cycles per second) for one quarter of a second.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        BEEP, CTRL-G, and PRINT CHR$(7) have the same effect.
+ 
+    Errors:
+        TODO
+CALL address_var [, p0, p1, ...]: Executes a machine language subroutine.
+ 
+    Parameters:
+        'address_var' is a numeric variable.
+        'p0', 'p1', ... are variables.
+    Notes:
+        None
+    Errors:
+        'address_var' is a string variable: Type mismatch.
+        'address_var' is a literal: Syntax error.
+CHAIN [MERGE] filename[, [line][, [ALL][, DELETE range]]]: To transfer control to the specified program and pass (chain) variables to it from the current program.
+ 
+    Parameters:
+        MERGE overlays the current program with the called program.
+        'filename' is the name of the program that is called to be chained to.
+            The '.BAS' extension is assumed unless another is specified.
+        'line' is a line number or an expression that corresponds to a line number in the called program.
+            It is the starting point for execution of the called program.
+            If 'line' is omitted, execution begins at the first line.
+            'line' is not affected by a RENUM command.
+            However, the line numbers in the specified range are affected by a RENUM command.
+        'ALL' specifies that every variable in the current program is chained to the called program.
+            For example: 20 CHAIN \"PROG1\", 1000, ALL
+            If the 'ALL' option is omitted, the current program must contain a COMMON statement to list the variables that are passed.
+ 
+    Notes:
+        The called program must be an ASCII file (previously saved with the 'a' option) if it is to be merged.
+        CHAIN executes a RESTORE before it runs the program that it is to be chained to.
+        The READ statement then gets the first item in the DATA statement.
+        Reading will not resume where it left off in the program that is being chained.
+        After an overlay is executed and used for a specific purpose, it is usually desirable to
+        delete it so that a new overlay may be brought in. To do this, use the DELETE command.
+        The CHAIN statement with the MERGE command leaves the files open and preserves the current OPTION BASE setting.
+        If the MERGE command is omitted, the OPTION BASE setting is preserved,
+        and CHAIN preserves no variable types or user-defined functions for use by the chained program.
+        That is, any DEF FN statement containing shared variables must be restated in the chained program.
+        When using the MERGE command, place user-defined functions before any CHAIN MERGE statements in the program.
+        Otherwise, they will be undefined after the merge is complete.
+ 
+    Errors:
+        TODO
+DATA [const_0] [, [const_1]] ...: Specifies data that can be read by a READ statement.
+ 
+    Parameters:
+        'const_0', 'const_1', ... are string and number literals or may be empty.
+ 
+    Notes:
+        String literals can be given with or without quotation marks.
+        If quotation marks are omitted, leading and trailing whitespace is ignored and commas or colons will terminate the data statement.
+ 
+    Errors:
+        If the type of the literal does not match that of the corresponding READ statement, a Syntax error occurs on the DATA statement.
+DATE$ = v$: To set the current date.
+ 
+    Parameters:
+        'v$' is a valid string literal or variable.
+ 
+    Notes:
+        'v$' can be any of the following formats when assigning the date:
+            mm-dd-yy
+            mm / dd / yy
+            mm-dd-yyyy
+            mm / dd / yyyy
+ 
+        The current date is stored if DATE$ is the target of a string assignment.
+ 
+    Errors:
+        If 'v$' is not a valid string, a 'Type Mismatch' error results. Previous values are retained.
+        If any of the values are out of range or missing, an 'Illegal Function Call' error is issued. Any previous date is retained.
+v$ = DATE$: To retrieve the current date.
+ 
+    Parameters:
+        None
+ 
+    Notes:
+        The current date (as assigned when the operating system was initialized) is fetched
+        and assigned to the string variable if DATE$ is the expression in a LET or PRINT statement.
+        DATE$ returns a 10-character string in the form mm-dd-yyyy.
+        'mm' is the month (01 to 12), 'dd' is the day (01 to 31), and 'yyyy' is the year (1980 to 2099).
+ 
+    Errors:
+        If 'v$' is not a valid string, a 'Type Mismatch' error results. Previous values are retained.
+DEF SEG[= address]: To assign the current segment address to be referenced by a subsequent BLOAD, BSAVE, CALL, PEEK, POKE, or USR.
+ 
+    Parameters:
+        'address' is a numeric expression within the range of 0 to 65535.
+            If the 'address' option is omitted, the segment to be used is set to SE Basic's data segment (DS).
+            This is the initial default value.
+ 
+    Notes:
+        DEF and SEG must be separated by a space.
+        The address specified is saved for use as the segment required by BLOAD, BSAVE, PEEK, POKE, and CALL statements.
+        Entry of any value outside the address range (0-65535) results in an 'Illegal Function Call' error, and the previous value is retained.
+        Otherwise, SE Basic will interpret the statement DEFSEG = 100 to mean, assign the value 100 to the variable DEFSEG.
+        If you specify the 'address' option, base it on a 16-byte boundary.
+        Segment addresses are shifted 4 bits to the left; so to get the segment address, divide the memory location by 16.
+        For BLOAD, BSAVE, PEEK, POKE, or CALL statements, the value is shifted left four bits to form the code segment address
+        for the subsequent call instruction.
+        SE Basic does not perform additional checking to assure that the resultant segment address is valid.
+ 
+    Errors:
+        The statement is executed directly instead of in a program line: Illegal direct.
+        If the type of the return value is incompatible with the type of name, no error is raised at the DEF FN statement
+        however, a Type mismatch will be raised at the first call of FNname.
+DIM name {(|[} limit_0 [, limit_1] ... {)|]}: Allocates memory for arrays.
+ 
+    Parameters:
+        'name' is a legal variable name specifying the array to be allocated.
+        'limit_0', 'limit_1', ... are numeric expressions that specify the greatest index allowed at that position.
+ 
+    Notes:
+        The DIM statement also fixes the number of indices of the array.
+        Mixed brackets are allowed.
+        The size of arrays is limited by the available BASIC memory.
+        The maximum number of indices is, theoretically, 255. In practice, it is limited by the 255-byte limit on the length of program lines.
+        An array can only be allocated once; to re-allocate an array, ERASE or CLEAR must be executed first.
+        If an array is first used without a DIM statement,
+            it is automatically allocated with its maximum indices set at 10 for each index position used.
+        If an array's DIM statement specifies no indices, it is allocated with a single index with maximum 10.
+        The least index allowed is determined by OPTION BASE.
+ 
+    Errors:
+        'name' has already been dimensioned: Duplicate definition.
+        An index is empty: Syntax error.
+        An index is missing at the end: Missing operand.
+        'limit_0', 'limit_1', ... have a string value: Type mismatch.
+        'limit_0', 'limit_1', ... are not within [-32768 to 32767]: Overflow.
+        'limit_0', 'limit_1', ... are negative: Illegal function call.
+        The array exceeds the size of available variable space: Out of memory.
+DOKE address, value: Sets the 16-bit value of the memory byte pair at 'segment' * 16 + 'address' to 'value', where 'segment' is the current segment set with DEF SEG.
+ 
+    Parameters:
+        'address' is a numeric expression in [0 to 65535]. Negative values are interpreted as their two's complement.
+        'value' is a numeric expression in [0 to 65535].
+ 
+    Notes:
+       DEF SEG is not yet implemented in SE Basic IV.
+ 
+    Errors:
+        'address' or 'value' has a string value: Type mismatch.
+        'address' is not in [-32768 to 65535]: Overflow.
+        'value' is not in [-32768 to 32767]: Overflow.
+        'value' is not in [0 to 65535]: Illegal function call.
+ERASE list of array variables: To eliminate arrays from a program.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        Arrays may be re-dimensioned after they are erased, or the memory space previously allocated to the array may be used for other purposes.
+        If an attempt is made to re-dimension an array without first erasing it, an error occurs.
+ 
+    Errors:
+        TODO
+ERROR error_number: Raises the error with number 'error_number'.
+ 
+    Parameters:
+        'error_number' is an expression with a numeric value.
+ 
+    Notes:
+        None
+ 
+    Errors:
+        'error_number' has a string value: Type mismatch.
+        'error_number' is not in [-32768 to 32767]: Overflow.
+        'error_number' is not in 1 to 255]: Illegal function call.
+FOR loop_var = start TO stop [STEP step]: Initiates a FOR NEXT loop.
+ 
+    Parameters:
+        'loop_var' is a numeric variable.
+        'start', 'stop' and 'step' are numeric expressions.
+ 
+    Notes:
+        Initially, 'loop_var' is set to 'start'.
+        Then, the statements between the FOR statement and the NEXT statement are executed and
+        'loop_var' is incremented by 'step' (if 'step' is not specified, by 1).
+        This is repeated until 'loop_var' has become greater than 'stop'.
+        Execution then continues at the statement following NEXT.
+        The value of 'loop_var' equals 'stop' + 'step' after the loop.
+ 
+    Errors:
+        No NEXT statement is found to match the FOR statement: FOR without NEXT occurs at the FOR statement.
+        'loop_var' is a string variable or 'start', 'stop', or 'end' has a string value: Type mismatch.
+        'loop_var' is an array element: Syntax error.
+        'loop_var' is an integer variable and 'start', 'stop' or 'step' is outside the range [-32768, 32767]: Overflow.
+GO[ ]SUB line_number [anything]: Jumps to a subroutine at line_number.
+ 
+    Parameters:
+        'line_number' is an existing line number literal.
+ 
+    Notes:
+        The next RETURN statement jumps back to the statement after GOSUB.
+        If executed from a direct line, GOSUB runs the subroutine and the following RETURN returns execution to the direct line.
+        Further characters on the line are ignored until end of statement.
+        If no RETURN is encountered, no problem.
+        One optional space is allowed between GO and SUB; it will not be retained in the program.
+ 
+    Errors:
+        If 'line_number' does not exist: Undefined line number.
+        If 'line_number' is greater than 65529, only the first 4 characters are read (for example, 6553).
+GOTO line_number [anything]: Jumps to 'line_number'.
+ 
+    Parameters:
+        'line_number' is an existing line number literal.
+ 
+    Notes:
+        Anything after line_number until the end of the statement is ignored.
+        If executed from a direct line, GOTO starts execution of the program at the specified line.
+        Further characters on the line are ignored until end of statement.
+        No spaces are allowed between GO and TO.
+ 
+    Errors:
+        'line_number' does not exist: Undefined line number.
+IF truth_value {THEN|GOTO} [compound_statement_true|line_number_true [anything]] [ELSE [compound_statement_false|line_number_false [anything]]]: If 'truth_value' is non-zero, executes 'compound_statement_true' or jumps to 'line_number_true'.
+ 
+    Parameters:
+        'truth_value' is a numeric expression.
+        'line_number_false' and 'line_number_true' are existing line numbers.
+        'compound_statement_false' and 'compound_statement_true' are compound statements, consisting of at least one statement,
+            optionally followed by further statements separated by colons ':'.
+ 
+    Notes:
+        If 'truth_value' is zero, executes 'compound_statement_false' or jumps to 'line_number_false'.
+        The comma is optional and ignored.
+        ELSE clauses are optional; they are bound to the innermost free IF statement if nested.
+            Additional ELSE clauses that have no matching IF are ignored.
+        All clauses must be on the same program line.
+        THEN and GOTO are interchangeable; which one is chosen is independent of whether
+            a statement or a line number is given. GOTO PRINT 1 is fine.
+        As in GOTO, anything after the line number is ignored.
+        The compound statements may contain nested IF to THEN to ELSE statements.
+ 
+    Errors:
+        If 'truth_value' has a string value: Type mismatch.
+        'truth_value' equals 0 and 'line_number_false' is a non-existing line number,
+        'truth_value' is nonzero and 'line_number_true' is a non-existing line number: Undefined line number.
+KEY key_id, string_value: Defines the string macro for function key 'key_id'.
+ 
+    Parameters:
+        'key_id' is a numeric expression in the range [1 to 15].
+        'string_value' is a string expression.
+ 
+    Notes:
+        Only the first 15 characters of 'string_value' are stored.
+        If 'key_id' is not in the prescribed range, an error is raised.
+        If 'string_value' is the empty string or the first character of 'string_value' is CHR$(0),
+            the function key macro is switched off and subsequent catching of the associated function key with INKEY$ is enabled.
+ 
+    Errors:
+        'key_id' is not in [-32768 to 32767]: Overflow.
+        'key_id' is not in [1 to 255]: Illegal function call.
+        'key_id' has a string value: Type mismatch.
+KEY LIST: Prints a list of the 15 function keys with the function-key macros defined for those keys to the console.
+ 
+    Parameters:
+        None
+ 
+    Notes:
+        Most characters are represented by their symbol equivalent in the current codepage.
+        However, some characters get a different represenation, which is a symbolic representation of the effect as control characters on the screen.
+ 
+    Errors:
+        TODO
+KEY {ON|OFF}: Toggles function-key macros ON or OFF.
+ 
+    Parameters:
+        None
+ 
+    Notes:
+        None
+ 
+    Errors:
+        None
+[LET] name = expression: Assigns the value of 'expression' to the variable or array element 'name'.
+ 
+    Parameters:
+        'name' is a variable that may or may not already exist.
+ 
+    Notes:
+        The type of expression matches that of 'name':
+            that is, all numeric types can be assigned to each other but strings can only be assigned to strings.
+ 
+    Errors:
+        'name' and 'expression' are not of matching types: Type mismatch.
+NEXT [var_0 [, var_1] ...]: Iterates a FOR to NEXT loop by incrementing the loop variable and jumping to the FOR statement.
+ 
+    Parameters:
+        'var_0', 'var_1', ... are numeric variables which are loop counters in a FOR statement.
+ 
+    Notes:
+        If no variables are specified, next matches the most recent FOR statement.
+        Several nested NEXT statements can be consolidated into one by using the variable list.
+        If one or more variables are specified, their order must match the order of earlier FOR statements.
+ 
+    Errors:
+        No FOR statement is found to match the NEXT statement and variables: NEXT without FOR.
+        'var_0', 'var_1', ... are string variables: NEXT without FOR.
+        The (implicit or explicit) loop variable is an integer variable and is taken outside the range [-32768, 32767]
+            when incremented after the final iteration: Overflow.
+ON n {GOTO|GOSUB} line_number_0 [, line_number_1] ...: Jumps to the nth line number specified in the list.
+ 
+    Parameters:
+        'n' is a numeric expression in [0 to 255].
+        'line_number_0', 'line_number_1', ... are existing line numbers in the program.
+ 
+    Notes:
+        If n is 0 or greater than the number of line numbers in the list, no jump is performed.
+        If GOTO is specified, the jump is unconditional; if GOSUB is specified, jumps to a subroutine.
+ 
+    Errors:
+        'n' has a string value: Type mismatch.
+        'n' is not in [-32768 to 32767], Overflow.
+        'n' is not in [0 to 255]: Illegal function call.
+        The line number jumped to does not exist: Undefined line number.
+ON event specifier GOSUB line number: To create an event trap line number for a specified event
+    (such as communications, pressing function or cursor control keys, using the light pen, or using joysticks).
+ 
+    Parameters:
+        The syntax shown sets up an event trap 'line number' for the specified event.
+ 
+    Notes:
+        A 'line number' of 0 disables trapping for this event.
+        Once trap 'line numbers' have been set, event trapping itself can be controlled with the following syntax lines:
+ 
+        event specifier ON
+            When an event is ON, and a nonzero line number is specified for the trap, then every time BASIC starts a new statement,
+                it checks to see if the specified event has occurred.
+            If it has, BASIC performs a GOSUB to the line specified in the ON statement.
+        event specifier OFF
+            When an event is OFF, no trapping occurs and the event is not remembered, even if it occurs.
+        event specifier STOP
+            When an event is stopped, no trapping can occur, but if the event happens, it is remembered,
+                so an immediate trap occurs when an event specifier ON is executed.
+            When a trap is made for a particular event, the trap automatically causes a STOP on that event, so recursive traps can never take place.
+ 
+        The return from the trap routine automatically does an ON unless an explicit OFF has been performed inside the trap routine.
+        When an error trap takes place, this automatically disables all trapping.
+        Trapping will never take place when you are not executing a program.
+ 
+        The following are valid values for event specifier:
+        COM(n)
+            'n' is the number of the COM channel (1 or 2).
+        KEY(n)
+            'n' is a function key number 1-20. 1 through 10 are the function keys F1 through F10.
+            11 through 14 are the cursor control keys as follows:
+            11 = CURSOR UP    13 = CURSOR RIGHT
+            12 = CURSOR LEFT    14 = CURSOR DOWN
+            15-20 are user-defined keys.
+        PEN
+            Since there is only one pen, no number is given.
+        PLAY(n)
+            'n' is an integer expression in the range of 1-32. Values outside this range result in 'Illegal function call' errors.
+        STRIG(n)
+            'n' is 0, 2, 4 or 6. (0 = trigger A1; 4 = trigger A2; 2 = trigger B1; 6 = trigger B2).
+        TIMER(n)
+            'n' is a numeric expression within the range of 1 to 86,400.
+            A value outside of this range results in an 'Illegal function call' error.
+        RETURN line number
+            This optional form of RETURN is primarily intended for use with event trapping.
+            The event-trapping routine may want to go back into the SE Basic program at a fixed 'line number'
+                while still eliminating the GOSUB entry that the trap created.
+            Use of the nonlocal RETURN must be done with care.
+            Any other GOSUB, WHILE, or FOR that was active at the time of the trap remains active.
+            If the trap comes out of a subroutine, any attempt to continue loops outside the subroutine results in a 'NEXT without FOR' error.
+ 
+        Special Notes about Each Type of Trap:
+        COM Trapping
+            Typically, the COM trap routine will read an entire message from the COM port before returning.
+            It is recommended that you not use the COM trap for single character messages,
+                since at high baud rates the overhead of trapping and reading for each individual character
+                may allow the interrupt buffer for COM to overflow.
+        KEY Trapping
+            Trappable keys 15 to 20 are defined by the following statement:
+                KEY(n), CHR$[hex code] + CHR$[scan code]
+                'n' is an integer expression within the range of 15 to 20 defining the key to be trapped.
+                'hex code' is the mask for the latched key: (CAPS LOCK, NUM LOCK, ALT, CTRL, LEFT SHIFT, RIGHT SHIFT)
+                'scan code' is the number identifying one of the 83 keys to trap.
+                The appropriate bit in 'hex code' must be set in order to trap a key that is shifted, control-shifted, or alt-shifted.
+ 
+                'hex code' values are as follows:
+                    Mask        Hex code    Indicates that
+                    EXTENDED    &H80        Key is extended
+                    CAPS LOCK   &H40        CAPS LOCK is active
+                    NUM LOCK    &H20        NUM LOCK  is active
+                    ALT         &H08        The ALT key is pressed
+                    CTRL        &H04        The CTRL key is pressed
+                    LEFT SHIFT  &H02        The left SHIFT key is pressed
+                    RIGHT SHIFT &H01        The right SHIFT key is pressed
+ 
+                For trapping shifted keys, you may use the value &H01, &H02, or &H03.
+                The left and right SHIFT keys are coupled when &H03 is used.
+                No type of trapping is activated when SE Basic is in direct mode.
+                Function keys resume their standard expansion meaning during input.
+                A key that causes a trap is not available for examination with the INPUT or INKEY$ statement,
+                    so the trap routine for each key must be different if a different function is desired.
+                If CTL-PRTSCR is trapped, the line printer echo toggle is processed first.
+                Defining CTL-PRTSCR as a key trap does not prevent characters from being echoed to the printer if CTL-PRTSCR is pressed.
+                Function keys 1 through 14 are predefined. Therefore, setting scan codes 59-68, 72, 75, 77, or 80 has no effect.
+        PLAY Trapping
+            A PLAY event trap is issued only when playing background music (PLAY \\ MB ..).
+            PLAY event music traps are not issued when running in MUSIC foreground (default case, or PLAY \\ MF ..).
+            Choose conservative values for 'n'. An ON PLAY(32).. statement will cause event traps so often
+                that there will be little time to execute the rest of your program.
+            The ON PLAY(n) statement causes an event trap when the background music queue goes from 'n' to 'n'-1 notes.
+        STRIG Trapping
+            Using STRIG(n) ON activates the interrupt routine that checks the trigger status.
+            Down-strokes that cause trapping will not set STRIG(0), STRIG(2), STRIG(4), or STRIG(6) functions.
+        TIMER Trapping
+            An ON TIMER(n) event trapping statement is used with applications needing an internal timer.
+            The trap occurs when 'n' seconds have elapsed since the TIMER ON statement.
+ 
+    Errors:
+        TODO
+OPTION BASE [n]: To declare the minimum value for array subscripts.
+ 
+    Parameters:
+        'n' is 1 or 0. The default base is 0.
+ 
+    Notes:
+        If the statement OPTION BASE 1 is executed, the lowest value an array subscript can have is 1.
+        An array subscript may never have a negative value.
+        OPTION BASE gives an error only if you change the base value.
+        This allows chained programs to have OPTION BASE statements as long as the value is not changed from the initial setting.
+        You must code the OPTION BASE statement before you can define or use any arrays.
+        If an attempt is made to change the option base value after any arrays are in use, an error results.
+ 
+    Errors:
+        TODO
+POKE address, value: Sets the value of the memory byte at 'segment' * 16 + 'address' to 'value', where 'segment' is the current segment set with DEF SEG.
+ 
+    Parameters:
+        'address' is a numeric expression in [-32768 to 65535]. Negative values are interpreted as their two's complement.
+        'value' is a numeric expression in [0 to 255].
+ 
+    Notes:
+        DEF SEG is not yet implemented in SE Basic IV.
+ 
+    Errors:
+        'address' or 'value' has a string value: Type mismatch.
+        'address' is not in [-32768 to 65535]: Overflow.
+        'value' is not in [-32768 to 32767]: Overflow.
+        'value' is not in [0 to 255]: Illegal function call.
+RANDOMIZE [expr]: Seeds the random number generator with expr.
+ 
+    Parameters:
+        'expr' is a numeric expression.
+ 
+    Notes:
+        If no seed is specified, RANDOMIZE will prompt the user to enter a random seed.
+        The user-provided value is rounded to an integer. The random seed is formed of the last two bytes of that integer or expr.
+        If 'expr' is a float (4 or 8 bytes), these are XORed with the preceding 2. The first 4 bytes of a double are ignored.
+        The same random seed will lead to the same sequence of pseudorandom numbers being generated by the RND function.
+        For the same seed, SE Basic IV produces the same pseudorandom numbers as Microsoft BASIC 3.23.
+        The random number generator is very poor and should not be used for serious purposes. See RND for details.
+ 
+    Errors:
+        'expr' has a string value: Illegal function call.
+        The user provides a seed outside [-32768 to 32767] at the prompt: Overflow.
+READ var_0 [, var_1] ...: Assigns data from a DATA statement to variables.
+ 
+    Parameters:
+        'var_0', 'var_1' are variables or array elements.
+ 
+    Notes:
+        Reading starts at the current DATA position, which is the DATA entry immediately after the last one read by previous READ statements.
+        The DATA position is reset to the start by the RUN and RESTORE statements.
+ 
+    Errors:
+        Not enough data is present in DATA statements: Out of DATA.
+        The type of the variable is not compatible with that of the data entry being read: a Syntax error occurs on the DATA line.
+{REM|'} [anything]: Ignores everything until the end of the line.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        The REM statement is intended for comments.
+        Everything after REM will be stored in the program unaltered and uninterpreted. Apostrophe (') is an alias for REM.
+        Note that a colon : does not terminate the REM statement; the colon and everything after it will be treated as part of the comment.
+ 
+    Errors:
+        TODO
+RESTORE [line]: Resets the DATA pointer.
+ 
+    Parameters:
+        'line' is a line number.
+ 
+    Notes:
+        If 'line' is not specified, the DATA pointer is reset to the first DATA entry in the program.
+        If it is specified, the DATA pointer is reset to the first DATA entry in or after 'line'.
+ 
+    Errors:
+        'line' is not an existing line number: Undefined line number.
+RESUME {var|NEXT|line_number}: To continue program execution after an error-recovery procedure has been performed.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        None
+ 
+    Errors:
+        TODO
+RETURN [line]: Returns from a GOSUB subroutine.
+ 
+    Parameters:
+        'line' is a line number.
+ 
+    Notes:
+        If 'line' is not specified, RETURN jumps back to the statement after the GOSUB that jumped into the subroutine.
+        If line is specified, it must be a valid line number. RETURN jumps to that line (and pops the GOSUB stack).
+        When returning from an error trapping routine, RETURN re-enables the event trapping which was stopped on entering the trap routine.
+ 
+    Errors:
+        'line' is not an existing line number: Undefined line number.
+SWAP variable1, variable2: To exchange the values of two variables.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        Any type variable may be swapped (integer, single-precision, double-precision, string).
+ 
+    Errors:
+        If the two variables are not of the same type a 'Type mismatch' error results.
+TIME$ = string exp: To set the current time.
+ 
+    Parameters:
+        'string exp' is a valid string literal or variable that lets you set hours (hh), hours and minutes (hh: mm),
+        or hours, minutes, and seconds (hh: mm:ss).
+            'hh' sets the hour (0-23). Minutes and seconds default to 00.
+            'hh:mm' sets the hour and minutes (0-59). Seconds default to 00.
+            'hh:mm:ss' sets the hour, minutes, and seconds (0-59).
+ 
+    Notes:
+        As you enter any of the above values, you may omit the leading zero, if any.
+        You must, however, enter at least one digit.
+        If you wanted to set the time as a half hour after midnight, you could enter TIME$ = \"0:30\", but not TIME$ = \":30\".
+ 
+    Errors:
+        If 'string exp' is not a valid string, a 'Type mismatch' error results.
+        If any of the values are out of range, an 'Illegal function call' error is issued. The previous time is retained.
+string exp = TIME$: To retrieve the current time.
+ 
+    Parameters:
+        'string exp' is a valid string literal or variable.
+ 
+    Notes:
+        The current time is fetched and assigned to the string variable if TIME$ is the expression in a LET or PRINT statement.
+        If string exp = TIME$, TIME$ returns an 8 character string in the form 'hh:mm:ss'.
+ 
+    Errors:
+        If 'string exp' is not a valid string, a 'Type mismatch' error results.
+USING: TODO
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        TODO
+WAIT frames: Pauses for frames / 60 seconds.
+ 
+    Parameters:
+        'frames' is in [0 to 65535].
+ 
+    Notes:
+        In Microsoft BASIC, WAIT waits for input from a given port.
+ 
+    Errors:
+        Any parameter has a string value: Type mismatch.
+WEND: Iterates a WHILE—WEND loop by jumping to the matching WHILE statement, where its condition can be checked.
+ 
+    Parameters:
+        None
+ 
+    Notes:
+        WHILE—WEND loops can be nested.
+        WEND jumps to the most recent WHILE statement that has not been closed by another WEND.
+ 
+    Errors:
+        All previous WHILE statements have been closed by another WEND or no WHILE statement has been executed before: WEND without WHILE.
+WHILE expr: Initiates a WHILE—WEND loop.
+ 
+    Parameters:
+        'expr' is a numeric expression.
+ 
+    Notes:
+        If 'expr' evaluates to zero, WHILE jumps to the statement immediately after the matching WEND. If not, execution continues.
+ 
+    Errors:
+        No matching WEND is found: WHILE without WEND.
+        'expr' has a string value: Type mismatch.
+val = ASC(char): Returns the code point (ASCII value) for the first character of 'char'.
+ 
+    Parameters:
+        'char' is an expression with a string value.
+ 
+    Notes:
+        None
+ 
+    Errors:
+        'char' has a numeric value: Type mismatch.
+        'char' equals \\: Illegal function call.
+char = CHR$(x): Returns the character with code point 'x'.
+ 
+    Parameters:
+        'x' is a numeric expression in the range [0 to 255].
+ 
+    Notes:
+        None
+ 
+    Errors:
+        'x' has a string value: Type mismatch.
+        'x' is not in [-32768 to 32767]: Overflow.
+        'x' is not in 0 to 255: Illegal function call.
+value = DEEK(address): Returns the 16-bit value of the memory at 'segment' * 16 + 'address' where 'segment' is the current segment set with DEF SEG.
+ 
+    Parameters:
+        'address' is a numeric expression in [-32768 to 65535]. Negative values are interpreted as their two's complement.
+ 
+    Notes:
+        None
+ 
+    Errors:
+        TODO
+result = FN[ ]name [(arg_0 [, arg_1] ...): Evaluates the user-defined function previously defined with DEF FN name.
+ 
+    Parameters:
+        'name' is the name of a previously defined function.
+        'arg_0', 'arg_1', ... are expressions, given as parameters to the function.
+ 
+    Notes:
+        Spaces between FN and name are required.
+        Unlike Microsoft BASIC, in SE Basic IV, functions can be called recursively, albeit without tail call optimization.
+ 
+    Errors:
+        No function named 'name' is defined: Undefined user function.
+        The number of parameters differs from the function definition: Syntax error.
+        The type of one or more parameters differs from the function definition: Type mismatch.
+        The return type is incompatible with the function name's sigil: Type mismatch.
+        The statement is executed directly instead of in a program line: Illegal direct.
+        If the type of the return value is incompatible with the type of name, no error is raised at the DEF FN statement,
+            however, a Type mismatch will be raised at the first call of FNname.
+DEF FN[]name[(arg_0[, arg_1]...)] = expression: Defines a function called FN name (or FN name - spaces between FN and name are optional).
+ 
+    Parameters:
+        'name' must be a legal variable name.
+        'arg_0', 'arg_1', ... must be legal variable names.
+            These are the parameters of the function. Variables of the same name may or may not exist in the program
+            their value is not affected or used by the defined function.
+        'expression' must be a legal SE Basic IV expression.
+ 
+    Notes:
+        On calling FNname(... ), expression is evaluated with the supplied parameters substituted.
+        Any variable names used in the function that are not in the argument list refer to the corresponding global variables.
+            The result of the evaluation is the return value of FNname.
+        The type of the return value must be compatible with the type indicated by name.
+        DEF FN may only be used on a program line.
+        As the function must be a single expression and SE Basic IV does not have a ternary operator,
+        the only way to define a recursive function that actually terminates is by using VAL or VAL$.
+ 
+    Errors:
+        The statement is executed directly instead of in a program line: Illegal direct.
+        If the type of the return value is incompatible with the type of name, no error is raised at the DEF FN statement
+        however, a Type mismatch will be raised at the first call of FNname.
+FRE(x$): Returns the number of available bytes in allocated string memory.
+ 
+    Parameters:
+        'x$' and 'x' are dummy arguments.
+ 
+    Notes:
+        Before FRE(x$) returns the amount of space available in allocated string memory, SE Basic initiates a 'garbage collection' activity.
+        Data in string memory space is collected and reorganized, and unused portions of fragmented strings are discarded to make room for new input.
+        If FRE is not used, SE Basic initiates an automatic garbage collection activity when all string memory space is used up.
+        SE Basic will not initiate garbage collection until all free memory has been used.Garbage collection may take 1 to 1.5 minutes.
+        FRE(\\) or any string forces a garbage collection before returning the number of free bytes.
+        Therefore, using FRE(\\) periodically will result in shorter delays for each garbage collection.
+        It should be noted that the ctrl-break function cannot be used during this housecleaning process.
+ 
+    Errors:
+        TODO
+FRE(x): Returns the number of available bytes in allocated string memory.
+ 
+    Parameters:
+        'x$' and 'x' are dummy arguments.
+ 
+    Notes:
+        Before FRE(x$) returns the amount of space available in allocated string memory, SE Basic initiates a 'garbage collection' activity.
+        Data in string memory space is collected and reorganized, and unused portions of fragmented strings are discarded to make room for new input.
+        If FRE is not used, SE Basic initiates an automatic garbage collection activity when all string memory space is used up.
+        SE Basic will not initiate garbage collection until all free memory has been used.Garbage collection may take 1 to 1.5 minutes.
+        FRE(\\) or any string forces a garbage collection before returning the number of free bytes.
+        Therefore, using FRE(\\) periodically will result in shorter delays for each garbage collection.
+        It should be noted that the ctrl-break function cannot be used during this housecleaning process.
+ 
+    Errors:
+        TODO
+position = INSTR([start,] parent, child): Returns the location of the first occurrence of the substring 'child' in 'parent'.
+ 
+    Parameters:
+        'parent' and 'child' are string expressions.
+        'start' is a numeric expression in [1 to 255], specifying the starting position from where to look.
+            If not specified, the search starts at character 1.
+ 
+    Notes:
+        If 'child' is not a substring of 'parent' occurring at or before 'start', INSTR returns 0.
+        If the 'start' index is 0 (instead of 1), it still searches from the beginning.
+        If 'child' is empty, it is found right away at the 'start' index.
+ 
+    Errors:
+        'start' has a string value or 'parent' or 'child' have numeric values: Type mismatch.
+        'start' is not in [-32768 to 32767]: Overflow.
+        'start' is not in [1 to 255]: Illegal function call.
+child = LEFT$(parent, num_chars): Returns the left most number of characters 'num_chars' from the string 'parent'.
+ 
+    Parameters:
+        'parent' is a string expression.
+        'num_chars' is a numeric expression.
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        TODO
+length = LEN(string): Returns the number of characters in 'string'.
+ 
+    Parameters:
+        'string' is a string expression.
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        'string' has a number value: Type mismatch.
+substring = MID$(string, position [, length]): Returns the middle 'length' characters starting at 'position' from the string 'parent'.
+ 
+    Parameters:
+        'string' is a string expression.
+        'position' is a numeric expression.
+        'length' is a numeric expression.
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        TODO
+value = PEEK(address): Returns the value of the memory at 'segment' * 16 + 'address' where 'segment' is the current segment set with DEF SEG.
+ 
+    Parameters:
+        'address' is a numeric expression in [-32768 to 65535]. Negative values are interpreted as their two's complement.
+ 
+    Notes:
+        Currently PEEK only accepts values in the range [0 to 65535] and ignores SEG, returning values from the 64K address space.
+ 
+    Errors:
+        'address' has a string value: Type mismatch.
+        'address' is not in [-32768 to 65535]: Overflow.
+child = RIGHT$(parent, num_chars): Returns the right most number of characters 'num_chars' from the string 'parent'.
+ 
+    Parameters:
+        'parent' is a string expression.
+        'num_chars' is a numeric expression.
+ 
+    Notes
+        TODO
+ 
+    Errors:
+        TODO
+SPACE$(x): Returns a string of 'x' spaces.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        'x' is rounded to an integer and must be within the range of 0 to 255.
+ 
+    Errors:
+        TODO
+SPC(n): To skip a specified number of spaces in a PRINT statement.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        'n' must be within the range of 0 to 255.
+        If 'n' is greater than the defined width of the printer or the screen, the value used will be 'n' MOD width.
+        A semicolon is assumed to follow the SPC(n) command.
+        SPC may only be used with PRINT and PRINT# statements.
+ 
+    Errors:
+        TODO
+string = STRING$(length, char): Returns a string of 'length' times the character 'char'.
+ 
+    Parameters:
+        If 'char' is a numeric expression, it must be in [0 to 255] and is interpreted as the code point of the character.
+        If 'char' is a string expression, its first character is used.
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        'length' has a string value: Type mismatch.
+        'char' is the empty string: Illegal function call.
+        'char' or 'length' is not in [-32768 to 32767]: Overflow.
+        'char' or 'length' is not in [0 to 255]: Illegal function call.
+repr = STR$(number): Returns the string representation of 'number'.
+ 
+    Parameters:
+        'number' is a numeric expression.
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        'number' has a string value: Type mismatch.
+v = TIMER: Returns single precision floating point numbers representing the elapsed number of seconds since midnight or system reset.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        Fractions of seconds are calculated to the nearest degree possible. Timer is read-only.
+ 
+    Errors:
+        TODO
+value = USR[n](expr): Calls a machine-code function and returns its return value.
+ 
+    Parameters:
+        'n' is a digit (0 to 9).
+        'expr' is an expression.
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        'n' is not a digit [0 to 9]: Syntax error.
+value = VAL(string): Returns the numeric value of the string expression 'string'.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        Spaces before a number are ignored: VAL(\"10\") returns 10. But unlike Microsoft BASIC, spaces inside a number are not ignored.
+        Unlike Microsoft BASIC, expressions inside the string expression are also evaluated.
+            For example, VAL \"5 + 5\" returns 10 and VAL \"foo\" returns the value of variable foo.
+        Expressions between curly braces { and } are not evaluated, but their syntax is checked upon entering.
+            They are interpreted as strings that can be passed to VAL for actual evaluation.
+ 
+    Errors:
+        'string' has a number value: Type mismatch.
+value = VAL$(string): Evaluates a 'string' as a string expression.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        The string value assigned to 'a$' should be an expression using 'x$'.
+            For example, \"x$+x$\". A string value is then assigned to 'x$', for example \"yo\".
+        VAL$ strips the quotes of the value of 'a$' to get 'x$+x$' and evaluates it using the value assigned to 'x$' displaying the result \"yoyo\".
+        This function is not present in Microsoft BASIC. It is very useful for creating recursive functions,
+            if used together with AND applied to string arguments, allowing for selective evaluation.
+        Expressions between curly braces { and } are not evaluated, but their syntax is checked upon entering.
+            They are interpreted as strings that can be passed to VAL$ for actual evaluation.
+ 
+    Errors:
+        'string' has a number value: Type mismatch.
+x = VARPTR$(variable): Returns a character form of the offset of a variable in memory.
+ 
+    Parameters:
+        'variable' is the name of a variable that exists in the program.
+ 
+    Notes:
+        Assign all simple variables before calling VARPTR$ for an array element,
+            because the array addresses change when a new simple variable is assigned.
+        VARPTR$ returns a three byte string of the following form:
+            | Byte 0 | Byte 1 | Byte 2 |
+ 
+        Byte 0 contains one of the following variable types:
+            2    integer
+            3    string
+            4    single precision
+            8    double precision
+ 
+        Byte 1 contains the 8086 address format, and is the least significant byte.
+        Byte 2 contains the 8086 address format, and is the most significant byte.
+ 
+    Errors:
+        TODO
+x = VARPTR(variable name): Returns the address in memory of the variable.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        VARPTR is usually used to obtain the address of a variable or array so it can be passed to an assembly language subroutine.
+        A function call of the following form:
+            x = VARPTR(A(0))
+        is usually specified when passing an array, so that the lowest addressed element of the array is returned.
+ 
+        All simple variables should be assigned before calling VARPTR for an array,
+            because the addresses of the arrays change whenever a new simple variable is assigned.
+        VARPTR(variable name) returns the address of the first byte of data identified with the 'variable name'.
+        Any type 'variable name' may be used (numeric, string, or array), and the address returned will be an integer within the range
+            of 32767 to -32768.
+        If a negative address is returned, it is added to 65536 to obtain the actual address.
+ 
+    Errors:
+        A value must be assigned to 'variable name' prior to execution of VARPTR, otherwise, an 'Illegal function call' error results.
+CLEAR [mem_limit]: Clears all variables, arrays, DEF FN user functions, closes all files, turns off all sound, clears all ON ERROR traps and clears the loop stack.
+ 
+    Parameters:
+        'mem_limit' specifies the upper limit of usable memory. Default is previous memory size. Default memory size is 65535.
+ 
+    Notes:
+        If called inside a FOR to NEXT or WHILE to WEND loop, an error will be raised at the NEXT or WEND statement,
+        since the loop stacks have been cleared.
+ 
+    Errors:
+        Any of the arguments has a string value: Type mismatch.
+        'mem_limit' is not in [0 to 65535]: Overflow.
+        'mem_limit' is too low: Address out of range.
+CONT: Resumes execution of a program that has been halted by STOP, END or Esc.
+ 
+    Parameters:
+        None
+ 
+    Notes:
+        Anything after the CONT keyword is ignored.
+        This statement can only be used in direct mode.
+        If a break is encountered in GOSUB routine called from a continuing direct line (for example, GOSUB 100:PRINT A$),
+            CONT will overwrite the running direct line. As the subroutine RETURNs to the position after the GOSUB in the old direct line,
+        strange things may happen if commands are given after CONT.
+            In Microsoft BASIC, this can lead to strange errors in non-existing program lines as the parser executes bytes
+                that are not part of a program line. In SE Basic IV, if the new direct line is shorter, execution stops after RETURN.
+        but if the direct line is extended beyond the old return position, the parser tries to resume at that return position, with strange effects.
+ 
+    Errors:
+        No program is loaded, a program has not been run, after a program line has been modified or after CLEAR: Can't continue.
+        The break occurred in a direct line: Can't continue.
+        CONT is used in a program: Can't continue.
+DELETE [line_number_0|.] [-[line_number_1|.]]: Deletes a range of lines from the program and also stops program execution and returns control to the user.
+ 
+    Parameters:
+        'line_number_0' and 'line_number_1' are line numbers in the range [0 to 65529], specifying the inclusive range of line numbers to delete.
+        A '.' indicates the last line edited.
+ 
+    Notes:
+        If the start point is omitted, the range will start at the start of the program.
+        If the end point is omitted, the range will end at the end of the program.
+        If no range is specified, the whole program will be deleted.
+ 
+    Errors:
+        'line_number_0' or 'line_number_1' is greater than 65529: Syntax error.
+        The range specified does not include any program lines stored: Illegal function call.
+NEW: Stops execution of a program, deletes the program in memory, executes CLEAR and RESTORE and returns control to the user.
+ 
+    Parameters:
+        None
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        TODO
+OLD: Loads a backup from disk of the program that was in memory the last time a NEW command was issued and returns control to the user.
+ 
+    Parameters:
+        None
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        TODO
+RENUM [new|.] [, [old|.] [, increment]]: Replaces the line numbers in the program by a systematic enumeration starting from 'new' and increasing by 'increment'.
+ 
+    Parameters:
+        'new', 'old' are line numbers; the dot '.' signifies the last line edited.
+        'increment' is a line number but must not be a dot or zero.
+ 
+    Notes:
+        If 'old' is specified, line numbers less than 'old' remain unchanged.
+        The following keywords can reference line numbers, which will be renumbered by RENUM:
+            GOSUB, GOTO, LIST, RESTORE, RUN.
+ 
+    Errors:
+        Any of the parameters is not in [0 to 65529]: Syntax error.
+        Any of the newly generated line numbers is greater than 65529: Illegal function call. The line numbers up to the error have not been changed.
+        'increment' is empty or zero: Illegal function call.
+        'old' is specified and 'new' is less than or equal to an existing line number less than 'old': Illegal function call.
+RUN [line_number | app_name [, p0, p1, ...]]: Executes a program.
+ 
+    Parameters:
+        'line_number' is a valid line number in the current program. If specified, execution starts from this line number.
+            The rest of the RUN statement is ignored in this case.
+        The string expression 'app_name', if specified, is a valid application name (case-insensitive, truncated to the first 11 characters).
+        'p0', 'p1', ... are variables.
+ 
+    Notes:
+        Existing variables will be cleared and any program in memory will be erased.
+        RUN implies a CLEAR. If an 'app_name' is specified, opens the application.
+ 
+    Errors:
+        'line_number' is not a line number in the current program: Undefined line number.
+        'app_name' cannot be found: File not found.
+STOP: Breaks program execution, prints a Break message on the console and returns control to the user.
+ 
+    Parameters:
+        None
+ 
+    Notes:
+        Files are not closed. It is possible to resume program execution at the next statement using CONT.
+ 
+    Errors:
+        TODO
+TRACE {ON|OFF}: Turns line number tracing on or off.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        If line number tracing is on, prints a tag [100] to the console when program line 100 is executed, and so forth.
+        Tracing is turned off by the NEW and LOAD statements.
+ 
+    Errors:
+        TODO
+v = ERR: Returns the error code associated with an error.
+ 
+    Parameters:
+        None
+ 
+    Notes:
+        'ERR' contains the error code for the last occurrence of an error.
+        'ERR' and 'ERL' are usually used in IF-THEN, or ON ERROR...GOTO, or GOSUB statements to direct program flow in error trapping.
+        Because 'ERL' and 'ERR' are reserved variables, neither may appear to the left of the equal sign in a LET (assignment) statement.
+ 
+    Errors:
+        TODO
+v = ERL: Returns the line number associated with an error.
+ 
+    Parameters:
+        None
+ 
+    Notes:
+        'ERL' contains the line number of the line in which the error was detected.
+        'ERR' and 'ERL' are usually used in IF-THEN, or ON ERROR...GOTO, or GOSUB statements to direct program flow in error trapping.
+        Because 'ERL' and 'ERR' are reserved variables, neither may appear to the left of the equal sign in a LET (assignment) statement.
+ 
+    Errors:
+        TODO
+-----
+IO
+BSAVE file_spec, offset, length: Saves a region of memory to an image file.
+ 
+    Parameters:
+        The string expression 'file_spec' is a valid file specification indicating the file to write to.
+        'offset' is a numeric expression in the range [-32768 to 65535] indicating the offset into the current segment from where to start reading.
+        'length' is a numeric expression in the range [-32768 to 65535] indicating the number of bytes to read.
+        If 'offset' or 'length' are negative, their two's complement will be used.
+ 
+    Notes:
+        None
+ 
+    Errors:
+        'file_spec' has a numeric value: Type mismatch.
+        'file_spec' contains disallowed characters: Bad file number (on CAS1:); Bad file name (on disk devices).
+        'offset' is not in the range [-32768 to 65535]: Overflow.
+        'length' is not in the range [-32768 to 65535]: Overflow.
+CLOSE [[#] file_0 [, [#] file_1] ...]: Closes streams.
+ 
+    Parameters:
+        'file_1', 'file_2', ... are numeric expressions yielding stream numbers.
+ 
+    Notes:
+        If no file numbers are specified, all open streams [3 to 15] are closed.
+        The hash ('#') is optional and has no effect.
+ 
+    Errors:
+        'file_1', 'file_2', ... are not in [0 to 15]: Bad I/O device.
+        'file_1', 'file_2', ... are not open streams: Undefined stream.
+        'file_1', 'file_2', ... have a string value: Type mismatch.
+        The statement ends in a comma, Syntax error.
+        If an error occurs, only the files before the erratic value are closed.
+COM(n) {ON|OFF|STOP}: To enable or disable trapping of communications activity to the specified communications adapter.
+ 
+    Parameters:
+        'n' is the number of the communications adapter 1 or 2.
+ 
+    Notes:
+        Execute a COM(n) ON statement before ON COM(n) statement to allow trapping.
+        After COM(n) ON, if a nonzero number is specified in the ON COM(n) statement,
+        SE Basic checks every new statement to see if any characters have come in the communication adapter.
+        With COM(n) OFF, no trapping takes place, and all communications activity will be lost.
+        With COM(n) STOP, no trapping takes place.
+        However, any communication that takes place will be remembered so that immediate trapping will occur when COM(n) ON is executed.
+ 
+    Errors:
+        TODO
+COPY file_spec_1 TO file_spec_2: Copies the disk file 'file_spec_1' to 'file_spec_2'.
+ 
+    Parameters:
+        The string expressions 'file_spec_1' and 'file_spec_2' are valid file specifications indicating the source and destination files.
+ 
+    Notes:
+        The 'file_spec_1' must point to an existing file on a disk device.
+        Typically, this command is not present in Microsoft BASIC.
+ 
+    Errors:
+        'file_spec_1' or 'file_spec_2' have number values: Type mismatch
+        'file_spec_1' does not exist: File not found.
+END: Closes all files, stops program execution and returns control to the user.
+ 
+    Parameters:
+        None
+ 
+    Notes:
+        No message is printed. It is possible to resume execution at the next statement using CONT.
+ 
+    Errors:
+        TODO
+FIELD[#] filenum, width AS stringvar[, width AS stringvar]...: To allocate space for variables in a random file buffer.
+ 
+    Parameters:
+        'filenum' is the number under which the file was opened.
+        'width' is the number of characters to be allocated to the string variable.
+        'stringvar' is a string variable which will be used for random file access.
+ 
+    Notes:
+        A FIELD statement must have been executed before you can:
+            Get data out of a random buffer after a GET statement
+            Enter data before a PUT statement
+        FIELD only allocates space; it does not place any data in the random file buffer.
+        Any number of FIELD statements may be executed for the same file, and all FIELD statements executed are in effect at the same time.
+        DO NOT use a fielded variable name in an INPUT or LET statement.
+        Once a variable name is fielded, it points to the correct place in the random file buffer.
+        If a subsequent INPUT or LET statement with that variable name is executed, the variable's pointer is moved to string space.
+ 
+    Errors:
+        The total number of bytes allocated in a FIELD statement must not exceed the record length specified when the file was opened.
+        Otherwise, a 'Field overflow' error occurs (the default record length is 128).
+GET[#] file number[, record number]: To read a record from a random disk file into a random buffer.
+ 
+    Parameters:
+        'file number' is the number under which the file was opened.
+        'record number' is the number of the record, within the range of 1 to 16, 777, 215.
+ 
+    Notes:
+        If 'record number' is omitted, the next record (after the last GET) is read into the buffer.
+        After a GET statement, INPUT# and LINE INPUT# may be used to read characters from the random file buffer.
+        GET may also be used for communications files. 'record number' is the number of bytes to be read from the communications buffer.
+        'record number' cannot exceed the buffer length set in the OPEN COM(n) statement.
+ 
+    Errors:
+        TODO
+LINE INPUT [;][prompt string;] string variable: To input an entire line (up to 255 characters) from the keyboard into a string variable, ignoring delimiters.
+ 
+    Parameters:
+        'prompt string' is a string literal, displayed on the screen, that allows user input during program execution.
+        A question mark is not printed unless it is part of prompt string.
+        'string variable' accepts all input from the end of the prompt to the carriage return. Trailing blanks are ignored.
+ 
+    Notes:
+        LINE INPUT is almost the same as the INPUT statement, except that it accepts special characters
+        (such as commas) in operator input during program execution.
+        If a line-feed/carriage return sequence (this order only) is encountered, both characters are input and echoed. Data input continues.
+        If LINE INPUT is immediately followed by a semicolon, pressing the RETURN key will not move the cursor to the next line.
+        A LINE INPUT may be escaped by typing CTRL-BREAK. SE Basic returns to command level and displays 'Ok'.
+        Typing CONT resumes execution at the LINE INPUT line.
+ 
+    Errors:
+        TODO
+LINE INPUT# file number, string variable: To read an entire line (up to 255 characters), without delimiters, from a sequential disk file to a string variable.
+ 
+    Parameters:
+        'file number' is the number under which the file was opened.
+        'string variable' is the variable name to which the line will be assigned.
+ 
+    Notes:
+        LINE INPUT# reads all characters in the sequential file up to a carriage return.
+        If a line feed/carriage return sequence (this order only) is encountered, it is input.
+        LINE INPUT# is especially useful if each line of a data file has been broken into fields,
+            or if a BASIC program saved in ASCII mode is being read as data by another program.
+ 
+    Errors:
+        TODO
+LSET string variable = string expression: To move data from memory to a random file buffer and left-justify it in preparation for a PUT statement.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        If 'string expression' requires fewer bytes than were fielded to 'string variable',
+            LSET left-justifies the string in the field (spaces are used to pad the extra positions).
+        If the string is too long for the field, characters are dropped from the right.
+        LSET or RSET may also be used with a nonfielded string variable to left-justify or right-justify a string in a given field.
+ 
+    Errors:
+        TODO
+RSET string variable = string expression: To move data from memory to a random file buffer and right-justify it in preparation for a PUT statement.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        If 'string expression' requires fewer bytes than were fielded to 'string variable',
+            RSET right-justifies the string (spaces are used to pad the extra positions).
+        If the string is too long for the field, characters are dropped from the right.
+        LSET or RSET may also be used with a nonfielded string variable to left-justify or right-justify a string in a given field.
+ 
+    Errors:
+        TODO
+OPEN # file_num, mode_char [,file_spec]: Opens a data file on a device.
+ 
+    Parameters:
+        The string expression 'file_spec' is a valid file specification.
+        'file_num' is a valid stream [3 to 15].
+        'mode_char' is a string expression of which the first character is one of:
+            [\"K\", \"S\"] - system channel (keyboard or screen).
+            [\"I\", \"O\", \"A\", \"R\"] - access mode for a disk file.
+            other alpha character - a user defined channel.
+ 
+    Notes:
+        Access modes:
+            The 'mode_char' are as follows:
+                mode_char    Meaning    Effect
+                \"I\"        INPUT      Opens a text file for reading and positions the file pointer at the start.
+                \"O\"        OUTPUT     Truncates a text file at the start and opens it for writing.
+                                        Any data previously present in the file will be deleted.
+                \"A\"        APPEND     Opens a text file for writing at the end of any existing data.
+                \"R\"        RANDOM     Opens a file for random access.
+ 
+        A single character can be read with c$=INKEY$ #file_num or written with PRINT #file_num;c$;.
+        Strings are terminated with a carriage return. A string can be read with INPUT #file_num;s$ or written with PRINT #file_num;s$.
+ 
+        File specification:
+            'file_spec' is a non-empty string expression of the form 'parameters'.
+                'parameters' must specify a valid file path of the form [/][dirname/] ... filename.
+            In SE Basic IV, file support is provided using the OS kernel.
+                UnoDOS 3 follows MS-DOS file system conventions with the exception that folder names are separated with forward slashes (/).
+                SE Basic IV adds syntactic sugar to the short filename format. File names consist of an 8-character name and 3-character extension.
+                Folder names consist of an 11-character name. Permissible characters are the printable ASCII characters in the range [$20 to $7E]
+                    excluding the characters '* + . , / : ; < = > ? \\ [ ] |'. Spaces are allowed but are converted to underscores.
+            A path starting with a forward slash is interpreted as an absolute path, starting at the root of the specified disk device.
+            Otherwise, the path is interpreted as relative to the current folder on the specified device.
+            The special folder name '..' refers to the parent folder of a preceding path,
+                or the parent folder of the current folder if no path is given.
+            The special folder name '.' refers to the same folder as given by the preceding path,
+                or the current folder if no preceding path is given.
+            The LOAD and SAVE statements do not currently implicitly add a default extension .BAS if no extension is specified.
+ 
+        Compatibility notes:
+            UnoDOS 3 allows certain characters in the range $7F to $FF. However, their permissibility and interpretation depends on
+            the console code page, which may be different from the display code page currently in use.
+            Therefore you should avoid using these characters.
+ 
+    Errors:
+        'file_num' is a non-existent stream: Undefined stream.
+        'file_num' is not in range [0 to 15]: Bad I/O device.
+        'mode_char' is a non-existent channel: Undefined channel.
+        'file_spec' is non-existent in input or append mode: File not found.
+OUT port, value: Sends a byte to an emulated machine port.
+ 
+    Parameters:
+        'port' is a numeric expression in [0 to 65535].
+        'value' is a numeric expression in [0 to 255].
+ 
+    Notes:
+        None
+ 
+    Errors:
+        'port' or 'value' has a string value: Type mismatch.
+        'port' is not in [0 to 65535]: Overflow.
+        'value' is not in [0 to 32767]: Overflow.
+        'value' is not in [0 to 255]: Illegal function call.
+PEN {ON|OFF|STOP}: To enable or disable the light pen.
+ 
+    Parameters:
+        PEN ON enables the PEN read function.
+        PEN OFF disables the PEN read function.
+        PEN STOP disables trapping. It remembers the event so immediate trapping occurs when PEN ON is executed.
+        The PEN function is initially off.
+ 
+    Notes:
+        For execution speed improvements, turn the pen off with a PEN OFF statement for those programs not using the light pen.
+ 
+    Errors:
+        A PEN ON statement must be executed before any PEN read function calls can be made,
+        or a PEN read function call results in an 'Illegal function call' error.
+x = PEN(n): To read the light pen coordinates.
+ 
+    Parameters:
+        'x' is the numeric variable receiving the PEN value.
+        'n' is an integer within the range of 0 to 9.
+ 
+    Notes:
+        Light pen coordinates:
+        n = 0    If PEN was down since last poll, returns -1; if not, returns 0.
+        n = 1    Returns the x-pixel coordinate when PEN was last activated.
+                 The range is within 0 to 319 for medium resolution; 0 to 639, for high resolution.
+        n = 2    Returns the y-pixel coordinate when PEN was last activated.
+                 The range is within 0 to 199.n = 3Returns the current PEN switch value. Returns -1 if down; 0 if up.
+        n = 4    Returns the last known valid x-pixel coordinate.
+                 The range is within 0 to 319 for medium resolution; or 0 to 639 for high resolution.
+        n = 5    Returns the last known valid y-pixel coordinate.
+                 The range is within 0 to 199.
+        n = 6    Returns the character row position when PEN was last activated.
+                 The range is within 1 to 24.
+        n = 7    Returns the character column position when PEN was last activated.
+                 The range is within 1 to 40, or 1 to 80, depending on the screen width.
+        n = 8    Returns the last known valid character row.
+                 The range is within 1 to 24.
+        n = 9    Returns the last known valid character column position.
+                 The range is within 1 to 40, or 1 to 80, depending on the screen width.
+        For execution speed improvements, turn the pen off with a PEN OFF statement for those programs not using the light pen.
+        When the pen is in the border area of the screen, the values returned will be inaccurate.
+ 
+    Errors:
+        A PEN ON statement must be executed before any PEN read function calls can be made,
+        or a PEN read function call results in an 'Illegal function call' error.
+PRINT [# stream,] [expr_0|;|,|SPC( n)|TAB( n)] ... [USING format; uexpr_0 [{;|,} uexpr_1] ... [;|,]]: Writes expressions to a file or another device.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        If stream is specified, output goes to the file or device open under that number.
+        '?' is a shorthand for PRINT.
+
+        Expressions can optionally be separated by one or more of the following keywords:
+        Keyword    Effect
+        ;          Attaches two expressions tight together
+                      strings will be printed without any space in between, numbers will have one space separating them,
+                      in addition to the space or minus sign that indicate the sign of the number.
+        ,          The expression after will be positioned at the next available tab stop.
+        '          Inserts a newline.
+        SPC(n)     Produces 'n' spaces, where 'n' is a numeric expression. If 'n' is less than zero, it defaults to zero.
+                       If 'n' is greater than the file width, it is taken modulo the file width.
+        TAB(n)     Moves to column 'n', where 'n' is a numeric expression. if 'n' is less than zero, it defaults to zero.
+                       If 'n' is greater than the file width, it is taken modulo the file width.
+                       If the current column is greater than 'n', TAB moves to column 'n' on the next line.
+ 
+        If the print statement does not end in one of these four separation tokens, a newline is printed after the last expression.
+        String expressions can be separated by one or more spaces, which has the same effect as separating by semicolons.
+ 
+    Errors:
+        TODO
+PUT[#] file number[, record number]: To write a record from a random buffer to a random disk file.
+ 
+    Parameters:
+        'file number' is the number under which the file was opened.
+        'record number' is the number of the record.If it is omitted, the record has the next available record number (after the last PUT).
+ 
+    Notes:
+        The largest possible 'record number' is 232-1.
+        This will allow you to have large files with short record lengths.
+        The smallest possible record number is 1.
+        The PRINT#, PRINT# USING, LSET, RSET, or WRITE# statements may be used to put characters in the random file buffer before a PUT statement.
+        In the case of WRITE#, SE Basic pads the buffer with spaces up to an enter.
+        PUT can be used for communications files.
+        Here 'record number' is the number of bytes written to the file.
+        'record number' must be less than or equal to the length of the buffer set in the OPEN COM(n) statement.
+ 
+    Errors:
+        Any attempt to read or write past the end of the buffer causes a 'Field overflow' error.
+SEEK #file_num, file_pos: Moves the current position in 'file_num' to 'file_pos'.
+ 
+    Parameters:
+        'file_num' is a numeric expressions yielding a file number.
+        'file_pos' is a numeric expressions.
+ 
+    Notes:
+        No error is raised if the specified file number is not open.
+ 
+    Errors:
+        TODO
+STRIG [(n)] {ON|OFF}: To allow the use of a joystick by enabling or disabling the trapping of its buttons.
+ 
+    Parameters:
+        n is 0, 2, 4, or 6, corresponding to the buttons on the joystick, where:
+            0 is button A1
+            2 is button B1
+            4 is button A2
+            6 is button B2
+ 
+    Notes:
+        STRIG ON must be executed before any STRIG(n) function calls may be made.
+        Once STRIG ON is executed, SE Basic will check to see if a button has been pressed before every statement is executed.
+        STRIG OFF disables the checking.
+ 
+    Errors:
+        TODO
+x = STRIG(n): Returns the status of the joystick triggers.
+ 
+    Parameters:
+        'x' is a numeric variable for storing the result.
+        'n' is a numeric expression within the range of 0 to 7 that returns the following values:
+            Value of 'n'    Returns
+            0               -1 if trigger A1 was pressed since the last STRIG(0) statement; 0, if not.
+            1               -1 if trigger A1 is currently pressed; 0, if not.
+            2               -1 if trigger B1 was pressed since the last STRIG(2) statement; 0, if not.
+            3               -1 if trigger B1 is currently pressed; 0, if not.
+            4               -1 if trigger A2 was pressed since the last STRIG(4) statement; 0, if not.
+            5               -1 if trigger A2 is currently pressed; 0, if not.
+ 
+    Notes:
+        None
+ 
+    Errors:
+        TODO
+WIDTH file number, size: To set the printed line width in number of characters for the screen and line printer.
+ 
+    Parameters:
+        'size', an integer within the range of 0 to 255, is the new width.
+        'file number' is the number of the file that is open.
+ 
+    Notes:
+        Changing Screen Width:
+            The following statements are used to set the screen width. Only a 40 or 80 column width is allowed.
+                WIDTH size
+                WIDTH \"SCRN:\", size
+        Changing SCREEN mode affects screen width only when moving between SCREEN 2 and SCREEN 1 or SCREEN 0.
+        Changing the screen width clears the screen and sets the border screen colour to black.
+        Changing Line Printer Width:
+            The following WIDTH statement is used as a deferred width assignment for the line printer.
+                This statement stores the new width value without actually changing the current width setting:
+                    WIDTH \"LPT1:\", size
+                A statement of the following form recognizes this stored width value:
+                    OPEN \"LPT1:\" FOR OUTPUT AS number
+                and uses it while the file is open:
+                    WIDTH file number, size
+        If the file is open to LPT1:, line printer width is immediately changed to the new size specified.
+        This allows the width to be changed at will while the file is open.
+        This form of WIDTH has meaning only for LPT1:
+            After outputting the indicated number of characters from the open file, SE Basic inserts a carriage return at the end of the line
+                and wraps the output, if the width is less than the length of the record.
+        Valid widths for the line printer are 1 through 255.
+        Specifying WIDTH 255 for the line printer (LPT1:) enables line wrapping. This has the effect of infinite width.
+        Any value entered outside of these ranges results in an 'Illegal function call' error. The previous value is retained.
+        Using the WIDTH statement on a communications file causes a carriage return to be sent after the number of characters
+            specified by the size attribute.
+        It does not alter either the receive or transmit buffer.
+ 
+    Errors:
+        TODO
+WIDTH dev, size: To set the printed line width in number of characters for the screen and line printer.
+ 
+    Parameters:
+        'size', an integer within the range of 0 to 255, is the new width.
+        'dev' is a valid string expression identifying the device. Valid devices are SCRN:, LPT1:, LPT2:, LPT3:, COM1:, and COM2:.
+ 
+    Notes:
+        Changing Screen Width:
+            The following statements are used to set the screen width. Only a 40 or 80 column width is allowed.
+                WIDTH size
+                WIDTH \"SCRN:\", size
+        Changing SCREEN mode affects screen width only when moving between SCREEN 2 and SCREEN 1 or SCREEN 0.
+        Changing the screen width clears the screen and sets the border screen colour to black.
+        Changing Line Printer Width:
+            The following WIDTH statement is used as a deferred width assignment for the line printer.
+                This statement stores the new width value without actually changing the current width setting:
+                    WIDTH \"LPT1:\", size
+                A statement of the following form recognizes this stored width value:
+                    OPEN \"LPT1:\" FOR OUTPUT AS number
+                and uses it while the file is open:
+                    WIDTH file number, size
+        If the file is open to LPT1:, line printer width is immediately changed to the new size specified.
+        This allows the width to be changed at will while the file is open.
+        This form of WIDTH has meaning only for LPT1:
+            After outputting the indicated number of characters from the open file, SE Basic inserts a carriage return at the end of the line
+                and wraps the output, if the width is less than the length of the record.
+        Valid widths for the line printer are 1 through 255.
+        Specifying WIDTH 255 for the line printer (LPT1:) enables line wrapping. This has the effect of infinite width.
+        Any value entered outside of these ranges results in an 'Illegal function call' error. The previous value is retained.
+        Using the WIDTH statement on a communications file causes a carriage return to be sent after the number of characters
+            specified by the size attribute.
+        It does not alter either the receive or transmit buffer.
+ 
+    Errors:
+        TODO
+WRITE #filenum, list of expressions: To write data to a sequential file.
+ 
+    Parameters:
+        'filenum' is the number under which the file was opened for output.
+        'list of expressions' is a list of string and/or numeric expressions separated by commas or semicolons.
+ 
+    Notes:
+        The WRITE# and PRINT# statements differ in that WRITE# inserts commas between the items as they are written and
+            delimits strings with quotation marks, making explicit delimiters in the list unnecessary.
+        Another difference is that WRITE# does not put a blank in front of a positive number.
+        After the last item in the list is written, a carriage return/line feed sequence is inserted.
+ 
+    Errors:
+        TODO
+v = EOF(file number): Returns -1 (true) when the end of a sequential or a communications file has been reached, or to return 0 if end of file (EOF) has not been found.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        If a GET is done past the end of the file, EOF returns -1.
+        This may be used to find the size of a file using a binary search or other algorithm.
+        With communications files, a-1 indicates that the buffer is empty.
+        Use EOF to test for end of file while inputting to avoid 'Input Past End' errors.
+ 
+    Errors:
+        TODO
+key = INKEY$ [ #file_num]: Returns one character from the stream 'file_num'.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        If no stream is specified, returns one key-press from the keyboard buffer.
+        If the keyboard buffer is empty, returns the empty string. Otherwise,
+            the return value is a one-character string holding the ASCII code of the pressed key.
+        When a function key F1 to F15 is pressed, INKEY$ will return the letters of the associated macro unless it's been set to empty
+            with the KEY statement, in which case it returns the e-ASCII code for the function key.
+ 
+    Errors:
+        TODO
+code = INP(port): Returns the value of a machine port.
+ 
+    Parameters:
+        'port' is a numeric expression in [0 to 65535].
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        TODO
+INPUT# file number, variable list: To read data items from a sequential file and assign it to program variables.
+ 
+    Parameters:
+        'file number' is the number used when the file was opened for input.
+        'variable list' contains the variable names to be assigned to the items in the file.
+ 
+    Notes:
+        The data items in the file appear just as they would if data were being typed on the keyboard in response to an INPUT statement.
+        The variable type must match the type specified by the variable name.
+        With INPUT#, no question mark is printed, as it is with INPUT.
+ 
+        Numeric Values:
+            For numeric values, leading spaces and line feeds are ignored.
+            The first character encountered (not a space or line feed) is assumed to be the start of a number.
+            The number terminates on a space, carriage return, line feed, or comma.
+ 
+        Strings:
+            If SE Basic is scanning the sequential data file for a string, leading spaces and line feeds are ignored.
+            If the first character is a double quotation mark (\"), the string will consist of all characters read
+                between the first double quotation mark and the second.
+            A quoted string may not contain a double quotation mark as a character. The second double quotation mark always terminates the string.
+            If the first character of the string is not a double quotation mark, the string terminates on a comma, carriage return, line feed,
+                or after 255 characters have been read.
+            If end of the file is reached when a numeric or string item is being INPUT, the item is terminated.
+            INPUT# can also be used with random files.
+ 
+    Errors:
+        TODO
+INPUT$(x[, [#] file number)]: Returns a string of 'x' characters read from the keyboard, or from file number.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        If the keyboard is used for input, no characters will appear on the screen.All control characters(except CTRL-BREAK) are passed through.
+        CTRL-BREAK interrupts the execution of the INPUT$ function.
+        The INPUT$ function is preferred over INPUT and LINE INPUT statements for reading communications files,
+            because all ASCII characters may be significant in communications.
+        INPUT is the least desirable because input stops when a comma or carriage return is seen.
+        LINE INPUT terminates when a carriage return is seen.
+        INPUT$ allows all characters read to be assigned to a string.
+        INPUT$ will return 'x' characters from the file number or keyboard.
+ 
+    Errors:
+        TODO
+INPUT [;] [prompt {;|,}] var_0 [, var_1] ...: Prints prompt to the screen and waits for the user to input values for the specified variables.
+ 
+    Parameters:
+        'prompt' is a string literal.
+        'var_0', 'var_1', ... are variable names or fully indexed array elements.
+ 
+    Notes:
+        The semicolon before the prompt, if present, stops a newline from being printed after the values have been entered.
+        If the prompt is followed by a semicolon, it is printed with a trailing '?'.
+        If the prompt is followed by a comma, no question mark is added.
+        Values entered must be separated by commas. Leading and trailing whitespace is discarded.
+        String values can be entered with or without double quotes.
+        If a string with a comma, leading or trailing whitespace is needed, quotes are the only way to enter it.
+        Between a closing quote and the comma at the end of the entry, only white-space is allowed.
+        If quotes are needed in the string itself, the first character must be neither a quote nor whitespace.
+        It is not possible to enter a string that starts with a quote through INPUT.
+        If a given 'var_n' is a numeric variable, the value entered must be number literal.
+        Characters beyond the 255th character of the screen line are discarded.
+        If user input is interrupted by Ctrl+Break, CONT will re-execute the INPUT statement.
+ 
+    Errors:
+        If the value entered for a numeric variable is not a valid numeric literal, or the number of values entered does not match
+            the number of variables in the statement, ?Redo from start is printed and all values must be entered again.
+        A Syntax error that is caused after the prompt is printed is only raised after the values have been entered. No values are stored.
+x = LOC(file number): Returns the current position in the file.
+ 
+    Parameters:
+        'file number' is the file number used when the file was opened.
+ 
+    Notes:
+        When transmitting or receiving a file through a communication port,
+            LOC returns the number of characters in the input buffer waiting to be read.
+        The default size for the input buffer is 256 characters, but can be changed with the / c: option on the SE Basic command line.
+        If there are more than 255 characters in the buffer, LOC returns 255.
+        Since a string is limited to 255 characters, this practical limit alleviates the need to test for string size before reading data into it.
+        If fewer than 255 characters remain in the buffer, then LOC returns the actual count.
+        With random disk files, LOC returns the record number just read from, or written to, with a GET or PUT statement.
+        With sequential files, LOC returns the number of 128 byte blocks read from, or written to, the file since it was opened.
+        When the sequential file is opened for input, SE Basic initially reads the first sector of the file.
+        In this case, the LOC function returns the character 1 before any input is allowed.
+        If the file was opened but no disk input / output was performed, LOC returns a zero.
+ 
+    Errors:
+        TODO
+x = LOF(file number): Returns the length (number of bytes) allocated to the file.
+ 
+    Parameters:
+        'file number' is the number of the file that the file was opened under.
+ 
+    Notes:
+        With communications files, LOF returns the amount of free space in the input buffers.
+ 
+    Errors:
+        TODO
+MOUSE: TODO
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        TODO
+NMI: TODO
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        TODO
+x = STICK(n): Returns the 'x' and 'y' coordinates of two joysticks.
+ 
+    Parameters:
+        'n' is a valid numeric expression within the range of 0 to 3.
+ 
+    Notes:
+        Value of 'n'    Coordinate Returned
+        0               'x' coordinate of joystick A.
+                        Stores the 'x' and 'y' values for both joysticks for the following three function calls.
+        1               'y' coordinate of joystick A.
+        2               'x' coordinate of joystick B.
+        3               'y' coordinate of joystick B.
+ 
+    Errors:
+        TODO
+x = VARPTR(#file number): Returns the address in memory of the file control block (FCB).
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        VARPTR(#file number) returns the starting address of the SE Basic File Control Block assigned to 'file number'.
+ 
+    Errors:
+        TODO
+AUTO [line number|.][, [increment]]: To generate and increment line numbers automatically each time you press the RETURN key.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        AUTO is useful for program entry because it makes typing line numbers unnecessary.
+        AUTO begins numbering at 'line number' and increments each subsequent line number by 'increment'.
+        The default for both values is 10.
+        The period('.') can be used as a substitute for 'line number' to indicate the current line.
+        If 'line number' is followed by a comma, and 'increment' is not specified, the last 'increment' specified in an AUTO command is assumed.
+        If AUTO generates a line number that is already being used, an asterisk appears after the number to warn that any input
+            will replace the existing line.
+        However, pressing return immediately after the asterisk saves the line and generates the next line number.
+        AUTO is terminated by entering CTRL-BREAK or CTRL-C.SE Basic will then return to command level.
+        The line in which CTRL-BREAK or CTRL-C is entered is not saved.
+        To be sure that you save all desired text, use CTRL-BREAK and CTRL-C only on lines by themselves.
+ 
+    Errors:
+        TODO
+BLOAD file_spec , offset: Loads a memory image file into memory.
+ 
+    Parameters:
+        The string expression 'file_spec' is a valid file specification indicating the file to read the memory image from.
+        'offset' is a numeric expression in the range [-32768 to 65535].
+            It indicates an offset in the current DEF SEG segment where the file is to be stored.
+            If not specified, the 'offset' stored in the BSAVE file will be used. If negative, its two's complement will be used.
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        The loaded file is not in BSAVE format: Bad file mode.
+        'file_spec' contains disallowed characters: Bad file number (on CAS1:); Bad file name (on disk devices).
+        'file_spec' has a numeric value: Type mismatch.
+        'offset' is not in the range [-32768 to 65535]: Overflow.
+CHDIR dir_spec: Change the current folder on a disk device to 'dir_spec'.
+ 
+    Parameters:
+        The string expression 'dir_spec' is a valid file specification indicating an existing folder on a disk device.
+ 
+    Notes:
+        Each disk device has its own current folder.
+ 
+    Errors:
+        No matching path is found: Path not found.
+        'dir_spec' has a numeric value: Type mismatch.
+        'dir_spec' is empty: Bad file name.
+FILES [filter_spec]: Displays the files fitting the specified filter in the specified folder on a disk device.
+ 
+    Parameters:
+        'filter_spec' is a string expression that is much like a file specification, but optionally allows the file name part to contain wildcards.
+ 
+    Notes:
+        If 'filter_spec' is not specified, displays all files in the current working folder.
+        Wildcards are not currently supported.
+ 
+    Errors:
+        'filter_spec' has a numeric value: Type mismatch.
+        'filter_spec' is the empty string: Bad file name.
+        The specified filter does not match any files: File not found.
+KILL file_spec: Deletes a file on a disk device.
+ 
+    Parameters:
+        The string expression 'file_spec' is a valid file specification indicating the file to delete.
+        It must point to an existing file on a disk device.
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        'file_spec' has a number value: Type mismatch.
+        The file 'file_spec' is open: File already open
+        The file or path 'file_spec' does not exist: File not found
+        The user has no write permission: Permission denied
+        If a syntax error occurs after the closing quote, the file is removed anyway.
+LIST [# file_num;] [line_number_0][, ][line_number_1]: Prints the program to the screen or a file, starting with 'line_number_0' up to and including 'line_number_1'.
+ 
+    Parameters:
+        'line_number_0' and 'line_number_1' are line numbers in the range [0 to 65529] or a '.' to indicate the last line edited.
+            The line numbers do not need to exist; they specify a range. If the range is empty, nothing is printed.
+        The string expression 'file_num' is a valid stream indicating the file to list to.
+ 
+    Notes:
+        Also stops program execution and returns control to the user.
+        In all cases, any further statements in a compound after LIST will be ignored, both in a program and in direct mode.
+        In Microsoft BASIC, LIST will not show line numbers 65531 to 65535 inclusive.
+        SE Basic IV's line range is currently [0 to 16383].
+        There is no LLIST command. Instead, LIST can be directed to the printer stream using LIST #.
+ 
+    Errors:
+        A line number is greater than 65529: Syntax error.
+        'file_num' has a string value: Type mismatch.
+LOAD file_spec [,{\"R\"|\"T\"}]: Loads the program stored in a file into memory.
+ 
+    Parameters:
+        The string expression 'file_spec' is a valid file specification indicating the file to read the program from.
+ 
+    Notes:
+        Existing variables will be cleared and any program in memory will be erased.
+        LOAD implies a [CLEAR](#CLEAR).
+        If \"R\" is specified, keeps all data files open and runs the specified file.
+        If \"T\" is specified, loads a tokenized program.
+        Unlike Microsoft BASIC, SE Basic IV always expects BASIC programs to be in plain text format.
+        Unlike Microsoft BASIC, the \"R\" directive must be in quotes. Otherwise SE Basic IV would treat it as a variable.
+ 
+    Errors:
+        'file_spec' has a numeric value: Type mismatch.
+        'file_spec' contains disallowed characters: Bad file number (on CAS1:); Bad file name (on disk devices).
+        The file specified in 'file_spec' cannot be found: File not found.
+        A loaded text file contains lines without line numbers: Direct statement in file.
+        A loaded text file contains lines longer than 255 characters: Line buffer overflow. 
+        Attempting to load a text file that has LF rather than CR LF line endings may cause this error.
+LOCK[#] n [, [record number] [TO record number]]: To restrict the access to all or part of a file that has been opened by another process.
+ 
+    Parameters:
+        'n' is the number that was assigned to the file as it was originally numbered in the program.
+        'record number' is the number of the individual record that is to be locked.
+        Or, if a range of records are to be locked, 'record number' designates the beginning and ending record of the specified range.
+ 
+    Notes:
+        The range of legal 'record numbers' is 1 to 232-1.The limit on record size is 32767 bytes.
+        The record range specified must be from lower to (the same or) higher 'record numbers'.
+        If a starting 'record number' is not specified, the 'record number' 1 is assumed.
+        If an ending 'record number' is not specified, then only the specified record is locked.
+        With a random-access file, the entire opened file, or a range of records within an opened file, may be locked,
+            thus denying access to those records to any other process which has also opened the file.
+        With a sequential access file that has been opened for input or output, the entire file is locked, regardless of any record range specified.
+            This is not considered an error.
+        The specification of a range in the LOCK statement regarding the sequential file will simply be disregarded.
+        The LOCK statement should be executed on a file or record range within a file before attempting to read or write to that file.
+        The locked file or record range should be unlocked before the file is closed.
+        Failure to execute the UNLOCK statement can jeopardize future access to that file in a network environment.
+        It is expected that the time in which files or regions within files are locked will be short,
+            and thus the suggested usage of the LOCK statement is within short-term paired LOCK / UNLOCK statements.
+ 
+    Errors:
+        TODO
+MERGE file_spec: Merges the program stored in a file into memory.
+ 
+    Parameters:
+        The string expression 'file_spec' is a valid file specification indicating the file to read the program from.
+ 
+    Notes:
+        Unlike Microsoft BASIC, SE Basic IV always expects BASIC programs to be in plain text format.
+ 
+    Errors:
+        'file_spec' has a numeric value: Type mismatch.
+        'file_spec' contains disallowed characters: Bad file number (on CAS1:); Bad file name (on disk devices).
+        The file specified in 'file_spec' cannot be found: File not found.
+        A loaded text file contains lines without line numbers: Direct statement in file.
+        A loaded text file contains lines longer than 255 characters: Line buffer overflow.
+            Attempting to load a text file that has LF rather than CR LF line endings may cause this error.
+MKDIR dir_spec: Creates a new folder on a disk device.
+ 
+    Parameters:
+        The string expression 'dir_spec' is a valid file specification that specifies the path of the new folder on a disk device.
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        'dir_spec' is not a string: Type mismatch.
+        The parent folder does not exist: Path not found.
+        The folder name already exists on that path: Path/File access error.
+        The user has no write permission: Permission denied.
+NAME old_name TO new_name: Renames the disk file 'old_name' into 'new_name'.
+ 
+    Parameters:
+        The string expressions 'old_name' and 'new_name' are valid file specifications giving the path on a disk device
+        to the old and new filenames, respectively.
+ 
+    Notes:
+        'new_name' will be modified into all-uppercase 8.3 format.
+ 
+    Errors:
+        'old_name' or 'new_name' have number values: Type mismatch.
+        'old_name' does not exist: File not found.
+        'old_name' is open: File already open.
+        'new_name' exists: File already exists.
+RESET: To close all disk files and write the directory information to a diskette before it is removed from a disk drive.
+ 
+    Parameters:
+        None
+ 
+    Notes:
+        Always execute a RESET command before removing a diskette from a disk drive.
+        Otherwise, when the diskette is used again, it will not have the current directory information written on the directory track.
+        RESET closes all open files on all drives and writes the directory track to every diskette with open files.
+ 
+    Errors:
+        TODO
+RMDIR dir_spec: Removes an empty folder on a disk device.
+ 
+    Parameters:
+        The string expression 'dir_spec' is a valid file specification that specifies the path and name of the folder.
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        'dir_spec' has a numeric value: Type mismatch.
+        'dir_spec' is an empty string: Bad file name.
+        No matching path is found: Path not found.
+SAVE file_spec [,\"T\"]: Stores the current program in a file.
+ 
+    Parameters:
+        The string expression 'file_spec' is a valid file specification indicating the file to store to.
+ 
+    Notes:
+        If \"T\" is specified, saves a tokenized program.
+        In Microsoft BASIC you can append \"A\" to save the file in plain text or \"P\" to save a protected listing,
+            otherwise the file is saved in tokenized format. In SE Basic IV the file is saved in plain text format unless you append \"T\".
+ 
+    Errors:
+        'file_spec' has a number value: Type mismatch.
+        'file_spec' is an empty string: Bad I/O device.
+        'file_spec' is too long: Bad I/O device.
+TERM: TODO
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        TODO
+UNLOCK[#] n [, [record number] [TO record number]]: To release locks that have been applied to an opened file.
+ 
+    Parameters:
+        'n' is the number that was assigned the file as it was originally numbered in the program.
+        'record number' is the number of the individual record that is to be unlocked.
+        Or, if a range of records are to be unlocked, 'record number' designates the beginning and ending record of the specified range.
+ 
+    Notes:
+        The range of legal 'record numbers' is 1 to 232-1.The limit on record size is 32767 bytes.
+        The record range specified must be from lower to (the same or) higher 'record numbers'.
+        If a starting 'record number' is not specified, the 'record number' 1 is assumed.
+        If an ending 'record number' is not specified, then only the specified record is unlocked.
+ 
+        The following are legal UNLOCK statements:
+            UNLOCK #n            unlocks the entire file 'n'
+            UNLOCK #n, X         unlocks record 'X' only
+            UNLOCK #n, TO Y      unlocks records 1 through 'Y'
+            UNLOCK #n, X TO Y    unlocks records 'X' through 'Y'
+ 
+        The locked file or record range should be unlocked before the file is closed.
+        Failure to execute the UNLOCK statement can jeopardize future access to that file in a network environment.
+        In the case of files opened in random mode, if a range of 'record numbers' is specified,
+            this range must match exactly the 'record number' range given in the LOCK statement.
+        The UNLOCK statement must match exactly the paired LOCK statement.
+        It is expected that the time in which files or regions within files are locked will be short,
+            and thus the suggested usage of the LOCK statement is within short term paired LOCK/UNLOCK statements.
+ 
+    Errors:
+        The 'Permission denied' message will appear if a syntactically correct UNLOCK request cannot be granted.
+-----
+Graphics
+CIRCLE(xcenter, ycenter), radius[, [color][, [start], [end][, aspect]]]: To draw a circle, ellipse, and angles on the screen during use of the Graphics mode.
+ 
+    Parameters:
+        'xcenter' and 'ycenter' are the x and y coordinates of the center of the ellipse.
+        'radius' is the radius (measured along the major axis) of the ellipse.
+        'color' specifies the color of the ellipse, which depends on the current screen mode.
+        The 'start' and 'end' angle parameters are radian arguments between -2PI and 2PI,
+            which specify where the drawing of the ellipse is to begin and end.
+        'aspect' describes the ratio of the x radius to the y radius (x: y).
+ 
+    Notes:
+        'xcenter' and 'ycenter' can be expressions and can use either absolute or relative coordinates.
+        In the high-resolution mode, a 'color' of 0 indicates black and 1 indicates white.
+        The default 'color' for the high resolution mode is 1.
+        If 'start' or 'end' is negative, the ellipse is connected to the center point with a line,
+        and the angles are treated as if they are positive (note that this is different from adding 2PI).
+        The default aspect ratio depends on the screen mode, but gives a visual circle in either graphics mode,
+        assuming a standard monitor screen aspect ratio of 4:3.
+        If the aspect ratio is less than 1, then the radius is given in x-pixels.
+        If it is greater than 1, the radius is given in y-pixels.
+        In many cases, an aspect ratio of 1 gives better ellipses in the medium-resolution mode.
+        This also causes the ellipse to be drawn faster.
+        The 'start' angle may be less than the 'end' angle.
+ 
+    Errors:
+        TODO
+CLS [x]: Clears the screen or part of it.
+ 
+    Parameters:
+        'x' is a numeric valued expression that determines what is cleared:
+            If 'x' = 0, the whole screen is cleared.
+            If 'x' = 1, the graphics view region is cleared.
+            If 'x' = 2, the text view region is cleared.
+ 
+    Notes:
+        If x is not specified, in SCREEN 0 the text view region is cleared.
+        In other screens, the graphics view region is cleared.
+        The comma is optional and has no effect.
+ 
+    Errors:
+        'x' is has a string value: Type mismatch.
+        'x' is not in [-32768 to 32767]: Overflow.
+        'x' is not in [0, 1, 2]: Illegal function call.
+        If an error occurs, the screen is not cleared.
+COLOR [foreground] [, [background] [, border]]: Changes the current foreground and background attributes.
+ 
+    Parameters:
+    'foreground' is a numeric expression in [0 to 15]. This specifies the new foreground attribute.
+        'background' is a numeric expression in [0 to 15]. This specifies the new background attribute.
+        'border' is a numeric expression in [0 to 15] specifying the border attribute.
+            It is taken MOD 8: Values 8 to 15 produce the same colour as 0 to 7.
+ 
+    Notes:
+        All new characters printed will take the newly set attributes.
+        Existing characters on the screen are not affected.
+ 
+    Errors:
+        Any of the parameters has a string value: Type mismatch.
+        Any of the parameters is not in [-32768 to 32767]: Overflow.
+        'foreground' is not in [0 to 31], background is not in [0 to 15] or border is not in [0 to 15]: Illegal function call.
+        Statement is used in SCREEN 2: Illegal function call.
+DRAW string_expression: To draw a figure.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        The DRAW statement combines most of the capabilities of the other graphics statements into an object definition language
+            called Graphics Macro Language (GML).
+        A GML command is a single character within a string, optionally followed by one or more arguments.
+        The DRAW statement is valid only in graphics mode.
+ 
+        Movement Commands:
+            Each of the following movement commands begins movement from the current graphics position.
+            This is usually the coordinate of the last graphics point plotted with another GML command, LINE, or PSET.
+            The current position defaults to the center of the screen (160,100 in medium res; 320,100 in high res) when a program is run.
+            Movement commands move for a distance of scale factor * n, where the default for n is 1;
+                thus, they move one point if n is omitted and the default scale factor is used.
+ 
+            Un    up
+            Dn    down
+            Ln    left
+            Rn    right
+            En    diagonally up and right
+            Fn    diagonally down and right
+            Gn    diagonally down and left
+            Hn    diagonally up and left
+ 
+            This command moves as specified by the following argument:
+                Mx, y
+ 
+            Move absolute or relative.
+                If 'x' is preceded by a + or -, 'x' and 'y' are added to the current graphics position,
+                    and connected to the current position by a line.
+                Otherwise, a line is drawn to point 'x', 'y' from the current position.
+ 
+            The following prefix commands may precede any of the above movement commands:
+                B    Move, but plot no points.
+                N    Move, but return to original position when done.
+ 
+            The following commands are also available:
+                An          Set angle 'n'. 'n' may range from 0 to 3, where 0 is 0°, 1 is 90°, 2 is 180°, and 3 is 270°.
+                            Figures rotated 90° or 270° are scaled so that they will appear the same size as with 0° or 180°
+                                on a monitor screen with the standard aspect ratio of 4:3.
+                TAn         Turn angle 'n'. 'n' can be any value from negative 360 to positive 360.
+                            If the value specified by 'n' is positive, it turns the angle counter-clockwise.
+                                If the value specified by 'n' is negative, it turns clockwise.
+                Cn          Set color 'n'.
+                Sn          Set scale factor. 'n' may range from 1 to 255. 'n' is divided by 4 to derive the scale factor.
+                            The scale factor is multiplied by the distances given with U, D, L, R, E, F, G, H, or relative M commands
+                                to get the actual distance traveled.
+                            The default for 'S' is 4.
+                xstring;    Execute substring. This command executes a second substring from a string, much like GOSUB. One string executes another,
+                            which executes a third, and so on.
+                variable    'string' is a variable assigned to a string of movement commands.
+                Ppaint,     Specifies the colours for a graphics figure and creates a filled-in figure.
+                boundary    'paint' specifies what colour you want the figure filled in with.
+                            'boundary' specifies the border colour (outline).
+                            You must specify values for both 'paint' and 'boundary' when used.
+                            This command (Ppaint, boundary) does not paint colour tiling.
+ 
+            Numeric Arguments:
+                Numeric arguments can be constants like '123' or ' = variable;', where 'variable' is the name of a variable.
+                When you use the second syntax, ' = variable;', the semicolon must be used. Otherwise, the semicolon is optional between commands.
+                You can also specify variables using VARPTR$(variable).
+ 
+    Errors:
+        TODO
+EDIT {line_number|.}: Displays the specified program line with the cursor positioned for editing.
+ 
+    Parameters:
+        'line_number' must be a line that exists in the program, or a period ('.') to indicate the last line stored.
+ 
+    Notes:
+        None
+ 
+    Errors:
+        No 'line_number' is specified: Undefined line number.
+        More characters are written after the line number: Illegal function call.
+        'line_number' is not in [0 to 65529]: Illegal function call.
+        The specified 'line_number' does not exist: Undefined line number.
+GET (x1, y1)-(x2, y2), array name: To transfer graphics images from the screen.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        The PUT and GET statements are used to transfer graphics images to and from the screen.
+        PUT and GET make animation and high-speed object motion possible in either graphics mode.
+        The GET statement transfers the screen image bounded by the rectangle described by the specified points into the array.
+        The rectangle is defined the same way as the rectangle drawn by the LINE statement using the ',B' option.
+        The array is used simply as a place to hold the image, and can be of any type except string.
+        It must be dimensioned large enough to hold the entire image.
+        The contents of the array after a GET will be meaningless when interpreted directly (unless the array is an integer type, as shown below).
+        The storage format in the array is as follows:
+            2 bytes given x dimension in bits
+            2 bytes given y dimension in bits
+            the array data itself
+        The data for each row of pixels is left justified on a byte boundary.
+        If less than a multiple of eight bits is stored, the rest of the byte will be filled out with zeros.
+        The required array size in bytes is as follows:
+            4 + INT((x * bitsperpixel + 7) / 8) * y
+        The bytes-per-element of an array are as follows:
+            2 for integer
+            4 for single precision
+            8 for double precision
+        The number of bytes required to get a 10 by 12 image into an integer array is 4 + INT((10 * 2 + 7) / 8) * 12, or 40 bytes.
+        An integer array with at least 20 elements is necessary.
+        If 'OPTION BASE' equals zero, an integer array can be used to examine the x and y dimensions and the data.
+        The x dimension is in element 0 of the array, and the y dimension is in element 1.
+        Integers are stored low byte first, then high byte, but data is transferred high byte first (left most), then low byte.
+        It is possible to get an image in one mode and put it in another, although the effect may be quite strange
+            because of the way points are represented in each mode.
+ 
+    Errors:
+        TODO
+LINE[(x1, y1)]-(x2, y2)[, [attribute][, B[F]][, style]]: To draw lines and boxes on the screen.
+ 
+    Parameters:
+        'x1', 'y1' and 'x2', 'y2' specify the end points of a line.
+        'attribute' specifies color or intensity of the displayed pixel.
+        'B' (box) draws a box with the points (x1, y1) and (x2, y2) at opposite corners.
+        'BF' (filled box) draws a box (as 'B') and fills in the interior with points.
+        LINE supports the additional argument 'style', which is a 16-bit integer mask used when putting down pixels on the screen.
+ 
+    Notes:
+        If 'attribute' is not specified, two commas must be used before 'B' or 'BF'.
+        Each time LINE stores a point on the screen, it uses the current circulating bit in 'style'.
+        If that bit is 0, no store will be done.If the bit is a 1, then a normal store is done.
+            After each point, the next bit position in 'style' is selected.
+        Since a 0 bit in 'style' does not clear out the old contents, you may wish to draw a background line before a styled line,
+            in order to force a known background.
+        'style' is used for normal lines and boxes, but is illegal for filled boxes.
+        When out-of-range values are given in the LINE statement, the coordinates that are out of range are not visible on the screen.
+        In the syntax shown here, the coordinate form STEP (x offset, y offset) is not shown.
+        However, this form can be used wherever a coordinate is used.
+        In a LINE statement, if the relative form is used on the second coordinate, it is relative to the first coordinate.
+        After a LINE statement, the last referenced point is x2, y2.
+ 
+    Errors:
+        If the 'BF' parameter is used with the 'style' parameter, a 'Syntax' error will occur.
+LOCATE [row][, [col][, [cursor][, [start][, stop]]]]: To move the cursor to the specified position on the active screen.
+ 
+    Parameters:
+        'row' is the screen line number, a numeric expression within the range of 1 to 25.
+        'col' is the screen column number, a numeric expression within the range of 1 to 40, or 1 to 80, depending upon screen width.
+        'cursor' is a Boolean value indicating whether the cursor is visible; zero is off, nonzero is on.
+        'start' is the cursor start scan line, a numeric expression within the range of 0 to 31.
+        'stop' is the cursor stop scan line, a numeric expression within the range of 0 to 31.
+ 
+    Notes:
+        A raster line is the vertical or horizontal distance between two adjacent, addressable points on your screen.
+        When the cursor is moved to the specified position, subsequent PRINT statements begin placing characters at this location.
+        Optionally, the LOCATE statement may be used to start the cursor blinking on or off, or change the size of the blinking cursor.
+        As you set up the parameters for the LOCATE statement, you may find that you don't wish to change one or more of the existing specifications.
+        To omit a parameter from this LOCATE statement, insert a comma for the parameter that is being skipped.
+        If the omitted parameter(s) occurs at the end of the statement, you do not have to type the comma.
+        If the 'start' scan line parameter is given and the 'stop' scan line parameter is omitted, 'stop' assumes the 'start' value.
+ 
+    Errors:
+        Any values entered outside of these ranges result in 'Illegal function call' errors.Previous values are retained.
+PAINT (x start, y start)[, paint attribute[, border attribute][, bckgrnd attribute]]: To fill in a graphics figure with the selected attribute.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        The PAINT statement fills in an arbitrary graphics figure of the specified 'border attribute' with the specified 'paint attribute'.
+        If 'paint attribute' is not given, it will default to the foreground attribute (3 or 1).
+        'border attribute' defaults to 'paint attribute'.
+        PAINT must start on a non-border point, otherwise, PAINT will have no effect.
+        PAINT can fill any figure, but painting jagged edges or very complex figures may result in an 'Out of memory' error.
+        The CLEAR statement may be used to increase the amount of stack space available.
+        Points that are specified outside the limits of the screen will not be plotted and no error will occur.
+ 
+        Paint Tiling:
+            PAINT tiling is similar to LINE styling. Like LINE, PAINT looks at a tiling mask each time a point is put down on the screen.
+            If 'paint attribute' is omitted, the standard foreground attribute is used.
+            If 'paint attribute' is a numeric formula, then the number must be a valid colour, and it is used to paint the area as before.
+            If 'paint attribute' is a string formula, then tiling is performed as follows:
+                The tile mask is always eight bits wide and may be from 1 to 64 bytes long.
+                Each byte in the tile string masks eight bits along the x axis when putting down points.
+                Each byte of the tile string is rotated as required to align along the y axis, such that:
+                    tile_byte_mask = y MOD tile_length
+                where 'y' is the position of the graphics cursor on the y-axis.
+                'tile_length' is the length in bytes of the tile string defined by the user (1 to 64 bytes).
+                This is done so that the tile pattern is replicated uniformly over the entire screen (as if a PAINT (0,0).. were used).
+            In high-resolution mode (SCREEN 2), the screen can be painted with Xs by the following statement:
+                PAINT (320,100),CHR$(&H81)+CHR$(&H42)+CHR$(&H24)+CHR$(&H18)+CHR$(&H18)+CHR$(&H24)+CHR$(&H81)
+            Since there are two bits per pixel in medium-resolution mode (SCREEN 1), each byte of the tile pattern only describes four pixels.
+            In this case, every two bits of the tile byte describes one of the four possible colours
+                associated with each of the four pixels to be put down.
+            'bckgrnd attribute' specifies the background tile pattern or colour byte to skip when checking for boundary termination.
+            'bckgrnd attribute' is a string formula returning one character. When omitted, the default is CHR$(0).
+            Occasionally, you may want to paint tile over an already painted area that is the same colour as
+                two consecutive lines in the tile pattern.
+            PAINT quits when it encounters two consecutive lines of the same colour as the point being set (the point is surrounded).
+            It is not possible to draw alternating blue and red lines on a red background without 'bckgrnd attribute'.
+            PAINT stops as soon as the first red pixel is drawn.
+            By specifying red (CHR$(&HAA)) as the 'bckgrnd attribute', the red line is drawn over the red background.
+            You cannot specify more than two consecutive bytes in the tile string that match the 'bckgrnd attribute'.
+            Specifying more than two results in an 'Illegal function call' error.
+ 
+    Errors:
+        TODO
+PALETTE [attrib, colour]: Assigns a colour to an attribute.
+ 
+    Parameters:
+        'attrib' is a numeric expression from [0 to 63].
+        'colour' is a numeric expression between [0 and 255]
+ 
+    Notes:
+        All pixels with the specified attribute will change colour immediately.
+        If no parameters are specified, PALETTE resets to the initial setting.
+        Colours are entered in compressed RGB format (lowest to highest bit).
+        The red and green levels are each stored in three bits (0 to 7) while the blue level is stored in two bits (0 to 3).
+        The easiest way to enter values is in octal (@BGR). For example, to set attribute to maximum blue, you would enter PALETTE attribute, @300.
+ 
+    Errors:
+        'attrib' or 'colour' has a string value: Type mismatch.
+        'attrib' or 'colour' is not in [ to 32767]: Overflow
+        'attrib' or 'colour' is not in range: Illegal function call.
+PALETTE USING integer-array-name (arrayindex): Assigns a colour to an attribute.
+ 
+    Parameters:
+        'integer-array-name' argument is the name of an integer array,
+        'arrayindex' specifies the index of the first array element in the 'integer-array-name' to use in setting your palette.
+ 
+    Notes:
+        All pixels with the specified attribute(s) will change colour immediately.
+        With the USING option, all entries in the palette can be modified in one PALETTE statement.
+        Each attribute in the palette is assigned a corresponding colour from this integer array.
+        The array must be dimensioned large enough to set all the palette entries after arrayindex.
+        For example, if you are assigning colours to all 16 attributes,
+        and the index of the first array element given in your PALETTE USING statement is 5,
+        then the array must be dimensioned to hold at least 20 elements (since the number of elements from 5-20, inclusive, is 16)
+ 
+    Errors:
+        TODO
+PRESET(x, y)[, color]: To display a point at a specified place on the screen during use of the graphics mode.
+ 
+    Parameters:
+        ('x', 'y') represents the coordinates of the point.
+        'color' is the colour of the point.
+ 
+    Notes:
+        Coordinates can be given in either absolute or relative form:
+ 
+        Absolute Form:
+            (absolute x, absolute y) is more common and refers directly to a point without regard to the last point referenced.
+            For example: (10, 10)
+ 
+        Relative Form:
+            STEP(x offset, y offset) is a point relative to the most recent point referenced.
+            For example: STEP(10, 10)
+ 
+        (0, 0) is always the upper left corner and (0, 199) is the lower left corner in both high resolution and medium resolution.
+ 
+    Errors:
+        Coordinate values can be beyond the edge of the screen.
+        However, values outside the integer range (-32768 to 32767) cause an 'Overflow' error.
+        If the value for 'color' is greater than 3, an 'Illegal function call' error is returned.
+PSET(x, y)[, color]: To display a point at a specified place on the screen during use of the graphics mode.
+ 
+    Parameters:
+        ('x', 'y') represents the coordinates of the point.
+        'color' is the colour of the point.
+ 
+    Notes:
+        Coordinates can be given in either absolute or relative form:
+ 
+        Absolute Form:
+            (absolute x, absolute y) is more common and refers directly to a point without regard to the last point referenced.
+            For example: (10, 10)
+ 
+        Relative Form:
+            STEP(x offset, y offset) is a point relative to the most recent point referenced.
+            For example: STEP(10, 10)
+ 
+        (0, 0) is always the upper left corner and (0, 199) is the lower left corner in both high resolution and medium resolution.
+ 
+    Errors:
+        Coordinate values can be beyond the edge of the screen.
+        However, values outside the integer range (-32768 to 32767) cause an 'Overflow' error.
+        If the value for 'color' is greater than 3, an 'Illegal function call' error is returned.
+PRINT [expr_0|;|,|SPC( n)|TAB( n)] ... [USING format; uexpr_0 [{;|,} uexpr_1] ... [;|,]]: Writes expressions to the screen.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        If stream is specified, output goes to the file or device open under that number.
+        '?' is a shorthand for PRINT.
+        When writing a string expression to the screen, the following control characters have special meaning.
+ 
+        Other characters are shown as their corresponding glyph in the current codepage:
+            Code point    Control character    Effect
+            $07           BEL                  Beep the speaker.
+            $08           BS                   Erase the character in the previous column and move the cursor back.
+            $09           HT                   Jump to the next 8-cell tab stop.
+            $0A           LF                   Go to the leftmost column in the next row; connect the rows to one logical line.
+            $0B           VT                   Move the cursor to the top left of the screen.
+            $0C           FF                   Clear the screen.
+            $0D           CR                   Go to the leftmost column in the next row.
+            $1C           FS                   Move the cursor one column to the right.
+            $1D           GS                   Move the cursor one column to the left.
+            $1E           RS                   Move the cursor one row up.
+            $1F           US                   Move the cursor one row down.
+        Note: In SE Basic IV, anything after PRINT CHR$(12) is not printed.
+ 
+        Expressions can optionally be separated by one or more of the following keywords:
+        Keyword    Effect
+        ;          Attaches two expressions tight together
+                      strings will be printed without any space in between, numbers will have one space separating them,
+                      in addition to the space or minus sign that indicate the sign of the number.
+        ,          The expression after will be positioned at the next available tab stop.
+        '          Inserts a newline.
+        SPC(n)     Produces 'n' spaces, where 'n' is a numeric expression. If 'n' is less than zero, it defaults to zero.
+                       If 'n' is greater than the file width, it is taken modulo the file width.
+        TAB(n)     Moves to column 'n', where 'n' is a numeric expression. if 'n' is less than zero, it defaults to zero.
+                       If 'n' is greater than the file width, it is taken modulo the file width.
+                       If the current column is greater than 'n', TAB moves to column 'n' on the next line.
+ 
+        If the print statement does not end in one of these four separation tokens, a newline is printed after the last expression.
+        String expressions can be separated by one or more spaces, which has the same effect as separating by semicolons.
+ 
+    Errors:
+        TODO
+PUT(x, y), array[, action verb]: To transfer graphics images to the screen.
+ 
+    Parameters:
+        'action verb' may be PSET, PRESET, AND, OR, XOR.
+        ('x', 'y') are the coordinates of the top-left corner of the image to be transferred.
+ 
+    Notes:
+        PUT and GET make possible animation and high speed object motion in either graphics mode.
+        The PUT statement transfers the image stored in the array onto the screen.
+        The specified point is the coordinate of the upper left corner of the image.
+        The 'action verb' is used to interact the transferred image with the image already on the screen:
+            PSET transfers the data onto the screen verbatim.
+            PRESET is the same as PSET except that an inverse image (black on white) is produced.
+            AND transfers the image only if an image already exists under the transferred image.
+            OR superimposes the image onto the existing image.
+            XOR is a special mode often used for animation.
+
+        XOR causes the points on the screen to be inverted where a point exists in the array image.
+        This behaviour is exactly like the cursor on the screen. XOR is especially useful for animation.
+        When an image is put against a complex background twice, the background is restored unchanged.
+        An object can be moved around the screen without obliterating the background. The default action mode is XOR.
+ 
+        Animation of an object is usually performed as follows:
+            1) Put the object(s) on the screen.
+            2) Recalculate the new position of the object(s).
+            3) Put the object(s) on the screen a second time at the old location(s) to remove the old image(s).
+            4) Return to Step 1, this time putting the object(s) at the new location.
+        Movement done this way leaves the background unchanged.
+        Flicker can be cut down by minimizing the time between Steps 4 and 1,
+            and by making sure that there is enough time delay between Steps 1 and 3.
+        If more than one object is being animated, process every object at once, one step at a time.
+        If it is not important to preserve the background, animation can be performed using the PSET action verb.
+        Leave a border around the image (when it is first gotten) as large or larger than the maximum distance the object will move.
+        Thus, when an object is moved, this border effectively erases any points.
+        This method may be somewhat faster than the method using XOR described above since only one PUT is required to move an object.
+        However, the image to be PUT must be larger than the existing image.
+ 
+    Errors:
+        An 'Illegal function call' error results if the image to be transferred is too large to fit onto the screen.
+SCREEN [mode] [, [colorburst] [, [apage] [, [vpage] [, erase]]]]: Change the video mode, composite colorburst, active page and visible page.
+ 
+    Parameters:
+        'mode' is a numeric expression that sets the screen mode.
+ 
+    Notes:
+        Video mode    Notes
+        0             Text mode. 80x24 characters. Two attributes picked from 16 colors.
+        1             Bitmap mode. 240 x 192 pixles. 40x24 characters of 6x8 pixels. 8x1 attributes from 16 colors.
+ 
+        The driver for SCREEN 1 is stored in RAM and can be replaced with a driver for any screen mode supported by the hardware.
+ 
+    Errors:
+        No parameters are specified: Missing operand.
+        Any parameter has a string value: Type mismatch.
+        Any parameter is not in [-32768 to 32767]: Overflow.
+        'mode' is not an available video mode number for your video card setting: Illegal function call.
+VIEW [[SCREEN][(x1, y1)-(x2, y2)[, [fill][, [border]]]]: To define a physical viewport limit from 'x1', 'y1' (upper left x, y coordinates) to 'x2', 'y2' (lower right x, y coordinates).
+ 
+    Parameters:
+        ('x1', 'y1') are the upper left coordinates.
+        ('x2', 'y2') are the lower right coordinates.
+        The 'fill' attribute lets you fill the view area with colour.
+        The 'border' attribute lets you draw a line surrounding the viewport if space for a border is available.
+ 
+    Notes:
+        RUN or VIEW with no arguments define the entire screen as the viewport.
+        If 'border' is omitted, no border is drawn.
+        The 'x' and 'y' coordinates must be within the physical bounds of the screen and
+            define the rectangle within the screen that graphics map into.
+        The 'x' and 'y' coordinate pairs will be sorted, with the smallest values placed first.
+        Points are plotted relative to the viewpoint if the 'SCREEN' argument is omitted, that is, 'x1' and 'y1' are added to the 
+            'x' and 'y' coordinates before the point is plotted.
+        It is possible to have a varied number of pairs of 'x' and 'y'.
+        The only restriction is that 'x1' cannot equal 'x2', and 'y1' cannot equal 'y2'.
+        Points are plotted absolutely if the 'SCREEN' argument is present.
+        Only points within the current viewpoint will be plotted.
+        When using VIEW, the CLS statement clears only the current viewport.
+        To clear the entire screen, you must use VIEW to disable the viewports. Then use CLS to clear the screen.
+        CLS does not move the cursor to home. Press CTRL-HOME to send the cursor home, and clear the screen.
+ 
+    Errors:
+        TODO
+VIEW PRINT [topline TO bottomline]: To set the boundaries of the screen text window.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        VIEW PRINT without 'topline' and 'bottomline' parameters initializes the whole screen area as the text window.
+        The whole screen area consists of lines 1 to 24; by default, line 25 is not used.
+        Statements and functions that operate within the defined text window include CLS, LOCATE, PRINT, and SCREEN.
+        The screen editor will limit functions such as scroll and cursor movement to the text window.
+ 
+    Errors:
+        TODO
+WIDTH size:  To set the printed line width in number of characters for the screen and line printer.
+ 
+    Parameters:
+        'size', an integer within the range of 0 to 255, is the new width.
+ 
+    Notes:
+        Changing Screen Width:
+            The following statements are used to set the screen width. Only a 40 or 80 column width is allowed.
+                WIDTH size
+                WIDTH \"SCRN:\", size
+        Changing SCREEN mode affects screen width only when moving between SCREEN 2 and SCREEN 1 or SCREEN 0.
+        Changing the screen width clears the screen and sets the border screen colour to black.
+        Changing Line Printer Width:
+            The following WIDTH statement is used as a deferred width assignment for the line printer.
+                This statement stores the new width value without actually changing the current width setting:
+                    WIDTH \"LPT1:\", size
+                A statement of the following form recognizes this stored width value:
+                    OPEN \"LPT1:\" FOR OUTPUT AS number
+                and uses it while the file is open:
+                    WIDTH file number, size
+        If the file is open to LPT1:, line printer width is immediately changed to the new size specified.
+        This allows the width to be changed at will while the file is open.
+        This form of WIDTH has meaning only for LPT1:
+            After outputting the indicated number of characters from the open file, 
+                SE Basic inserts a carriage return at the end of the line and wraps the output, if the width is less than the length of the record.
+        Valid widths for the line printer are 1 through 255.
+        Specifying WIDTH 255 for the line printer (LPT1:) enables line wrapping. This has the effect of infinite width.
+        Any value entered outside of these ranges results in an 'Illegal function call' error. The previous value is retained.
+        Using the WIDTH statement on a communications file causes a carriage return to be sent
+            after the number of characters specified by the size attribute.
+        It does not alter either the receive or transmit buffer.
+ 
+    Errors:
+        TODO
+WINDOW [[SCREEN](x1, y1)-(x2, y2)]: To draw lines, graphics, and objects in space not bounded by the physical limits of the screen.
+ 
+    Parameters:
+        ('x1', 'y1'), ('x2', 'y2') are the coordinates defined by the user.
+            These coordinates, called the world coordinates, may be any single precision, floating point number.
+            They define the world coordinate space that graphics statements map into the physical coordinate space, as defined by the VIEW statement.
+        WINDOW is the rectangular region in the world coordinate space. It allows zoom and pan.
+ 
+    Notes:
+        WINDOW allows the user to draw lines, graphics, and objects in space not bounded by the physical limits of the screen.
+        To do this the user specifies the world coordinate pairs ('x1', 'y1') and ('x2', 'y2').
+        SE Basic then converts the world coordinate pairs into the appropriate physical coordinate pairs for subsequent display within screen space.
+        WINDOW inverts, with the screen attribute omitted, the y coordinate on subsequent graphics statements.
+        This places the ('x1', 'y1') coordinate in the lower left and the ('x2', 'y2') coordinate in the upper right of the screen.
+        This allows the screen to be viewed in true Cartesian coordinates.
+        The coordinates are not inverted when the 'SCREEN' attribute is included.
+        This places the ('x1', 'y1') coordinate in the upper left and the ('x2', 'y2') coordinate in the lower right corner of the screen.
+        The WINDOW statement sorts the 'x' and 'y' argument pairs into ascending order.
+        All coordinate pairs of 'x' and 'y' are valid, except that 'x1' cannot equal 'x2' and 'y1' cannot equal 'y2'.
+        WINDOW with no arguments disables previous window statements.
+ 
+    Errors:
+        TODO
+WRITE [list of expressions]: To output data to the screen.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        If 'list of expressions is omitted', a blank line is output.
+        If 'list of expressions' is included, the values of the expressions are output at the terminal.
+        The expressions in the list may be numeric and/or string expressions, and must be separated by commas or semicolons.
+        When printed items are output, each item will be separated from the last by a comma.
+        Printed strings are delimited by double quotation marks.
+        After the last item in the list is printed, SE Basic inserts a carriage return/line feed.
+        The difference between WRITE and PRINT is that WRITE inserts commas between displayed items and delimits strings with double quotation marks.
+        Positive numbers are not preceded by blank spaces.
+        WRITE outputs numeric values using the same format as the PRINT statement.
+ 
+    Errors:
+        TODO
+x = PMAP(exp, function): To map expressions to logical or physical coordinates.
+ 
+    Parameters:
+        'x' is the physical coordinate of the point that is to be mapped.
+        'exp' is a numeric variable or expression.
+ 
+    Notes:
+        This function is valid for graphics modes only.
+ 
+        Function Maps:
+            0    logical expressions to physical x
+            1    logical expressions to physical y
+            2    physical expressions to logical x
+            3    physical expressions to logical y
+        PMAP is used with WINDOW and VIEW to translate coordinates.
+ 
+    Errors:
+        TODO
+z = POINT(x, y): To read the colour or attribute value of a pixel from the screen.
+ 
+    Parameters:
+        'x' and 'y' are coordinates of the point to be examined.
+ 
+    Notes
+        If the point given is out of range, the value -1 is returned.
+        POINT with one argument allows you to retrieve the current graphics coordinates.
+ 
+    Errors:
+        TODO
+z = POINT(function): To read the colour or attribute value of a pixel from the screen.
+ 
+    Parameters:
+        POINT(function) returns the value of the current 'x' or 'y' graphics coordinates as follows:
+        Function    Returns
+        0           the current physical x coordinate.
+        1           the current physical y coordinate.
+        2           the current logical x coordinate if WINDOW is active, otherwise, it returns the current physical x coordinate as in 0 above.
+        3           the current logical y coordinate if WINDOW is active, otherwise, it returns the current physical y coordinate as in 1 above.
+ 
+    Notes
+        TODO
+ 
+    Errors:
+        TODO
+x = POS(c): Returns the column location of the cursor.
+ 
+    Parameters:
+        'c' is a dummy argument
+ 
+    Notes:
+        The value returned is within the range of 1 to 40, or 1 to 80, depending on the current screen width.
+ 
+    Errors:
+        TODO
+TAB(n): Spaces to position 'n' on the screen.
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        If the current print position is already beyond space 'n', TAB goes to that position on the next line.
+        Space 1 is the leftmost position. The rightmost position is the screen width.
+        'n' must be within the range of 1 to 255.
+        If the TAB function is at the end of a list of data items, SE Basic will not return the cursor to the next line.
+        It is as though the TAB function has an implied semicolon after it.
+        TAB may be used only in PRINT or PRINT# statements.
+ 
+    Errors:
+        TODO
+LIST [line_number_0][, ][line_number_1]: Prints the program to the screen or a file, starting with 'line_number_0' up to and including 'line_number_1'.
+ 
+    Parameters:
+        'line_number_0' and 'line_number_1' are line numbers in the range [0 to 65529] or a '.' to indicate the last line edited.
+            The line numbers do not need to exist; they specify a range. If the range is empty, nothing is printed.
+ 
+    Notes:
+        Also stops program execution and returns control to the user.
+        In all cases, any further statements in a compound after LIST will be ignored, both in a program and in direct mode.
+        When listing to the screen, the same control characters are recognised as in the PRINT statement.
+        In Microsoft BASIC, LIST will not show line numbers 65531 to 65535 inclusive.
+        SE Basic IV's line range is currently [0 to 16383].
+        There is no LLIST command. Instead, LIST can be directed to the printer stream using LIST #.
+ 
+    Errors:
+        A line number is greater than 65529: Syntax error.
+PCOPY sourcepage, destinationpage: To copy one screen page to another in all screen modes.
+ 
+    Parameters:
+        'sourcepage' is an integer expression in the range 0 to 'n', where 'n' is determined by the current video memory size
+            and the size per page for the current screen mode.
+        'destinationpage' has the same requirements as 'sourcepage'.
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        TODO
+y = CSRLIN(): Returns the current line (row) position of the cursor.
+ 
+    Parameters:
+        'y' is a numeric variable receiving the value returned. The value returned is within the range of 1 to 25.
+ 
+    Notes:
+        CSRLIN returns the vertical coordinate of the cursor on the active page.
+ 
+    Errors:
+        TODO
+-----
+Sound
+NOISE: TODO
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        TODO
+PLAY string expression: To play music by embedding a music macro language into the string data type.
+ 
+    Parameters:
+        'string expression' is a string containing the commands detailed below
+ 
+    Notes:
+        The single-character commands in PLAY are as follows:
+            A-G[#,+,-]
+                    'A-G' are notes. '#' or '+' following a note produces a sharp; '-' produces a flat.
+                    Any note followed by '#','+',or '-' must refer to a black key on a piano.
+            L(n)    Length
+                    Sets the length of each note. L4 is a quarter note, L1 is a whole note, and so on. 'n' may be from 1 to 64.
+                    Length may also follow the note to change the length for that note only. A16 is equivalent to L16A.
+            MF      Music foreground.
+                    PLAY and SOUND statements are to run in foreground.
+                    That is, each subsequent note or sound is not started until the previous note or sound is finished.This is the initial default.
+            MB      Music background.
+                    PLAY and SOUND statements are to run in background.
+                    That is, each note or sound is placed in a buffer allowing the BASIC program to continue execution
+                        while music plays in the background.
+                    As many as 32 notes(or rests) can be played in background at one time.
+            MN      Music normal.
+                    Each note plays seven-eighths of the time determined by L(length).
+            ML      Music legato.
+                    Each note plays the full period set by L.
+            MS      Music staccato.
+                    Each note plays three-quarters of the time determined by L.
+            N(n)    Note
+                    Play note 'n'. 'n' may range from 0 to 84. In the 7 possible octaves, there are 84 notes. 'n' set to 0 indicates a rest.
+            O(n)    Octave
+                    0 sets the current octave. There are 7 octaves (0 through 6). Default is 4. Middle C is at the beginning of octave 3.
+            P(n)    Pause
+                    'P' may range from 1-64.
+            T(n)    Tempo.
+                    T sets the number of L4s in a minute. 'n' may range from 32-255. Default is 120.
+            .      (period)
+                    A period after a note increases the playing time of the note by 3 / 2 times the period determined by
+                        L(length of note) times T(tempo).
+                    Multiple periods can appear after a note, and the playing time is scaled accordingly.
+                    For example, 'A.' will cause the note A to play one and half times the playing time determined by
+                        L(length of the note) times T(the tempo)"
+                    two periods placed after A ('A..') will cause the note to be played at 9 / 4 times its ascribed value;
+                        an A with three periods ('A...') at 27 / 8, etc.
+                    Periods may also appear after a P (pause), and increase the pause length as described above.
+            Xstring
+                    Executes a substring, where string is a variable assigned to a string of PLAY commands.
+                    Because of the slow clock interrupt rate, some notes do not play at higher tempos; for example, 1.64 at T255.
+                    These note/tempo combinations must be determined through experimentation.
+            > nA    greater than
+                    '>' symbol preceding the note 'n' plays the note in the next higher octave.
+            < nA    less than
+                    '<' symbol preceding the note n plays the note in the next lower octave.
+ 
+        'n' as an argument can be a constant, or it can be a variable with = in front of it (= variable).
+        A semicolon is required after the variable and also after the variable in 'Xstring'.
+ 
+    Errors:
+        TODO
+x = PLAY(n): Returns the number of notes currently in the background music queue.
+ 
+    Parameters:
+        'n' is a dummy argument, and may be any value.
+ 
+    Notes:
+        PLAY(n) returns 0 when in music foreground mode. The maximum returned value is 32.
+ 
+    Errors:
+        TODO
+SOUND freq, duration: To generate sound through the speaker.
+ 
+    Parameters:
+        'freq' is the desired frequency in Hertz(cycles per second). 'freq' is a numeric expression within the range of 37 to 32767.
+        'duration' is the desired duration in clock ticks. Clock ticks occur 18.2 times per second.
+ 
+    Notes:
+        'duration' must be a numeric expression within the range of 0 to 65535.
+        Values below .022 produce an infinite sound until the next SOUND or PLAY statement is executed.
+        If 'duration' is zero, any active SOUND statement is turned off.
+        If no SOUND statement is running, a 'duration' of zero has no effect.
+        The sound is executed in foreground or background depending on the PLAY statement.
+        By doubling or halving the frequency, the coinciding note values can be estimated for the preceding and following octaves.
+        To produce periods of silence, use the following statement:
+            SOUND 32767, duration
+        To calculate the duration of one beat, divide beats per minute into the number of clock ticks in a minute (1092).
+ 
+    Errors:
+        TODO
+-----
+Math
+y = ABS(x): Returns the absolute value of 'x' if 'x' is a number and the value of 'x' if 'x' is a string.
+ 
+    Parameters:
+        'x' is an expression.
+ 
+    Notes:
+        None
+ 
+    Errors:
+        TODO
+y = ACOS(x): Returns the inverse cosine of 'x'.
+ 
+    Parameters:
+        'x' is a numeric expression that gives the angle in radians.
+ 
+    Notes:
+        None
+ 
+    Errors:
+        'x' has a string value: Type mismatch.
+y = ASIN(x): Returns the inverse sine of 'x'.
+ 
+    Parameters:
+        'x' is a numeric expression that gives the angle in radians.
+ 
+    Notes:
+        None
+ 
+    Errors:
+        'x' has a string value: Type mismatch.
+y = ATAN(x): Returns the inverse tangent of 'x'.
+ 
+    Parameters:
+        'x' is a numeric expression that gives the angle in radians.
+ 
+    Notes:
+        None
+ 
+    Errors:
+        'x' has a string value: Type mismatch.
+y = COS(x): Returns the cosine of 'x'.
+ 
+    Parameters:
+        'x' is a numeric expression that gives the angle in radians.
+ 
+    Notes:
+        None
+ 
+    Errors:
+        'x' has a string value: Type mismatch.
+y = EXP(x): Returns the exponential of 'x', that is e to the power 'x'.
+ 
+    Parameters:
+        'x' is a numeric expression.
+ 
+    Notes:
+        None
+ 
+    Errors:
+        'x' has a string value: Type mismatch.
+        'x' is larger than the natural logarithm of the maximum single-precision value: Overflow.
+y = FIX(x): Returns 'x' truncated towards zero.
+ 
+    Parameters:
+        'x' is a numeric expression.
+ 
+    Notes:
+        FIX truncates towards zero: it removes the fractional part. By contrast, INT truncates towards negative infinity.
+ 
+    Errors:
+        'x' is a string expression: Type mismatch.
+y = INT(x): Returns 'x' truncated towards negative infinity.
+ 
+    Parameters:
+        'x' is a numeric expression.
+ 
+    Notes:
+        INT truncates towards negative infinity. By contrast, FIX truncates towards zero.
+ 
+    Errors:
+        'x' is a string expression, Type mismatch.
+y = LOG(x): Returns the natural logarithm of 'x'.
+ 
+    Parameters:
+        'x' is a numeric expression greater than zero.
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        'x' has a string value: Type mismatch.
+        'x' is zero or negative: Illegal function call.
+PI: TODO
+ 
+    Parameters:
+        TODO
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        TODO
+y = RND[(x)]: Returns a pseudorandom number in the interval 0 to 1.
+ 
+    Parameters:
+        'x' is a numeric expression.
+ 
+    Notes:
+        If 'x' is zero, RND repeats the last pseudo-random number.
+        If 'x' is greater than zero, a new pseudorandom number is returned.
+        If 'x' is negative, 'x' is converted to a single-precision floating-point value and the random number seed
+            is set to the absolute value of its mantissa. 
+            The function then generates a new pseudorandom numer with this seed. 
+            Since only the mantissa of 'x' is used, any two values whose ratio is a power of 2 will produce the same seed.
+        Note that this procedure for generating a new seed differs from that used by RANDOMIZE.
+        SE Basic IV's RND function produces different random numbers from Microsoft BASIC.
+        It is a very poor random number generator. RND should not be used for cryptography, scientific simulations or anything else remotely serious.
+ 
+    Errors:
+        'x' has a string value: Type mismatch.
+y = SGN(x): Returns the sign of 'x'. The value returned is 1 for positive, 0 for zero and -1 for negative.
+ 
+    Parameters:
+        'x' is a numeric expression.
+ 
+    Notes
+        TODO
+ 
+    Errors:
+        'x' has a string value: Type mismatch.
+y = SIN(x): Returns the sine of 'x'.
+ 
+    Parameters:
+        'x' is a numeric expression giving the angle in radians.
+ 
+    Notes
+        TODO
+ 
+    Errors:
+        'x' has a string value: Type mismatch.
+y = SQR(x): Returns the square root of 'x'.
+ 
+    Parameters:
+        'x' is a numeric expression.
+ 
+    Notes
+        TODO
+ 
+    Errors:
+        'x' has a string value: Type mismatch.
+y = TAN(x): Returns the tangent of 'x'.
+ 
+    Parameters:
+        'x' is a numeric expression giving the angle in radians.
+ 
+    Notes:
+        TODO
+ 
+    Errors:
+        'x' has a string value: Type mismatch.
+DUMMY: Dummy.
+ 
+    Parameters:
+        Dummy.
+ 
+    Notes:
+        Dummy.
+ 
+    Errors:
+        Dummy.

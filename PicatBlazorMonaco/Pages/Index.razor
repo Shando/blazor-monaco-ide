@@ -1,359 +1,401 @@
 ﻿@page "/"
-<label>
-    Compiler Web Service IP:
-    <input @bind="ServiceIP" />
-    <button @onclick="TestServiceConnection" style="background-color: @StatusColor">Test</button>
-</label>
+
+<SfButton @ref="OpenEditor" @onclick="onOpenBasicEditor" CssClass="e-custom" IsToggle="true" IsPrimary="true">Open SE Basic Editor</SfButton>
+<SfButton @ref="LoadFile" @onclick="onLoadFile" CssClass="e-custom" IsToggle="true" IsPrimary="true">Load a .bas File</SfButton>
+<SfButton @ref="OpenHelp" @onclick="onOpenHelp" CssClass="e-custom" IsToggle="true" IsPrimary="true">Open Help Page</SfButton>
 <br />
-<select @onchange="SampleSelected">
-    <option>-- samples --</option>
-    @foreach (var item in Samples)
-    {
-        <option value="@item.Item1">@item.Item1</option>
-    }
-</select>
-
-<div class="row">
-    <div class="column left">
-        <MonacoEditor @ref="_editor"
-                      Id="sample-code-editor-123"
-                      ConstructionOptions="EditorConstructionOptions"
-                      OnDidInit="EditorOnDidInit"
-                      OnKeyDown="OnKeyDown"
-                      OnKeyUp="OnKeyUp" />
-
-        <label>
-            Goal:
-            <input @bind="Goal" style="width:800px" @bind:event="oninput"
-                   @onkeydown="RunKeyPress" />
-            <button @onclick="RunGoal">Run</button>
-        </label>
-
-        <textarea @bind="Output" @ref="outputElement" @ondblclick="OutputDoubleClick" style="width:100%;height:200px" readonly="readonly" />
-    </div>
-    <div class="column right">
-        Tests:
-        <button @onclick="RunAllTests">Run All</button>
-        <table>
-            <tbody>
-                @foreach (var test in (_astEditor?.TestResults ?? new List<(string, bool?, int)>()).OrderBy(x => x.Item2).ThenBy(x => x.Item1))
-                {
-                    <tr @ondblclick="@(() => OnTestDoubleClick(test))">
-                        @if (test.Item2 == true)
-                        {
-                        <td style="color:forestgreen"> ✅ @test.Item1</td>
-
-                        }
-                        else if (test.Item2 == false)
-                        {
-                    <td style="color:orangered"> ❌ @test.Item1</td>
-                        }
-                        else
-                        {
-                    <td style="color:dimgray"> ❔ @test.Item1</td>
-
-                        }
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+<br />
+<label><b>Example BASIC Programs:</b></label>
+<br />
+<br />
+<SfButton @ref="OpenExample1" @onclick="onOpenExample1" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Hello World</SfButton>
+<SfButton @ref="OpenExample2" @onclick="onOpenExample2" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Happy Birthday</SfButton>
+<SfButton @ref="OpenExample3" @onclick="onOpenExample3" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Greeting</SfButton>
+<SfButton @ref="OpenExample4" @onclick="onOpenExample4" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Inclined</SfButton>
+<SfButton @ref="OpenExample5" @onclick="onOpenExample5" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Calculator</SfButton>
+<br />
+<br />
+<SfButton @ref="OpenExample6" @onclick="onOpenExample6" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Key Buffer</SfButton>
+<SfButton @ref="OpenExample7" @onclick="onOpenExample7" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Bottles of Beer</SfButton>
+<SfButton @ref="OpenExample8" @onclick="onOpenExample8" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Find Previous Prime</SfButton>
+<SfButton @ref="OpenExample9" @onclick="onOpenExample9" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Bio Data</SfButton>
+<SfButton @ref="OpenExample10" @onclick="onOpenExample10" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Decimal to Binary</SfButton>
+<br />
+<br />
+<SfButton @ref="OpenExample11" @onclick="onOpenExample11" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Binary to Decimal</SfButton>
+<SfButton @ref="OpenExample12" @onclick="onOpenExample12" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Next String</SfButton>
+<SfButton @ref="OpenExample13" @onclick="onOpenExample13" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Number Mountain</SfButton>
+<SfButton @ref="OpenExample14" @onclick="onOpenExample14" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Prime</SfButton>
+<SfButton @ref="OpenExample15" @onclick="onOpenExample15" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Acey Ducey</SfButton>
+<br />
+<br />
+<SfButton @ref="OpenExample16" @onclick="onOpenExample16" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Math Dice</SfButton>
+<SfButton @ref="OpenExample17" @onclick="onOpenExample17" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Queen</SfButton>
+<SfButton @ref="OpenExample18" @onclick="onOpenExample18" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Tic Tac Toe</SfButton>
+<SfButton @ref="OpenExample19" @onclick="onOpenExample19" CssClass="e-custom1" IsToggle="true" IsPrimary="true">High IQ</SfButton>
+<SfButton @ref="OpenExample20" @onclick="onOpenExample20" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Digits</SfButton>
+<br />
+<br />
+<SfButton @ref="OpenExample21" @onclick="onOpenExample21" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Diamond</SfButton>
+<SfButton @ref="OpenExample22" @onclick="onOpenExample22" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Cube</SfButton>
+<SfButton @ref="OpenExample23" @onclick="onOpenExample23" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Chemist</SfButton>
+<SfButton @ref="OpenExample24" @onclick="onOpenExample24" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Black Jack</SfButton>
+<SfButton @ref="OpenExample25" @onclick="onOpenExample25" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Batnum</SfButton>
+<br />
+<br />
+<SfButton @ref="OpenExample26" @onclick="onOpenExample26" CssClass="e-custom1" IsToggle="true" IsPrimary="true">Super Star Trek</SfButton>
+<br />
+<br />
+<label><b>ABOUT</b></label>
+<p><b>NOTE:</b> File System Access only works on Windows-based machines and on Chrome and Edge Browsers</p>
+<p>Proof of Concept Web IDE for the SE Basic IV programming language for the Chloe 280se Personal Computer.</p>
+<p>Based on:</p>
+<p><a href="https://github.com/andrzejolszak/picat-blazor-monaco-ide">Picat Blazor Monaco IDE by andrzejolszak</a></p>
+<p><a href="https://github.com/serdarciplak/BlazorMonaco">BlazorMonaco by cerdarciplak</a></p>
+<p><a href="https://github.com/KristofferStrube/Blazor.FileSystemAccess">Blazor.FileSystemAccess by kristofferstrube</a></p>
+<p><a href="https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor">Blazor by Microsoft</a></p>
+<p><a href="https://www.antlr.org/">Antlr4 by Terence Parr</a></p>
+<p><a href="https://www.syncfusion.com/">UI Components by Syncfusion</a></p>
+<div class="col-lg-12 control-section toast-default-section">
+    <SfToast ID="toast_default" @ref="ToastObj" Title="@toastTitle" Content="@toastContent" Timeout="2500" CssClass="@toastClass" Icon="@toastIcon">
+        <ToastPosition X="@toastPosition"></ToastPosition>
+    </SfToast>
 </div>
 
-@using Ast2
-@using PicatBlazorMonaco.Ast
+<style>
+    .e-custom {
+        width: 325px;
+        height: 50px;
+    }
+
+    .e-custom1 {
+        width: 193px;
+        height: 40px;
+    }
+
+    @@font-face {
+        font-family: 'Toast_icons';
+        src: url(data:application/x-font-ttf;charset=utf-8;base64,AAEAAAAKAIAAAwAgT1MvMj0gSRkAAAEoAAAAVmNtYXDnM+eRAAABsAAAAEpnbHlmzVnmlwAAAhgAAAZAaGVhZBEYIl8AAADQAAAANmhoZWEHlgN3AAAArAAAACRobXR4LvgAAAAAAYAAAAAwbG9jYQnUCGIAAAH8AAAAGm1heHABHQBcAAABCAAAACBuYW1lfUUTYwAACFgAAAKpcG9zdAxfTDgAAAsEAAAAggABAAADUv9qAFoEAAAAAAAD6AABAAAAAAAAAAAAAAAAAAAADAABAAAAAQAACcU5MF8PPPUACwPoAAAAANcI7skAAAAA1wjuyQAAAAAD6APoAAAACAACAAAAAAAAAAEAAAAMAFAABwAAAAAAAgAAAAoACgAAAP8AAAAAAAAAAQPqAZAABQAAAnoCvAAAAIwCegK8AAAB4AAxAQIAAAIABQMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUGZFZABA5wDnCgNS/2oAWgPoAJYAAAABAAAAAAAABAAAAAPoAAAD6AAAA+gAAAPoAAAD6AAAA+gAAAPoAAAD6AAAA+gAAAPoAAAD6AAAAAAAAgAAAAMAAAAUAAMAAQAAABQABAA2AAAABAAEAAEAAOcK//8AAOcA//8AAAABAAQAAAABAAIAAwAEAAUABgAHAAgACQAKAAsAAAAAAAAAQgB8AMIA4gEcAZQCBgJwAo4DAAMgAAAAAwAAAAADlAOUAAsAFwAjAAABFwcXNxc3JzcnBycFDgEHLgEnPgE3HgEFHgEXPgE3LgEnDgEBTXh4L3h4L3h4L3h4AbwDt4qKtwMDt4qKt/0eBeuxsesFBeuxsesCbHh4L3h4L3h4L3h4p4q3AwO3ioq3AwO3irHrBQXrsbHrBQXrAAAAAwAAAAADlAOUAAUAEQAdAAABJwcXAScXDgEHLgEnPgE3HgEFHgEXPgE3LgEnDgEBr2UylwEbMqADt4qKtwMDt4qKt/0eBeuxsesFBeuxsesBrGQylgEcMqKKtwMDt4qKtwMDt4qx6wUF67Gx6wUF6wAAAAAFAAAAAAOUA5cABQARAB0AIQAlAAABFzcnNSMFDgEHLgEnPgE3HgEFHgEXPgE3LgEnDgElFzcnBRc3JwHKxiCnPwFOA6V8fKUDA6V8fKX9aATToJ/UBATUn5/UAh7ANsD9fja/NQGedzNj29F8pAMDpHx8pQMDpXyf1AQE1J+g0wQE0/GhQKGhQKFAAAQAAAAAA74DfgADAAcACgANAAAlMzUjNTM1IwEhCQEhAQHLUlJSUgFj/YwBOv42A5T+NuZUUqf+igIc/ZADFgAEAAAAAAOUA5QAAwAHABMAHwAAATM1IzUzNSMFDgEHLgEnPgE3HgEFHgEXPgE3LgEnDgEBylRUVFQBbgO3ioq3AwO3ioq3/R4F67Gx6wUF67Gx6wEk+lNT0Iq3AwO3ioq3AwO3irHrBQXrsbHrBQXrAAAAAAcAAAAAA+gDMQALABUAJQAuADcAQQBLAAABFhcVITUmJz4BMxYFFhcVITU+ATcWJQYHFSE1LgEjIgYHLgEjIgEWFAYiJjQ2MgUWFAYiJjQ2MiUGFBYXPgE0JiIFBhQWFz4BNCYiA1xEBP6sAxUeRiRX/qxEBP45BIlXV/7xZQsD6AvKUypvMzNvKlMCKxozTTMzTP6CGTNMNDRMAQItWUREWlqI/jstWkREWVmIAWMbFjc3IBgKDwQcGxY3NxY3BAQjJUt7e0tKFxgYFwEMGU01NU0zGhlNNTVNMxYthloCAlqGWy4thloCAlqGWwAAAAQAAAAAA5wCxwAIABQANABFAAABFBYyNjQmIgYXDgEHLgEnPgE3HgEfAQcOAQ8BNz4BNS4BJw4BBxQWHwEnLgEvATc+ATc2FiUOAQ8BFx4BNz4BPwEnJiciAb8fLR4eLR+wAkU0NEUBAUU0NEX8BgEemG0FBB8kAlZBQFcBKyUCCkeVTAYBH76RVMP+3bDPBwcKZclcu/AGCwrM2AoBxxYfHy0eHhc0RQEBRTQ1RQEBRSgEARpWGAECFUIoQVcCAldBLEYUAQEIQkAGASJsBwFCoRbFFAoJW0sBCo8LCgztAQAAAAIAAAAAA4ADbAA4AEEAAAEEJCcmDgEWFx4BHwEVFAYHDgEnJg4BFhcWNjc2Fx4BBx4BFzc+ASc2JicmJzUzPgE3PgEnJicjIiUUFjI2NCYiBgNM/tz+pwwMGxEDDAaMfAcSETKEQw8WBg8Og80hNSg4JwICEw0FDhECAjFJEBICPYhKDQgGChQCB/5dMUgxMUgxAuB/ZRcIAxgbCQdHEQGTGi8TOVgKAw8dFwMNuDUFHTGDCA0QAQECFQ8Mnz8LCasJKiUHGg0SATMkMDBJMDAAAAAAAgAAAAAC/QMkAAMADQAAAQchJxMeATMhMjY3EyEC2x3+bB0kBCQZAQQZJARH/ewDBuDg/fcZICAZAicAAwAAAAACzwPoACwAQwBPAAABERQfARYfAzMVHgE7ATI2NRE0JisBNTEWOwEyNjQmJyMiJi8BLgErAQ4BAxUzNTQ2NzMeARcVMzUuAScjIgcjESM1HgEXPgE3LgEnDgEBVQEBAwQCCAjXARENOg0REQ2zDROVExoaE2UQGAQfAxAKYg0RPR8RDZcNEQEeASIalxANAR8CTTo6TQEBTTo6TQJ8/nYEBQIGBAIFArYNERENARENEUoNGicZARMPfQoNARH98Hl5DREBARENeXkaIgEIAe3FOk0CAk06Ok0BAU0AAAAAAgAAAAAC5gMyAAkAEQAAJRQWMyEyNjURITcjFSE1IycjASApHgEaHin+WFBuAeR+JLD8HigoHgGfeT09HgAAAAAAEgDeAAEAAAAAAAAAAQAAAAEAAAAAAAEAEgABAAEAAAAAAAIABwATAAEAAAAAAAMAEgAaAAEAAAAAAAQAEgAsAAEAAAAAAAUACwA+AAEAAAAAAAYAEgBJAAEAAAAAAAoALABbAAEAAAAAAAsAEgCHAAMAAQQJAAAAAgCZAAMAAQQJAAEAJACbAAMAAQQJAAIADgC/AAMAAQQJAAMAJADNAAMAAQQJAAQAJADxAAMAAQQJAAUAFgEVAAMAAQQJAAYAJAErAAMAAQQJAAoAWAFPAAMAAQQJAAsAJAGnIEZpbmFsIFRvYXN0IE1ldHJvcFJlZ3VsYXJGaW5hbCBUb2FzdCBNZXRyb3BGaW5hbCBUb2FzdCBNZXRyb3BWZXJzaW9uIDEuMEZpbmFsIFRvYXN0IE1ldHJvcEZvbnQgZ2VuZXJhdGVkIHVzaW5nIFN5bmNmdXNpb24gTWV0cm8gU3R1ZGlvd3d3LnN5bmNmdXNpb24uY29tACAARgBpAG4AYQBsACAAVABvAGEAcwB0ACAATQBlAHQAcgBvAHAAUgBlAGcAdQBsAGEAcgBGAGkAbgBhAGwAIABUAG8AYQBzAHQAIABNAGUAdAByAG8AcABGAGkAbgBhAGwAIABUAG8AYQBzAHQAIABNAGUAdAByAG8AcABWAGUAcgBzAGkAbwBuACAAMQAuADAARgBpAG4AYQBsACAAVABvAGEAcwB0ACAATQBlAHQAcgBvAHAARgBvAG4AdAAgAGcAZQBuAGUAcgBhAHQAZQBkACAAdQBzAGkAbgBnACAAUwB5AG4AYwBmAHUAcwBpAG8AbgAgAE0AZQB0AHIAbwAgAFMAdAB1AGQAaQBvAHcAdwB3AC4AcwB5AG4AYwBmAHUAcwBpAG8AbgAuAGMAbwBtAAAAAAIAAAAAAAAACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAECAQMBBAEFAQYBBwEIAQkBCgELAQwBDQAFRXJyb3IHU3VjY2VzcwVBbGFybQdXYXJuaW5nBEluZm8HTWVldGluZwVCbGluawdTdHJldGNoA1NpcANTaXQFVHJhc2gAAAAA) format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    #toast_types button {
+        margin: 5px;
+        min-width: 160px;
+        max-width: 160px;
+    }
+
+    .toast-icons {
+        font-family: 'Toast_icons' !important;
+        speak: none;
+        font-size: 55px;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    #toast_type .e-toast-icon.e-icons {
+        height: auto;
+        font-size: 30px;
+    }
+        
+    .bootstrap5 #toast_type .e-toast-icon.e-icons,
+    .bootstrap5-dark #toast_type .e-toast-icon.e-icons {
+        height: 30px;
+    }
+
+    .toast-icons.e-error::before {
+        content: "\e700";
+        font-size: 30px;
+    }
+
+    .toast-icons.e-info::before {
+        content: "\e704";
+        font-size: 30px;
+    }
+</style>
+
+@inject NavigationManager NavManager
+@inject FileSystemAccessService FileSystemAccessService;
+@inject myText iText
+@inject IJSRuntime jsRuntime
+
 @using System.Net
 @using System.Net.Http
 @using System.Threading.Tasks
-@using Microsoft.AspNetCore.WebUtilities;
-@using BlazorMonaco;
-@using System.Timers;
+@using Microsoft.AspNetCore.WebUtilities
+@using BlazorMonaco
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Notifications
 
-@inject HttpClient Http
-@inject NavigationManager NavManager
 @code {
-    public ElementReference outputElement { get; set; }
-    private bool _initializedSuggestionDetail = false;
-    private List<(string, string)> Samples { get; set; } = Examples.Samples;
-    private string ServiceIP { get; set; } = "localhost:8701";
-    private string StatusColor { get; set; }
-    private string Goal { get; set; } = "main.";
-    private string Output { get; set; }
-    private Ast2Editor _astEditor { get; set; }
-    private MonacoEditor _editor { get; set; }
-    [Inject] IJSRuntime _jsRuntime { get; set; }
-    private DotNetObjectReference<Index> objRef;
-    private Timer aTimer;
-    private string _oldProgramUserStopTyping;
+        SfButton OpenEditor;
+        SfButton OpenHelp;
+        SfButton OpenExample1;
+        SfButton OpenExample2;
+        SfButton OpenExample3;
+        SfButton OpenExample4;
+        SfButton OpenExample5;
+        SfButton OpenExample6;
+        SfButton OpenExample7;
+        SfButton OpenExample8;
+        SfButton OpenExample9;
+        SfButton OpenExample10;
+        SfButton OpenExample11;
+        SfButton OpenExample12;
+        SfButton OpenExample13;
+        SfButton OpenExample14;
+        SfButton OpenExample15;
+        SfButton OpenExample16;
+        SfButton OpenExample17;
+        SfButton OpenExample18;
+        SfButton OpenExample19;
+        SfButton OpenExample20;
+        SfButton OpenExample21;
+        SfButton OpenExample22;
+        SfButton OpenExample23;
+        SfButton OpenExample24;
+        SfButton OpenExample25;
+        SfButton OpenExample26;
+        SfButton LoadFile;
 
-    private string ValueToSet { get; set; }
+        SfToast ToastObj;
+    private string toastTitle = "";
+    private string toastPosition = "Right";
+    private string toastContent = "";
+    private string toastClass = "";
+    private string toastIcon = "";
 
-    [JSInvokable]
-    public async Task<BlazorMonaco.Range> GetDefinitionRange(Position pos) => await this._astEditor.GetDefinition(pos);
-
-    private StandaloneEditorConstructionOptions EditorConstructionOptions(MonacoEditor editor)
+    private void onOpenBasicEditor(MouseEventArgs mouse)
     {
-        StandaloneEditorConstructionOptions options = Ast2Editor.GetEditorOptions();
-
-        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
-        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("code", out var code) && !string.IsNullOrWhiteSpace(code))
-        {
-            options.Value = WebUtility.UrlDecode(code);
-        }
-
-        return options;
+        NavManager.NavigateTo("/basic");
     }
 
-    private async Task EditorOnDidInit(MonacoEditorBase editor)
+    private async Task onOpenHelp(MouseEventArgs mouse)
     {
-        aTimer = new Timer(1000);
-        aTimer.Elapsed += OnUserFinish;
-        aTimer.AutoReset = false;
-
-        objRef = DotNetObjectReference.Create(this);
-        await _jsRuntime.InvokeVoidAsync(@"setDotNetHelper", objRef);
-
-        string builtins = await Http.GetStringAsync("builtins.txt");
-        BuiltIns.InitializeFunctions(builtins);
-
-        this._astEditor = new Ast2Editor(_editor, _jsRuntime);
-        await this._astEditor.Init();
-
-        await _editor.AddAction("runSnippet", "Run selected snippet", new[] { (int)KeyMode.CtrlCmd | (int)KeyCode.KEY_R }, null, null, "_picat", 1, async (x, y) =>
-        {
-            TextModel m = await this._editor.GetModel();
-            Selection s = await this._editor.GetSelection();
-            string val = await m.GetValueInRange(s, EndOfLinePreference.TextDefined);
-            this.Goal = val;
-            await this.RunGoal(null);
-        });
+        string strURL = "https://github.com/cheveron/sebasic4/wiki/Language-guide";
+        await jsRuntime.InvokeVoidAsync("open", strURL, "_blank");
     }
 
-    private async Task TestServiceConnection(MouseEventArgs mouse)
+    private void onOpenExample1(MouseEventArgs mouse)
     {
+        iText.inputText = "10 REM Display Hello World\n20 A$= \"Hello World!\"\n30 PRINT A$\n40 END";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample2(MouseEventArgs mouse)
+    {
+        iText.inputText = "10 REM Say Happy Birthday to SE BASIC\n20 HAPPY$ = \"Happy birthday\"\n30 PRINT HAPPY$; \" to you!\"\n40 PRINT HAPPY$; \" to you!\"\n50 PRINT HAPPY$; \" dear SE BASIC!\"\n60 PRINT HAPPY$; \" to you!\"\n70 END";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample3(MouseEventArgs mouse)
+    {
+        iText.inputText = "10 REM Say Hello to You\n20 WHILE 1 = 1\n30 INPUT \"Enter Your Name\"; NAM$\n40 PRINT \"Hello \"; NAM$\n50 PRINT \"\"\n60 WEND\n70 END";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample4(MouseEventArgs mouse)
+    {
+        iText.inputText = "10 REM Create an Incline\n20 FOR I = 1 TO 5\n30 FOR J = 1 TO I\n40 PRINT \"*\";\n50 NEXT J\n60 PRINT \"\\\"\n70 NEXT I\n80 END";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample5(MouseEventArgs mouse)
+    {
+        iText.inputText = "10 CLS\n20 INPUT \"Enter First Number:\";X\n30 INPUT \"Enter Second Number:\";Y\n50 PRINT \"1 for *\"\n60 PRINT \"2 for /\"\n70 PRINT \"3 for + \"\n75 INPUT \"select any one from above:\";C\n80 IF C = 1 THEN 120\n90 IF C = 2 THEN 150\n100 IF C = 3 THEN 180 ELSE 110\n110 PRINT \"wrong input the program is terminated\"\n115 END\n120 Z = X * Y\n130 PRINT X; \"*\"; Y; \"=\"; Z\n140 END\n150 Z = X / Y\n160 PRINT X; \"/\"; Y; \"=\"; Z\n170 END\n180 Z = X + Y\n190 PRINT X; \"+\"; Y; \"=\"; Z\n200 END\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample6(MouseEventArgs mouse)
+    {
+        iText.inputText = "10 REM flush the keyboard buffer\n20 IF INKEY$ <> \"\" THEN GOTO 10\n30 PRINT \"Press Y or N to continue\"\n40 LET K$ = INKEY$\n50 IF K$ <> \"y\" AND K$ <> \"Y\" AND K$ <> \"n\" AND K$ <> \"N\" THEN GOTO 40\n60 PRINT \"The response was \"; K$\n70 END\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample7(MouseEventArgs mouse)
+    {
+        iText.inputText = "10 FOR BOTTLES = 99 TO 1 STEP -1\n20 PRINT BOTTLES \" bottles of beer on the wall\"\n30 PRINT BOTTLES \" bottles of beer\"\n40 PRINT \"Take one down, pass it around\"\n50 PRINT BOTTLES - 1 \" bottles of beer on the wall\"\n60 NEXT BOTTLES";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample8(MouseEventArgs mouse)
+    {
+        iText.inputText = "10 INPUT \"ENTER NUMBER TO SEARCH TO: \";LIMIT\n20 DIM FLAGS(LIMIT)\n30 FOR N = 2 TO SQR(LIMIT)\n40 IF FLAGS(N) <> 0 THEN 80\n50 FOR K = N * N TO LIMIT STEP N\n60 FLAGS(K) = 1\n70 NEXT K\n80 NEXT N\n90 REM DISPLAY THE PRIMES\n100 FOR N = 2 TO LIMIT\n110 IF FLAGS(N) = 0 THEN PRINT N; \", \";\n120 NEXT N\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample9(MouseEventArgs mouse)
+    {
+        iText.inputText = "10 REM PRACTICAL 10 (BIO-DATA)\n20 CLS\n30 INPUT \"ENTER STUDENT NAME\"; N$\n40 INPUT \"ENTER FATHERS NAME\"; F$\n50 INPUT \"ENTER DATE OF BIRTH\"; D$\n60 INPUT \"ENTER QUALIFICATION\"; Q$\n70 INPUT \"ENTER STUDENT SEX\"; S$\n80 INPUT \"ENTER NATIONALITY\"; P$\n90 INPUT \"ENTER RELIGON\"; R$\n100 CLS\n110 PRINT TAB(15) \"BIO-DATA\"\n120 PRINT TAB(12)\"STUDENT NAME= =\"; N$\n130 PRINT TAB(12)\"FATHERS NAME= =\"; F$\n140 PRINT TAB(12)\"DATE OF BIRTH= =\"; D$\n150 PRINT TAB(12)\"QUALIFICATION =\"; Q$\n160 PRINT TAB(12)\"SEX= = = = = = = =\"; S$\n170 PRINT TAB(12)\"NATIONALITY= = =\"; P$\n180 PRINT TAB(12)\"RELIGON= = = = =\"; R$\n190 END\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample10(MouseEventArgs mouse)
+    {
+        iText.inputText = "10 ' Step by Step Decimal to Binary Convertor\n20 ' Writen By: Nauman Umer\n30 CLS\n40 INPUT \"Enter a no in decimal Number System: \";DECI\n50 N = 0\n60 QUOT = INT(DECI / 2)\n70 REMAIN = DECI - (QUOT * 2)\n80 IF N = 0 THEN PRINT ELSE PRINT \"------------\"\n90 IF N = 0 THEN PRINT \"2 | \"; DECI\n100 IF N = 0 THEN PRINT \"------------\"\n110 IF QUOT = 1 or QUOT = 0 THEN PRINT \" | \";QUOT ;\" - \";REMAIN ELSE PRINT \"2 | \";QUOT ;\" - \";REMAIN\n120 DECI = QUOT\n130 N = N + 1\n140 IF DECI > 1 THEN GOTO 60\n150 END\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample11(MouseEventArgs mouse)
+    {
+        iText.inputText = "0 Rem Binary to Decimal coverter\n1 rem By: Nauman Umer\n10 CLS\n11 REM ON ERROR GOTO 150\n12 N = 1: I = 1\n13 DIM A(50)\n20 INPUT \"Enter a Number in Binary: \" ; BIN$\n21 PRINT BIN$\n30 LENGTH = LEN(BIN$)\n40 BINA = FIX(VAL(BIN$))\n44 REM **----------STEP 1----------**\n45 A$ = MID$(BIN$,N,I)\n50 IF (A$ = \"0\") OR(A$ = \"1\") THEN PRINT \"\"; ELSE PRINT \"Please enter correct number\": END\n52 PRINT \"( \"; A$; \" * (\"; 2; \"^\"; LENGTH - 1; \"))\";\n54 IF LENGTH = 0 THEN GOTO 71 ELSE PRINT \" + \";\n53 LENGTH = LENGTH - 1\n60 N = N + 1\n70 GOTO 45\n71 REM **----------STEP 2----------**\n72 N = 1: I = 1\n73 LENGTH = LEN(BIN$)\n74 PRINT \"\"\n75 A$ = MID$(BIN$,N,I)\n76 AB = FIX(VAL(A$))\n77 LENGTH = LENGTH - 1\n78 AC = 2 ^ (LENGTH)\n79 PRINT \"(\"; AB; \"*\"; AC; \")\";\n80 IF LENGTH = 0 THEN GOTO 90 ELSE PRINT \" + \";\n84 N = N + 1\n86 GOTO 75\n87 REM **----------STEP 3----------**\n90 N = 1: I = 1\n100 LENGTH = LEN(BIN$)\n110 PRINT \"\"\n120 A$ = MID$(BIN$,N,I)\n130 AB = FIX(VAL(A$))\n140 LENGTH = LENGTH - 1\n150 AC = 2 ^ (LENGTH)\n151 AD = AB * AC\n152 A(LENGTH) = AD\n160 PRINT AD;\n170 IF LENGTH = 0 THEN GOTO 200 ELSE PRINT \" + \";\n180 N = N + 1\n190 GOTO 120\n191 REM **----------STEP 4----------**\n200 I = 0\n201 LENGTH = LEN(BIN$)\n202 PRINT \"\"\n211 SUM = 0\n212 SUM = SUM + A(I)\n230 I = I + 1\n220 IF I = (LENGTH - 1) THEN 250\n240 GOTO 212\n250 ? SUM;\n260 REM **----------END----------**\n400 END\n410 PRINT \"Please enter correct number\"\n420 GOTO 20\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample12(MouseEventArgs mouse)
+    {
+        iText.inputText = "10 INPUT \"Enter a string: \",A$\n20 GOSUB 50\n30 PRINT B$\n40 END\n50 FOR I = 1 TO LEN(A$)\n60 N = ASC(MID$(A$, I, 1))\n70 E = 255\n80 IF N > 64 AND N < 91 THEN E = 90 ' uppercase\n90 IF N > 96 AND N < 123 THEN E = 122 ' lowercase\n100 IF E < 255 THEN N = N + 13\n110 IF N > E THEN N = N - 26\n120 B$ = B$ + CHR$(N)\n130 NEXT\n140 RETURN\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample13(MouseEventArgs mouse)
+    {
+        iText.inputText = "10 INPUT \"Number of rows: \",R\n20 FOR I = 0 TO R-1\n30 C = 1\n40 FOR K = 0 TO I\n50 PRINT USING \"####\"; C;\n60 C = C * (I - K) / (K + 1)\n70 NEXT\n80 PRINT\n90 NEXT\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample14(MouseEventArgs mouse)
+    {
+        iText.inputText = "10 INPUT \"Enter a Number: \";INPT\n20 ITRATTO = INT(SQR(INPT)) + 1\n30 DIVIDING = 2\n40 WHILE (DIVIDING <> ITRATTO)\n50 IF (INPT / DIVIDING) = INT(INPT / DIVIDING) THEN PRINT \"Composite\":END\n60 DIVIDING = DIVIDING + 1\n70 WEND\n80 PRINT \"Prime\"\n90 END\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample15(MouseEventArgs mouse)
+    {
+        iText.inputText = "10 PRINT TAB(26);\"ACEY DUCEY CARD GAME\"\n20 PRINT TAB(15);\"CREATIVE COMPUTING MORRISTOWN, NEW JERSEY\"\n21 PRINT\n22 PRINT\n30 PRINT \"ACEY-DUCEY IS PLAYED IN THE FOLLOWING MANNER \"\n40 PRINT \"THE DEALER (COMPUTER) DEALS TWO CARDS FACE UP\"\n50 PRINT \"YOU HAVE AN OPTION TO BET OR NOT BET DEPENDING\"\n60 PRINT \"ON WHETHER OR NOT YOU FEEL THE CARD WILL HAVE\"\n70 PRINT \"A VALUE BETWEEN THE FIRST TWO.\"\n80 PRINT \"IF YOU DO NOT WANT TO BET, INPUT A 0\"\n100 N = 100\n110 Q = 100\n120 PRINT \"YOU NOW HAVE \";Q;\" DOLLARS.\"\n130 PRINT\n140 GOTO 260\n210 Q = Q + M\n220 GOTO 120\n240 Q = Q  -M\n250 GOTO 120\n260 PRINT \"HERE ARE YOUR NEXT TWO CARDS: \"\n270 A=INT(14 * RND(1)) + 2\n280 IF A < 2 THEN 270\n290 IF A > 14 THEN 270\n300 B = INT(14 * RND(1)) + 2\n310 IF B < 2 THEN 300\n320 IF B > 14 THEN 300\n330 IF A >= B THEN 270\n350 IF A < 11 THEN 400\n360 IF A = 11 THEN 420\n370 IF A = 12 THEN 440\n380 IF A = 13 THEN 460\n390 IF A = 14 THEN 480\n400 PRINT A\n410 GOTO 500\n420 PRINT \"JACK\"\n430 GOTO 500\n440 PRINT \"QUEEN\"\n450 GOTO 500\n460 PRINT \"KING\"\n470 GOTO 500\n480 PRINT \"ACE\"\n500 IF B < 11 THEN 550\n510 IF B = 11 THEN 570\n520 IF B = 12 THEN 590\n530 IF B = 13 THEN 610\n540 IF B = 14 THEN 630\n550 PRINT B\n560 GOTO 650\n570 PRINT \"JACK\"\n580 GOTO 650\n590 PRINT \"QUEEN\"\n600 GOTO 650\n610 PRINT \"KING\"\n620 GOTO 650\n630 PRINT \"ACE\"\n640 PRINT\n650 PRINT\n660 INPUT \"WHAT IS YOUR BET? \";M\n670 IF M <> 0 THEN 680\n675 PRINT \"CHICKEN!!\"\n676 PRINT\n677 GOTO 260\n680 IF M <= Q THEN 730\n690 PRINT \"SORRY, MY FRIEND, BUT YOU BET TOO MUCH.\"\n700 PRINT \"YOU HAVE ONLY \";Q;\" DOLLARS TO BET.\"\n710 GOTO 650\n730 C = INT(14 * RND(1)) + 2\n740 IF C < 2 THEN 730\n750 IF C > 14 THEN 730\n760 IF C < 11 THEN 810\n770 IF C = 11 THEN 830\n780 IF C = 12 THEN 850\n790 IF C = 13 THEN 870\n800 IF C = 14 THEN 890\n810 PRINT C\n820 GOTO 910\n830 PRINT \"JACK\"\n840 GOTO 910\n850 PRINT \"QUEEN\"\n860 GOTO 910\n870 PRINT \"KING\"\n880 GOTO 910\n890 PRINT \"ACE\"\n900 PRINT\n910 IF C > A THEN 930\n920 GOTO 970\n930 IF C >= B THEN 970\n950 PRINT \"YOU WIN!!!\"\n960 GOTO 210\n970 PRINT \"SORRY, YOU LOSE\"\n980 IF M < Q THEN 240\n990 PRINT\n1000 PRINT\n1010 PRINT \"SORRY, FRIEND, BUT YOU BLEW YOUR WAD.\"\n1015 PRINT:PRINT\n1020 INPUT \"TRY AGAIN (YES OR NO)? \";A$\n1025 PRINT:PRINT\n1030 IF A$ = \"YES\" THEN 110\n1040 PRINT \"O.K., HOPE YOU HAD FUN!\"\n1050 END\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample16(MouseEventArgs mouse)
+    {
+        iText.inputText = "10 PRINT TAB(31);\"MATH DICE\"\n20 PRINT TAB(15);\"CREATIVE COMPUTING MORRISTOWN, NEW JERSEY\"\n30 PRINT:PRINT:PRINT\n40 PRINT \"THIS PROGRAM GENERATES SUCCESIVE PICTURES OF TWO DICE.\"\n50 PRINT \"WHEN TWO DICE AND AN EQUAL SIGN FOLLOWED BY A QUESTION\"\n60 PRINT \"MARK HAVE BEEN PRINTED, TYPE YOUR ANSWER AND THE RETURN KEY.\"\n70 PRINT \"TO CONCLUDE THE LESSON, TYPE CONTROL-C AS YOUR ANSWER.\"\n80 PRINT\n90 PRINT\n100 N = N + 1\n110 D = INT(6 * RND(1) + 1)\n120 PRINT \" ----- \"\n130 IF D = 1 THEN 200\n140 IF D = 2 THEN 180\n150 IF D = 3 THEN 180\n160 PRINT \"I * * I\"\n170 GOTO 210\n180 PRINT \"I * I\"\n190 GOTO 210\n200 PRINT \"I I\"\n210 IF D = 2 THEN 260\n220 IF D = 4 THEN 260\n230 IF D = 6 THEN 270\n240 PRINT \"I * I\"\n250 GOTO 280\n260 PRINT \"I I\"\n265 GOTO 280\n270 PRINT \"I * * I\"\n280 IF D = 1 THEN 350\n290 IF D = 2 THEN 330\n300 IF D = 3 THEN 330\n310 PRINT \"I * * I\"\n320 GOTO 360\n330 PRINT \"I * I\"\n340 GOTO 360\n350 PRINT \"I I\"\n360 PRINT \" ----- \"\n370 PRINT\n375 IF N = 2 THEN 500\n380 PRINT \" +\"\n381 PRINT\n400 A = D\n410 GOTO 100\n500 T = D + A\n510 PRINT \" =\";\n520 INPUT T1\n530 IF T1 = T THEN 590\n540 PRINT \"NO, COUNT THE SPOTS AND GIVE ANOTHER ANSWER.\"\n541 PRINT \" =\";\n550 INPUT T2\n560 IF T2 = T THEN 590\n570 PRINT \"NO, THE ANSWER IS\";T\n580 GOTO 600\n590 PRINT \"RIGHT!\"\n600 PRINT\n601 PRINT \"THE DICE ROLL AGAIN...\"\n610 PRINT\n615 N = 0\n620 GOTO 100\n999 END\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample17(MouseEventArgs mouse)
+    {
+        iText.inputText = "1 PRINT TAB(33);\"QUEEN\"\n2 PRINT TAB(15);\"CREATIVE COMPUTING MORRISTOWN, NEW JERSEY\"\n3 PRINT:PRINT:PRINT\n10 DIM S(64)\n11 FOR I = 1 TO 64\n12 READ S(I)\n13 NEXT I\n14 DATA 81, 71, 61, 51, 41, 31, 21, 11\n15 DATA 92, 82, 72, 62, 52, 42, 32, 22\n16 DATA 103, 93, 83, 73, 63, 53, 43, 33\n17 DATA 114, 104, 94, 84, 74, 64, 54, 44\n18 DATA 125, 115, 105, 95, 85, 75, 65, 55\n19 DATA 136, 126, 116, 106, 96, 86, 76, 66\n20 DATA 147, 137, 127, 117, 107, 97, 87, 77\n21 DATA 158, 148, 138, 128, 118, 108, 98, 88\n22 INPUT \"DO YOU WANT INSTRUCTIONS? \";W$\n23 IF W$ = \"NO\" THEN 30\n24 IF W$ = \"YES\" THEN 28\n25 PRINT \"PLEASE ANSWER 'YES' OR 'NO'.\"\n26 GOTO 22\n28 GOSUB 5000\n29 GOTO 100\n30 GOSUB 5160\n90 REM ERROR CHECKS\n100 PRINT \"WHERE WOULD YOU LIKE TO START\";\n110 INPUT M1\n115 IF M1 = 0 THEN 232\n120 T1 = INT(M1 / 10)\n130 U1 = M1 - 10 * T1\n140 IF U1 = 1 THEN 200\n150 IF U1 = T1 THEN 200\n160 PRINT \"PLEASE READ THE DIRECTIONS AGAIN.\"\n170 PRINT \"YOU HAVE BEGUN ILLEGALLY.\"\n175 PRINT\n180 GOTO 100\n200 GOSUB 2000\n210 PRINT \"COMPUTER MOVES TO SQUARE\";M\n215 IF M = 158 THEN 3400\n220 PRINT \"WHAT IS YOUR MOVE\";\n230 INPUT M1\n231 IF M1 <> 0 THEN 239\n232 PRINT\n233 PRINT \"IT LOOKS LIKE I HAVE WON BY FORFEIT.\"\n234 PRINT\n235 GOTO 4000\n239 IF M1 <= M THEN 3200\n240 T1 = INT(M1 / 10)\n250 U1 = M1 - 10 * T1\n260 P = U1 - U\n270 IF P <> 0 THEN 300\n280 L = T1 - T\n290 IF L <= 0 THEN 3200\n295 GOTO 200\n300 IF T1 - T <> P THEN 320\n310 GOTO 200\n320 IF T1 - T <> 2 * P THEN 3200\n330 GOTO 200\n1990 REM LOCATE MOVE FOR COMPUTER\n2000 IF M1 = 41 THEN 2180\n2010 IF M1 = 44 THEN 2180\n2020 IF M1 = 73 THEN 2180\n2030 IF M1 = 75 THEN 2180\n2040 IF M1 = 126 THEN 2180\n2050 IF M1 = 127 THEN 2180\n2060 IF M1 = 158 THEN 3300\n2065 C = 0\n2070 FOR K = 7 TO 1 STEP -1\n2080 U = U1\n2090 T = T1 + K\n2100 GOSUB 3500\n2105 IF C = 1 THEN 2160\n2110 U = U + K\n2120 GOSUB 3500\n2125 IF C = 1 THEN 2160\n2130 T = T + K\n2140 GOSUB 3500\n2145 IF C = 1 THEN 2160\n2150 NEXT K\n2155 GOTO 2180\n2160 C = 0\n2170 RETURN\n2180 GOSUB 3000\n2190 RETURN\n2990 REM     RANDOM MOVE\n3000 Z = RND(1)\n3010 IF Z > .6 THEN 3110\n3020 IF Z > .3 THEN 3070\n3030 U = U1\n3040 T = T1 + 1\n3050 M = 10 * T + U\n3060 RETURN\n3070 U = U1 + 1\n3080 T = T1 + 2\n3090 M = 10 * T + U\n3100 RETURN\n3110 U = U1 + 1\n3120 T = T1 + 1\n3130 M = 10 * T + U\n3140 RETURN\n3190 REM     ILLEGAL MOVE MESSAGE\n3200 PRINT\n3210 PRINT \"Y O U   C H E A T . . .  TRY AGAIN\";\n3220 GOTO 230\n3290 REM     PLAYER WINS\n3300 PRINT\n3310 PRINT \"C O N G R A T U L A T I O N S . . .\"\n3320 PRINT \n3330 PRINT \"YOU HAVE WON--VERY WELL PLAYED.\"\n3340 PRINT \"IT LOOKS LIKE I HAVE MET MY MATCH.\"\n3350 PRINT \"THANKS FOR PLAYING---I CAN'T WIN ALL THE TIME.\"\n3360 PRINT\n3370 GOTO 4000\n3390 REM     COMPUTER WINS\n3400 PRINT\n3410 PRINT \"NICE TRY, BUT IT LOOKS LIKE I HAVE WON.\"\n3420 PRINT \"THANKS FOR PLAYING.\"\n3430 PRINT\n3440 GOTO 4000\n3490 REM     TEST FOR COMPUTER MOVE\n3500 M = 10 * T + U\n3510 IF M = 158 THEN 3570\n3520 IF M = 127 THEN 3570\n3530 IF M = 126 THEN 3570\n3540 IF M = 75 THEN 3570\n3550 IF M = 73 THEN 3570\n3560 RETURN\n3570 C = 1\n3580 GOTO 3560\n3990 REM     ANOTHER GAME???\n4000 PRINT \"ANYONE ELSE CARE TO TRY\";\n4010 INPUT Q$\n4020 PRINT\n4030 IF Q$ = \"YES\" THEN 30 \n4040 IF Q$ = \"NO\" THEN 4050\n4042 PRINT \"PLEASE ANSWER 'YES' OR 'NO'.\"\n4045 GOTO 4000\n4050 PRINT:PRINT \"OK --- THANKS AGAIN.\"\n4060 STOP\n4990 REM     DIRECTIONS\n5000 PRINT \"WE ARE GOING TO PLAY A GAME BASED ON ONE OF THE CHESS\"\n5010 PRINT \"MOVES.  OUR QUEEN WILL BE ABLE TO MOVE ONLY TO THE LEFT,\"\n5020 PRINT \"DOWN, OR DIAGONALLY DOWN AND TO THE LEFT.\"\n5030 PRINT\n5040 PRINT \"THE OBJECT OF THE GAME IS TO PLACE THE QUEEN IN THE LOWER\"\n5050 PRINT \"LEFT HAND SQUARE BY ALTERNATING MOVES BETWEEN YOU AND THE\"\n5060 PRINT \"COMPUTER.  THE FIRST ONE TO PLACE THE QUEEN THERE WINS.\"\n5070 PRINT\n5080 PRINT \"YOU GO FIRST AND PLACE THE QUEEN IN ANY ONE OF THE SQUARES\"\n5090 PRINT \"ON THE TOP ROW OR RIGHT HAND COLUMN.\"\n5100 PRINT \"THAT WILL BE YOUR FIRST MOVE.\"\n5110 PRINT \"WE ALTERNATE MOVES.\"\n5120 PRINT \"YOU MAY FORFEIT BY TYPING '0' AS YOUR MOVE.\"\n5130 PRINT \"BE SURE TO PRESS THE RETURN KEY AFTER EACH RESPONSE.\"\n5140 PRINT\n5150 PRINT\n5160 PRINT\n5170 FOR A = 0 TO 7\n5180 FOR B = 1 TO 8\n5185 I = 8 * A + B\n5190 PRINT S(I);\n5200 NEXT B\n5210 PRINT\n5220 PRINT\n5230 PRINT\n5240 NEXT A\n5250 PRINT\n5260 RETURN\n9999 END\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample18(MouseEventArgs mouse)
+    {
+        iText.inputText = "2 PRINT TAB(30);\"TIC-TAC-TOE\"\n4 PRINT TAB(15);\"CREATIVE COMPUTING MORRISTOWN, NEW JERSEY\"\n6 PRINT:PRINT:PRINT\n8 PRINT \"THE BOARD IS NUMBERED:\"\n10 PRINT \" 1 2 3\"\n12 PRINT \" 4 5 6\"\n14 PRINT \" 7 8 9\"\n16 PRINT:PRINT:PRINT\n20 DIM S(9)\n50 INPUT \"DO YOU WANT 'X' OR 'O'? \";C$\n55 IF C$ = \"X\" THEN 475\n60 P$ = \"O\":Q$ = \"X\"\n100 G = -1:H = 1:IF S(5) <> 0 THEN 103\n102 S(5) = -1:GOTO 195\n103 IF S(5) <> 1 THEN 106\n104 IF S(1) <> 0 THEN 110\n105 S(1) = -1:GOTO 195\n106 IF S(2) = 1 AND S(1) = 0 THEN 181\n107 IF S(4) = 1 AND S(1) = 0 THEN 181\n108 IF S(6) = 1 AND S(9) = 0 THEN 189\n109 IF S(8) = 1 AND S(9) = 0 THEN 189\n110 IF G = 1 THEN 112\n111 GOTO 118\n112 J = 3 * INT((M - 1) / 3) + 1\n113 IF J = M THEN K=1\n114 IF J + 1 = M THEN K = 2\n115 IF J + 2 = M THEN K = 3\n116 GOTO 120\n118 FOR J = 1 TO 7 STEP 3:FOR K = 1 TO 3\n120 IF S(J) <> G THEN 130\n122 IF S(J + 2) <> G THEN 135\n126 IF S(J + 1) <> 0 THEN 150\n128 S(J + 1) = -1:GOTO 195\n130 IF S(J) = H THEN 150\n131 IF S(J + 2) <> G THEN 150\n132 IF S(J + 1) <> G THEN 150\n133 S(J) = -1:GOTO 195\n135 IF S(J + 2) <> 0 THEN 150\n136 IF S(J + 1) <> G THEN 150\n138 S(J + 2) = -1:GOTO 195\n150 IF S(K) <> G THEN 160\n152 IF S(K + 6) <> G THEN 165\n156 IF S(K + 3) <> 0 THEN 170\n158 S(K + 3) = -1:GOTO 195\n160 IF S(K) = H THEN 170\n161 IF S(K + 6) <> G THEN 170\n162 IF S(K + 3) <> G THEN 170\n163 S(K) = -1:GOTO 195\n165 IF S(K + 6) <> 0 THEN 170\n166 IF S(K + 3) <> G THEN 170\n168 S(K + 6) = -1:GOTO 195\n170 GOTO 450\n171 IF S(3) = G AND S(7) = 0 THEN 187\n172 IF S(9) = G AND S(1) = 0 THEN 181\n173 IF S(7) = G AND S(3) = 0 THEN 183\n174 IF S(9) = 0 AND S(1) = G THEN 189\n175 IF G = -1 THEN G = 1:H = -1:GOTO 110\n176 IF S(9) = 1 AND S(3) = 0 THEN 182\n177 FOR I = 2 TO 9:IF S(I) <> 0 THEN 179\n178 S(I) = -1:GOTO 195\n179 NEXT I\n181 S(1) = -1:GOTO 195\n182 IF S(1) = 1 THEN 177\n183 S(3) = -1:GOTO 195\n187 S(7) = -1:GOTO 195\n189 S(9) = -1\n195 PRINT:PRINT \"THE COMPUTER MOVES TO...\"\n202 GOSUB 1000\n205 GOTO 500\n450 IF G = 1 THEN 465\n455 IF J = 7 AND K = 3 THEN 465\n460 NEXT K, J\n465 IF S(5) = G THEN 171\n467 GOTO 175\n475 P$ = \"X\":Q$ = \"O\"\n500 PRINT:INPUT\"WHERE DO YOU MOVE? \";M\n502 IF M = 0 THEN PRINT \"THANKS FOR THE GAME.\":GOTO 2000\n503 IF M > 9 THEN 506\n505 IF S(M) = 0 THEN 510\n506 PRINT \"THAT SQUARE IS OCCUPIED.\":PRINT:PRINT:GOTO 500\n510 G = 1:S(M) = 1\n520 GOSUB 1000\n530 GOTO 100\n1000 PRINT:FOR I = 1 TO 9:PRINT \" \";:IF S(I) <> -1 THEN 1014\n1012 PRINT Q$;\" \";:GOTO 1020\n1014 IF S(I) <> 0 THEN 1018\n1016 PRINT \"  \";:GOTO 1020\n1018 PRINT P$; \" \";\n1020 IF I <> 3 AND I <> 6 THEN 1050\n1030 PRINT:PRINT \"---+---+---\"\n1040 GOTO 1080\n1050 IF I = 9 THEN 1080\n1060 PRINT \"!\";\n1080 NEXT I:PRINT:PRINT:PRINT\n1095 FOR I = 1 TO 7 STEP 3\n1100 IF S(I) <> S(I + 1) THEN 1115\n1105 IF S(I) <> S(I + 2) THEN 1115\n1110 IF S(I) = -1 THEN 1350\n1112 IF S(I) = 1 THEN 1200\n1115 NEXT I:FOR I = 1 TO 3:IF S(I) <> S(I + 3) THEN 1150\n1130 IF S(I) <> S(I + 6) THEN 1150\n1135 IF S(I) = -1 THEN 1350\n1137 IF S(I) = 1 THEN 1200\n1150 NEXT I:FOR I = 1 TO 9:IF S(I) = 0 THEN 1155\n1152 NEXT I:GOTO 1400\n1155 IF S(5) <> G THEN 1170\n1160 IF S(1) = G AND S(9) = G THEN 1180\n1165 IF S(3) = G AND S(7) = G THEN 1180\n1170 RETURN\n1180 IF G = -1 THEN 1350\n1200 PRINT \"YOU BEAT ME!! GOOD GAME.\":GOTO 2000\n1350 PRINT \"I WIN, TURKEY!!!\":GOTO 2000\n1400 PRINT \"IT'S A DRAW. THANK YOU.\"\n2000 END\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample19(MouseEventArgs mouse)
+    {
+        iText.inputText = "1 PRINT TAB(33);\"H-I-Q\"\n2 PRINT TAB(15);\"CREATIVE COMPUTING MORRISTOWN, NEW JERSEY\"\n3 PRINT:PRINT:PRINT\n4 DIM B(70),T(9,9)\n5 PRINT \"HERE IS THE BOARD:\": PRINT\n6 PRINT \" ! ! !\"\n7 PRINT \"  13 14 15\": PRINT\n8 PRINT \" ! ! !\"\n9 PRINT \"  22 23 24\": PRINT\n10 PRINT \"! ! ! ! ! ! !\"\n11 PRINT \"29 30 31 32 33 34 35\": PRINT\n12 PRINT \"! ! ! ! ! ! !\"\n13 PRINT \"38 39 40 41 42 43 44\": PRINT\n14 PRINT \"! ! ! ! ! ! !\"\n15 PRINT \"47 48 49 50 51 52 53\": PRINT\n16 PRINT \" ! ! !\"\n17 PRINT \"  58 59 60\": PRINT\n18 PRINT \" ! ! !\"\n19 PRINT \"  67 68 69\": PRINT\n20 PRINT \"TO SAVE TYPING TIME, A COMPRESSED VERSION OF THE GAME BOARD\"\n22 PRINT \"WILL BE USED DURING PLAY. REFER TO THE ABOVE ONE FOR PEG\"\n24 PRINT \"NUMBERS. OK, LET'S BEGIN.\"\n28 REM *** SET UP BOARD\n29 FOR R = 1 TO 9\n30 FOR C = 1 TO 9\n31 IF (R - 4) * (R - 5) * (R - 6) = 0 THEN 40\n32 IF (C - 4) * (C - 5) * (C - 6) = 0 THEN 40\n35 T(R,C) = -5\n36 GOTO 50\n40 IF (R - 1) * (C - 1) * (R - 9) * (C - 9) = 0 THEN 35\n42 T(R,C) = 5\n50 NEXT C\n60 NEXT R\n65 T(5,5) = 0: GOSUB 500\n70 REM *** INPUT MOVE AND CHECK ON LEGALITY\n75 FOR W = 1 TO 33\n77 READ M\n79 DATA 13,14,15,22,23,24,29,30,31,32,33,34,35,38,39,40,41\n81 DATA 42,43,44,47,48,49,50,51,52,53,58,59,60,67,68,69\n83 B(M) = -7: NEXT W\n86 B(41) = -3\n100 INPUT \"MOVE WHICH PIECE\";Z\n110 IF B(Z) = -7 THEN 140\n120 PRINT \"ILLEGAL MOVE, TRY AGAIN...\": GOTO 100\n140 INPUT \"TO WHERE\";P\n150 IF B(P) = 0 THEN 120\n153 IF B(P) = -7 THEN 120\n156 IF Z = P THEN 100\n160 IF ((Z + P) / 2) = INT((Z + P) / 2) THEN 180\n170 GOTO 120\n180 IF (ABS(Z - P) - 2) * (ABS(Z - P) - 18) <> 0 THEN 120\n190 GOSUB 1000\n200 GOSUB 500\n210 GOSUB 1500\n220 GOTO 100\n500 REM *** PRINT BOARD\n510 FOR X = 1 TO 9\n520 FOR Y = 1 TO 9\n525 IF (X - 1) * (X - 9) * (Y - 1) * (Y - 9) = 0 THEN 550\n530 IF (X - 4) * (X - 5) * (X - 6) = 0 THEN 570\n540 IF (Y - 4) * (Y - 5) * (Y - 6) = 0 THEN 570\n550 REM\n560 GOTO 610\n570 IF T(X,Y) <> 5 THEN 600\n580 PRINT TAB(Y * 2);\"!\";\n590 GOTO 610\n600 PRINT TAB(Y * 2);\"O\";\n610 REM\n615 NEXT Y\n620 PRINT\n630 NEXT X\n640 RETURN\n1000 REM *** UPDATE BOARD\n1005 C = 1: FOR X = 1 TO 9\n1020 FOR Y = 1 TO 9\n1030 IF C <> Z THEN 1220\n1040 IF C + 2 <> P THEN 1080\n1045 IF T(X,Y + 1) = 0 THEN 120\n1050 T(X,Y + 2) = 5\n1060 T(X,Y + 1) = 0: B(C + 1) = -3\n1070 GOTO 1200\n1080 IF C + 18 <> P THEN 1130\n1085 IF T(X + 1,Y) = 0 THEN 120\n1090 T(X + 2, Y) = 5: T(X + 1,Y) = 0: B(C + 9) = -3\n1120 GOTO 1200\n1130 IF C - 2 <> P THEN 1170\n1135 IF T(X,Y - 1) = 0 THEN 120\n1140 T(X,Y - 2) = 5: T(X,Y - 1) = 0: B(C - 1) = -3\n1160 GOTO 1200\n1170 IF C - 18 <> P THEN 1220\n1175 IF T(X - 1,Y) = 0 THEN 120\n1180 T(X - 2,Y) = 5: T(X - 1,Y) = 0: B(C - 9) = -3\n1200 B(Z) = -3: B(P) = -7\n1210 T(X,Y) = 0: GOTO 1240\n1220 C = C + 1\n1225 NEXT Y\n1230 NEXT X\n1240 RETURN\n1500 REM*** CHECK IF GAME IS OVER\n1505 F = 0\n1510 FOR R = 2 TO 8\n1520 FOR C = 2 TO 8\n1530 IF T(R,C) <> 5 THEN 1580\n1535 F = F + 1\n1540 FOR A = R - 1 TO R + 1\n1545 T = 0\n1550 FOR B = C - 1 TO C + 1\n1560 T = T + T(A,B)\n1561 NEXT B\n1564 IF T <> 10 THEN 1567\n1565 IF T(A,C) <> 0 THEN 1630\n1567 NEXT A\n1568 FOR X = C - 1 TO C + 1\n1569 T = 0\n1570 FOR Y = R - 1 TO R + 1\n1571 T = T + T(Y,X)\n1572 NEXT Y\n1573 IF T <> 10 THEN 1575\n1574 IF T(R,X) <> 0 THEN 1630\n1575 NEXT X\n1580 NEXT C\n1590 NEXT R\n1600 REM *** GAME IS OVER\n1605 PRINT \"THE GAME IS OVER.\"\n1610 PRINT \"YOU HAD\";F;\"PIECES REMAINING.\"\n1611 IF F <> 1 THEN 1615\n1612 PRINT \"BRAVO!  YOU MADE A PERFECT SCORE!\"\n1613 PRINT \"SAVE THIS PAPER AS A RECORD OF YOUR ACCOMPLISHMENT!\"\n1615 PRINT: INPUT \"PLAY AGAIN (YES OR NO)?\";A$\n1617 IF A$ = \"NO\" THEN 2000\n1618 RESTORE: GOTO 28\n1620 STOP\n1630 RETURN\n2000 PRINT: PRINT \"SO LONG FOR NOW.\": PRINT\n2010 END\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample20(MouseEventArgs mouse)
+    {
+        iText.inputText = "10 PRINT TAB(33);\"DIGITS\"\n20 PRINT TAB(15);\"CREATIVE COMPUTING MORRISTOWN, NEW JERSEY\"\n30 PRINT:PRINT:PRINT\n210 PRINT \"THIS IS A GAME OF GUESSING.\"\n220 PRINT \"FOR INSTRUCTIONS, TYPE '1', ELSE TYPE '0'\";\n230 INPUT E\n240 IF E = 0 THEN 360\n250 PRINT\n260 PRINT \"PLEASE TAKE A PIECE OF PAPER AND WRITE DOWN\"\n270 PRINT \"THE DIGITS '0', '1', OR '2' THIRTY TIMES AT RANDOM.\"\n280 PRINT \"ARRANGE THEM IN THREE LINES OF TEN DIGITS EACH.\"\n290 PRINT \"I WILL ASK FOR THEN TEN AT A TIME.\"\n300 PRINT \"I WILL ALWAYS GUESS THEM FIRST AND THEN LOOK AT YOUR\"\n310 PRINT \"NEXT NUMBER TO SEE IF I WAS RIGHT. BY PURE LUCK,\"\n320 PRINT \"I OUGHT TO BE RIGHT TEN TIMES. BUT I HOPE TO DO BETTER\"\n330 PRINT \"THAN THAT *****\"\n340 PRINT:PRINT\n360 READ A, B, C\n370 DATA 0,1,3\n380 DIM M(26,2),K(2,2),L(8,2)\n400 FOR I = 0 TO 26: FOR J = 0 TO 2: M(I,J) = 1: NEXT J: NEXT I\n410 FOR I = 0 TO 2: FOR J = 0 TO 2: K(I,J) = 9: NEXT J: NEXT I\n420 FOR I = 0 TO 8: FOR J = 0 TO 2: L(I,J) = 3: NEXT J: NEXT I\n450 L(0,0) = 2: L(4,1) = 2: L(8,2) = 2\n480 Z = 26: Z1 = 8: Z2 = 2\n510 X = 0\n520 FOR T = 1 TO 3\n530 PRINT\n540 PRINT \"TEN NUMBERS, PLEASE\";\n550 INPUT N(1),N(2),N(3),N(4),N(5),N(6),N(7),N(8),N(9),N(10)\n560 FOR I = 1 TO 10\n570 W = N(I) - 1\n580 IF W = SGN(W) THEN 620\n590 PRINT \"ONLY USE THE DIGITS '0', '1', OR '2'.\"\n600 PRINT \"LET'S TRY AGAIN.\":GOTO 530\n620 NEXT I\n630 PRINT: PRINT \"MY GUESS\",\"YOUR NO.\",\"RESULT\",\"NO. RIGHT\":PRINT\n660 FOR U = 1 TO 10\n670 N = N(U): S = 0\n690 FOR J = 0 TO 2\n700 S1 = A * K(Z2,J) + B * L(Z1,J) + C * M(Z,J)\n710 IF S > S1 THEN 760\n720 IF S < S1 THEN 740\n730 IF RND(1) < .5 THEN 760\n740 S = S1: G = J\n760 NEXT J\n770 PRINT \" \";G,\" \";N(U),\n780 IF G = N(U) THEN 810\n790 PRINT \" WRONG\",X\n800 GOTO 880\n810 X = X + 1\n820 PRINT \" RIGHT\",X\n830 M(Z,N) = M(Z,N) + 1\n840 L(Z1,N) = L(Z1,N) + 1\n850 K(Z2,N) = K(Z2,N) + 1\n860 Z = Z - INT(Z / 9) * 9\n870 Z = 3 * Z + N(U)\n880 Z1 = Z - INT(Z / 9) * 9\n890 Z2 = N(U)\n900 NEXT U\n910 NEXT T\n920 PRINT\n930 IF X > 10 THEN 980\n940 IF X < 10 THEN 1010\n950 PRINT \"I GUESSED EXACTLY 1/3 OF YOUR NUMBERS.\"\n960 PRINT \"IT'S A TIE GAME.\"\n970 GOTO 1030\n980 PRINT \"I GUESSED MORE THAN 1/3 OF YOUR NUMBERS.\"\n990 PRINT \"I WIN.\": FOR Q = 1 TO 10: PRINT CHR$(7);: NEXT Q\n1000 GOTO 1030\n1010 PRINT \"I GUESSED LESS THAN 1/3 OF YOUR NUMBERS.\"\n1020 PRINT \"YOU BEAT ME.  CONGRATULATIONS *****\"\n1030 PRINT\n1040 PRINT \"DO YOU WANT TO TRY AGAIN (1 FOR YES, 0 FOR NO)\";\n1060 INPUT X\n1070 IF X = 1 THEN 400\n1080 PRINT:PRINT \"THANKS FOR THE GAME.\"\n1090 END\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample21(MouseEventArgs mouse)
+    {
+        iText.inputText = "1 PRINT TAB(33);\"DIAMOND\"\n2 PRINT TAB(15);\"CREATIVE COMPUTING MORRISTOWN, NEW JERSEY\"\n3 PRINT:PRINT:PRINT\n4 PRINT \"FOR A PRETTY DIAMOND PATTERN,\"\n5 INPUT \"TYPE IN AN ODD NUMBER BETWEEN 5 AND 21\";R:PRINT\n6 Q = INT(60 / R):A$ = \"CC\"\n8 FOR L = 1 TO Q\n10 X = 1:Y = R:Z = 2\n20 FOR N = X TO Y STEP Z\n25 PRINT TAB((R - N) / 2);\n28 FOR M = 1 TO Q\n29 C = 1\n30 FOR A = 1 TO N\n32 IF C > LEN(A$) THEN PRINT \"!\";:GOTO 50\n34 PRINT MID$(A$,C,1);\n36 C = C + 1\n50 NEXT A\n53 IF M = Q THEN 60\n55 PRINT TAB(R * M + (R - N) / 2);\n56 NEXT M\n60 PRINT\n70 NEXT N\n83 IF X <> 1 THEN 95\n85 X = R - 2:Y = 1:Z = -2\n90 GOTO 20\n95 NEXT L\n99 END\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample22(MouseEventArgs mouse)
+    {
+        iText.inputText = "10 PRINT TAB(34);\"CUBE\"\n20 PRINT TAB(15);\"CREATIVE COMPUTING MORRISTOWN, NEW JERSEY\"\n30 PRINT : PRINT : PRINT\n100 PRINT \"DO YOU WANT TO SEE THE INSTRUCTIONS? (YES--1,NO--0)\"\n110 INPUT B7\n120 IF B7 = 0 THEN 370\n130 PRINT \"THIS IS A GAME IN WHICH YOU WILL BE PLAYING AGAINST THE\"\n140 PRINT \"RANDOM DECISION OF THE COMPUTER. THE FIELD OF PLAY IS A\"\n150 PRINT \"CUBE OF SIDE 3. ANY OF THE 27 LOCATIONS CAN BE DESIGNATED\"\n160 PRINT \"BY INPUTING THREE NUMBERS SUCH AS 2,3,1. AT THE START,\"\n170 PRINT \"YOU ARE AUTOMATICALLY AT LOCATION 1,1,1. THE OBJECT OF\"\n180 PRINT \"THE GAME IS TO GET TO LOCATION 3,3,3. ONE MINOR DETAIL:\"\n190 PRINT \"THE COMPUTER WILL PICK, AT RANDOM, 5 LOCATIONS AT WHICH\"\n200 PRINT \"IT WILL PLANT LAND MINES. IF YOU HIT ONE OF THESE LOCATIONS\"\n210 PRINT \"YOU LOSE. ONE OTHER DETAIL: YOU MAY MOVE ONLY ONE SPACE \"\n220 PRINT \"IN ONE DIRECTION EACH MOVE. FOR EXAMPLE: FROM 1,1,2 YOU\"\n230 PRINT \"MAY MOVE TO 2,1,2 OR 1,1,3. YOU MAY NOT CHANGE\"\n240 PRINT \"TWO OF THE NUMBERS ON THE SAME MOVE. IF YOU MAKE AN ILLEGAL\"\n250 PRINT \"MOVE, YOU LOSE AND THE COMPUTER TAKES THE MONEY YOU MAY\"\n260 PRINT \"HAVE BET ON THAT ROUND.\"\n270 PRINT\n280 PRINT\n290 PRINT \"ALL YES OR NO QUESTIONS WILL BE ANSWERED BY A 1 FOR YES\"\n300 PRINT \"OR A 0 (ZERO) FOR NO.\"\n310 PRINT\n320 PRINT \"WHEN STATING THE AMOUNT OF A WAGER, PRINT ONLY THE NUMBER\"\n330 PRINT \"OF DOLLARS (EXAMPLE: 250) YOU ARE AUTOMATICALLY STARTED WITH\"\n340 PRINT \"500 DOLLARS IN YOUR ACCOUNT.\"\n350 PRINT\n360 PRINT \"GOOD LUCK!\"\n370 LET A1 = 500\n380 LET A = INT(3 * (RND(X)))\n390 IF A <> 0 THEN 410\n400 LET A = 3\n410 LET B = INT(3 * (RND(X)))\n420 IF B <> 0 THEN 440\n430 LET B = 2\n440 LET C = INT(3 * (RND(X)))\n450 IF C <> 0 THEN 470\n460 LET C = 3\n470 LET D = INT(3 * (RND(X)))\n480 IF D <> 0 THEN 500\n490 LET D = 1\n500 LET E = INT(3 * (RND(X)))\n510 IF E <> 0 THEN 530\n520 LET E = 3\n530 LET F = INT(3 * (RND(X)))\n540 IF F <> 0 THEN 560\n550 LET F = 3\n560 LET G = INT(3 * (RND(X)))\n570 IF G <> 0 THEN 590\n580 LET G = 3\n590 LET H = INT(3 * (RND(X)))\n600 IF H <> 0 THEN 620\n610 LET H = 3\n620 LET I = INT(3 * (RND(X)))\n630 IF I <> 0 THEN 650\n640 LET I = 2\n650 LET J = INT(3 * (RND(X)))\n660 IF J <> 0 THEN 680\n670 LET J = 3\n680 LET K = INT(3 * (RND(X)))\n690 IF K <> 0 THEN 710\n700 LET K = 2\n710 LET L = INT(3 * (RND(X)))\n720 IF L <> 0 THEN 740\n730 LET L = 3\n740 LET M = INT(3 * (RND(X)))\n750 IF M <> 0 THEN 770\n760 LET M = 3\n770 LET N = INT(3 * (RND(X)))\n780 IF N <> 0 THEN 800\n790 LET N = 1\n800 LET O = INT(3 * (RND(X)))\n810 IF O <> 0 THEN 830\n820 LET O = 3\n830 PRINT \"WANT TO MAKE A WAGER?\"\n840 INPUT Z\n850 IF Z = 0 THEN 920\n860 PRINT \"HOW MUCH \";\n870 INPUT Z1\n876 IF A1 < Z1 THEN 1522\n880 LET W = 1\n890 LET X = 1\n900 LET Y = 1\n910 PRINT\n920 PRINT \"IT'S YOUR MOVE:  \";\n930 INPUT P,Q,R\n940 IF P > W + 1 THEN 1030\n950 IF P = W + 1 THEN 1000\n960 IF Q > X + 1 THEN 1030\n970 IF Q = (X + 1) THEN 1010\n980 IF R > (Y + 1)  THEN 1030\n990 GOTO 1050\n1000 IF Q >= X + 1 THEN 1030\n1010 IF R >= Y + 1 THEN 1030\n1020 GOTO 1050\n1030 PRINT:PRINT \"ILLEGAL MOVE. YOU LOSE.\"\n1040 GOTO 1440\n1050 LET W = P\n1060 LET X = Q\n1070 LET Y = R\n1080 IF P = 3 THEN 1100\n1090 GOTO 1130\n1100 IF  Q = 3 THEN 1120\n1110 GOTO 1130\n1120 IF R = 3 THEN 1530\n1130 IF P = A THEN 1150\n1140 GOTO 1180\n1150 IF Q = B THEN 1170\n1160 GOTO 1180\n1170 IF R = C THEN 1400\n1180 IF P = D THEN 1200\n1190 GOTO 1230\n1200 IF Q = E THEN 1220\n1210 GOTO 1230\n1220 IF R = F THEN 1400\n1230 IF P = G THEN 1250\n1240 GOTO 1280\n1250 IF Q = H THEN 1270\n1260 GOTO 1280\n1270 IF R = I THEN 1400\n1280 IF P = J THEN 1300\n1290 GOTO 1330\n1300 IF Q = K THEN 1320\n1310 GOTO 1330\n1320 IF R = L THEN 1440\n1330 IF P = M THEN 1350\n1340 GOTO 1380\n1350 IF Q = N THEN 1370\n1360 GOTO 1380\n1370 IF R = O THEN 1400\n1380 PRINT \"NEXT MOVE: \";\n1390 GOTO 930 \n1400 PRINT \"******BANG******\"\n1410 PRINT \"YOU LOSE!\"\n1420 PRINT\n1430 PRINT\n1440 IF Z = 0 THEN 1580\n1450 PRINT \n1460 LET Z2 = A1 - Z1\n1470 IF Z2 > 0 THEN 1500\n1480 PRINT \"YOU BUST.\"\n1490 GOTO 1610\n1500 PRINT \" YOU NOW HAVE\"; Z2; \"DOLLARS.\"\n1510 LET A1 = Z2\n1520 GOTO 1580\n1522 PRINT \"TRIED TO FOOL ME; BET AGAIN\";\n1525 GOTO 870\n1530 PRINT \"CONGRATULATIONS!\"\n1540 IF Z = 0 THEN 1580\n1550 LET Z2 = A1 + Z1\n1560 PRINT \"YOU NOW HAVE\"; Z2;\"DOLLARS.\"\n1570 LET A1 = Z2\n1580 PRINT \"DO YOU WANT TO TRY AGAIN \";\n1590 INPUT S\n1600 IF S = 1 THEN 380\n1610 PRINT \"TOUGH LUCK!\"\n1620 PRINT\n1630 PRINT \"GOODBYE.\"\n1640 END\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample23(MouseEventArgs mouse)
+    {
+        iText.inputText = "3 PRINT TAB(33);\"CHEMIST\"\n6 PRINT TAB(15);\"CREATIVE COMPUTING MORRISTOWN, NEW JERSEY\"\n8 PRINT:PRINT:PRINT\n10 PRINT \"THE FICTITIOUS CHEMICAL KRYPTOCYANIC ACID CAN ONLY BE\"\n20 PRINT \"DILUTED BY THE RATIO OF 7 PARTS WATER TO 3 PARTS ACID.\"\n30 PRINT \"IF ANY OTHER RATIO IS ATTEMPTED, THE ACID BECOMES UNSTABLE\"\n40 PRINT \"AND SOON EXPLODES. GIVEN THE AMOUNT OF ACID, YOU MUST\"\n50 PRINT \"DECIDE HOW MUCH WATER TO ADD FOR DILUTION. IF YOU MISS\"\n60 PRINT \"YOU FACE THE CONSEQUENCES.\"\n100 A = INT(RND(1) * 50)\n110 W = 7 * A / 3\n120 PRINT A;\"LITERS OF KRYPTOCYANIC ACID. HOW MUCH WATER\";\n130 INPUT R\n140 D = ABS(W - R)\n150 IF D > W / 20 THEN 200\n160 PRINT \" GOOD JOB! YOU MAY BREATHE NOW, BUT DON'T INHALE THE FUMES!\"\n170 PRINT\n180 GOTO 100\n200 PRINT \" SIZZLE! YOU HAVE JUST BEEN DESALINATED INTO A BLOB\"\n210 PRINT \" OF QUIVERING PROTOPLASM!\"\n220 T = T + 1\n230 IF T = 9 THEN 260\n240 PRINT \" HOWEVER, YOU MAY TRY AGAIN WITH ANOTHER LIFE.\"\n250 GOTO 100\n260 PRINT \" YOUR 9 LIVES ARE USED, BUT YOU WILL BE LONG REMEMBERED FOR\"\n270 PRINT \" YOUR CONTRIBUTIONS TO THE FIELD OF COMIC BOOK CHEMISTRY.\"\n280 END\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample24(MouseEventArgs mouse)
+    {
+        iText.inputText = "2 PRINT TAB(31);\"BLACK JACK\"\n4 PRINT TAB(15);\"CREATIVE COMPUTING MORRISTOWN, NEW JERSEY\"\n6 PRINT:PRINT:PRINT\n10 DEF FNA(Q) = Q + 11 * (Q >= 22)\n20 DIM P(15,12),Q(15),C(52),D(52),T(8),S(7),B(15)\n30 DIM R(15)\n40 REM--P(I,J) IS THE JTH CARD IN HAND I, Q(I) IS TOTAL OF HAND I\n50 REM--C IS THE DECK BEING DEALT FROM, D IS THE DISCARD PILE,\n60 REM--T(I) IS THE TOTAL FOR PLAYER I, S(I) IS THE TOTAL THIS HAND FOR\n70 REM--PLAYER I, B(I) IS TH BET FOR HAND I\n80 REM--R(I) IS THE LENGTH OF P(I,*)\n90 GOTO 1500\n100 REM--SUBROUTINE TO GET A CARD. RESULT IS PUT IN X.\n110 IF C < 51 THEN 230\n120 PRINT \"RESHUFFLING\"\n130 FOR D = D TO 1 STEP -1\n140 C = C - 1\n150 C(C) = D(D)\n160 NEXT D\n170 FOR C1 = 52 TO C STEP -1\n180 C2 = INT(RND(1) * (C1 - C + 1)) + C\n190 C3 = C(C2)\n200 C(C2) = C(C1)\n210 C(C1) = C3\n220 NEXT C1\n230 X = C(C)\n240 C = C + 1\n250 RETURN\n300 REM--SUBROUTINE TO EVALUATE HAND I. TOTAL IS PUT INTO\n310 REM--Q(I). TOTALS HAVE THE FOLLOWING MEANING:\n320 REM-- 2-10...HARD 2-10\n330 REM-- 11-21...SOFT 11-21\n340 REM-- 22-32...HARD 11-21\n350 REM-- 33+....BUSTED\n360 Q = 0\n370 FOR Q2 = 1 TO R(I)\n380 X = P(I,Q2)\n390 GOSUB 500\n400 NEXT Q2\n410 Q(I) = Q\n420 RETURN\n500 REM--SUBROUTINE TO ADD CARD X TO TOTAL Q.\n510 X1 = X: IF X1 > 10 THEN X1 = 10: REM SAME AS X1 = 10 MIN X\n520 Q1 = Q + X1\n530 IF Q >= 11 THEN 590\n540 IF X > 1 THEN 570\n550 Q = Q + 11\n560 RETURN\n570 Q = Q1 - 11 * (Q1 >= 11)\n580 RETURN\n590 Q = Q1 - (Q <= 21 AND Q1 > 21)\n600 IF Q < 33 THEN 620\n610 Q = -1\n620 RETURN\n700 REM--CARD PRINTING SUBROUTINE\n710 REM D$ DEFINED ELSEWHERE\n720 PRINT MID$(D$,3 * X - 2,3);\n730 PRINT \" \";\n740 RETURN\n750 REM--ALTERNATIVE PRINTING ROUTINE\n760 PRINT \" \";MID$(D$,3 * X - 1,2);\n770 PRINT \" \";\n780 RETURN\n800 REM--SUBROUTINE TO PLAY OUT A HAND.\n810 REM--NO SPLITTING OR BLACKJACKS ALLOWED\n820 H1 = 5\n830 GOSUB 1410\n840 H1 = 3\n850 ON H GOTO 950,930\n860 GOSUB 100\n870 B(I) = B(I) * 2\n880 PRINT \"RECEIVED A\";\n890 GOSUB 700\n900 GOSUB 1100\n910 IF Q > 0 THEN GOSUB 1300\n920 RETURN\n930 GOSUB 1320\n940 RETURN\n950 GOSUB 100\n960 PRINT \"RECEIVED A\";\n970 GOSUB 700\n980 GOSUB 1100\n990 IF Q < 0 THEN 940\n1000 PRINT \"HIT\";\n1010 GOTO 830\n1100 REM--SUBROUTINE TO ADD A CARD TO ROW I\n1110 R(I) = R(I) + 1\n1120 P(I,R(I)) = X\n1130 Q = Q(I)\n1140 GOSUB 500\n1150 Q(I) = Q\n1160 IF Q >= 0 THEN 1190\n1170 PRINT \"...BUSTED\"\n1180 GOSUB 1200\n1190 RETURN\n1200 REM--SUBROUTINE TO DISCARD ROW I\n1210 IF R(I) <> 0 THEN 1230\n1220 RETURN\n1230 D = D + 1\n1240 D(D) = P(I,R(I))\n1250 R(I) = R(I) - 1\n1260 GOTO 1210\n1300 REM--PRINTS TOTAL OF HAND I\n1310 PRINT\n1320 AA = Q(I): GOSUB 3400\n1325 PRINT \"TOTAL IS\";AA\n1330 RETURN\n1400 REM--SUBROUTINE TO READ REPLY\n1410 REM  I$ DEFINED ELSEWHERE\n1420 INPUT H$: H$ = LEFT$(H$,1)\n1430 FOR H = 1 TO H1 STEP 2\n1440 IF H$ = MID$(I$,H,1) THEN 1480\n1450 NEXT H\n1460 PRINT \"TYPE \";MID$(I$,1,H1 - 1);\" OR \";MID$(I$,H1,2);\" PLEASE\";\n1470 GOTO 1420\n1480 H = (H + 1) / 2\n1490 RETURN\n1500 REM--PROGRAM STARTS HERE\n1510 REM--INITIALIZE\n1520 D$ = \"N A  2  3  4  5  6  7N 8  9 10  J  Q  K\"\n1530 I$ = \"H,S,D,/,\"\n1540 FOR I = 1 TO 13\n1550 FOR J = 4 * I - 3 TO 4 * I\n1560 D(J) = I\n1570 NEXT J\n1580 NEXT I\n1590 D = 52\n1600 C = 53\n1610 PRINT \"DO YOU WANT INSTRUCTIONS\";\n1620 INPUT H$\n1630 IF LEFT$(H$,1) = \"N\" OR LEFT$(H$,1) = \"n\" THEN 1760\n1640 PRINT \"THIS IS THE GAME OF 21. AS MANY AS 7 PLAYERS MAY PLAY THE\"\n1650 PRINT \"GAME. ON EACH DEAL, BETS WILL BE ASKED FOR, AND THE\"\n1660 PRINT \"PLAYERS' BETS SHOULD BE TYPED IN. THE CARDS WILL THEN BE\"\n1670 PRINT \"DEALT, AND EACH PLAYER IN TURN PLAYS HIS HAND. THE\"\n1680 PRINT \"FIRST RESPONSE SHOULD BE EITHER 'D', INDICATING THAT THE\"\n1690 PRINT \"PLAYER IS DOUBLING DOWN, 'S', INDICATING THAT HE IS\"\n1700 PRINT \"STANDING, 'H', INDICATING HE WANTS ANOTHER CARD, OR '/',\"\n1710 PRINT \"INDICATING THAT HE WANTS TO SPLIT HIS CARDS. AFTER THE\"\n1720 PRINT \"INITIAL RESPONSE, ALL FURTHER RESPONSES SHOULD BE 'S' OR\"\n1730 PRINT \"'H', UNLESS THE CARDS WERE SPLIT, IN WHICH CASE DOUBLING\"\n1740 PRINT \"DOWN IS AGAIN PERMITTED. IN ORDER TO COLLECT FOR\"\n1750 PRINT \"BLACKJACK, THE INITIAL RESPONSE SHOULD BE 'S'.\"\n1760 PRINT \"NUMBER OF PLAYERS\";\n1770 INPUT N\n1775 PRINT\n1780 IF N < 1 OR N > 7 OR N > INT(N) THEN 1760\n1790 FOR I = 1 TO 8: T(I) = 0: NEXT I\n1800 D1 = N + 1\n1810 IF 2 * D1 + C >= 52 THEN GOSUB 120\n1820 IF C = 2 THEN C = C - 1\n1830 FOR I = 1 TO N: Z(I) = 0: NEXT I\n1840 FOR I = 1 TO 15: B(I) = 0: NEXT I\n1850 FOR I = 1 TO 15: Q(I) = 0: NEXT I\n1860 FOR I = 1 TO 7: S(I) = 0: NEXT I\n1870 FOR I  =1 TO 15: R(I) = 0: NEXT I\n1880 PRINT \"BETS:\"\n1890 FOR I = 1 TO N: PRINT \"#\";I;: INPUT Z(I): NEXT I\n1900 FOR I = 1 TO N\n1910 IF Z(I) <= 0 OR Z(I) > 500 THEN 1880\n1920 B(I) = Z(I)\n1930 NEXT I\n1940 PRINT \"PLAYER\";\n1950 FOR I = 1 TO N\n1960 PRINT I;\"   \";\n1970 NEXT I\n1980 PRINT \"DEALER\"\n1990 FOR J = 1 TO 2\n2000 PRINT TAB(5);\n2010 FOR I = 1 TO D1\n2020 GOSUB 100\n2030 P(I,J) = X\n2040 IF J = 1 OR I <= N THEN GOSUB 750\n2050 NEXT I\n2060 PRINT\n2070 NEXT J\n2080 FOR I = 1 TO D1\n2090 R(I) = 2\n2100 NEXT I\n2110 REM--TEST FOR INSURANCE\n2120 IF P(D1,1) > 1 THEN 2240\n2130 PRINT \"ANY INSURANCE\";\n2140 INPUT H$\n2150 IF LEFT$(H$,1) <> \"Y\" THEN 2240\n2160 PRINT \"INSURANCE BETS\"\n2170 FOR I = 1 TO N: PRINT \"#\";I;: INPUT Z(I): NEXT I\n2180 FOR I = 1 TO N\n2190 IF Z(I) < 0 OR Z(I) > B(I) / 2 THEN 2160\n2200 NEXT I\n2210 FOR I = 1 TO N\n2220 S(I) = Z(I) * (3 * (-(P(D1,2) >= 10)) - 1)\n2230 NEXT I\n2240 REM--TEST FOR DEALER BLACKJACK\n2250 L1 = 1: L2 = 1\n2252 IF P(D1,1) = 1 AND P(D1,2) > 9 THEN L1 = 0: L2 = 0\n2253 IF P(D1,2) = 1 AND P(D1,1) > 9 THEN L1 = 0: L2 = 0\n2254 IF L1 <> 0 OR L2 <> 0 THEN 2320\n2260 PRINT:PRINT \"DEALER HAS A\";MID$(D$,3 * P(D1,2) - 2,3);\" IN THE HOLE \";\n2270 PRINT \"FOR BLACKJACK\"\n2280 FOR I = 1 TO D1\n2290 GOSUB 300\n2300 NEXT I\n2310 GOTO 3140\n2320 REM--NO DEALER BLACKJACK\n2330 IF P(D1,1) > 1 AND P(D1,1) < 10 THEN 2350\n2340 PRINT:PRINT \"NO DEALER BLACKJACK.\"\n2350 REM--NOW PLAY THE HANDS\n2360 FOR I = 1 TO N\n2370 PRINT \"PLAYER\";I;\n2380 H1 = 7\n2390 GOSUB 1410\n2400 ON H GOTO 2550,2410,2510,2600\n2410 REM--PLAYER WANTS TO STAND\n2420 GOSUB 300\n2430 IF Q(I) <> 21 THEN 2490\n2440 PRINT \"BLACKJACK\"\n2450 S(I) = S(I) + 1.5 * B(I)\n2460 B(I) = 0\n2470 GOSUB 1200\n2480 GOTO 2900\n2490 GOSUB 1320\n2500 GOTO 2900\n2510 REM--PLAYER WANTS TO DOUBLE DOWN\n2520 GOSUB 300\n2530 GOSUB 860\n2540 GOTO 2900\n2550 REM--PLAYER WANTS TO BE HIT\n2560 GOSUB 300\n2570 H1=3\n2580 GOSUB 950\n2590 GOTO 2900\n2600 REM--PLAYER WANTS TO SPLIT\n2610 L1 = P(I,1): IF P(I,1) > 10 THEN L1 = 10\n2612 L2 = P(I,2): IF P(I,2) > 10 THEN L2 = 10\n2614 IF L1 = L2 THEN 2640\n2620 PRINT \"SPLITTING NOT ALLOWED.\"\n2630 GOTO 2370\n2640 REM--PLAY OUT SPLIT\n2650 I1 = I + D1\n2660 R(I1) = 2\n2670 P(I1,1) = P(I,2)\n2680 B(I + D1) = B(I)\n2690 GOSUB 100\n2700 PRINT \"FIRST HAND RECEIVES A\";\n2710 GOSUB 700\n2720 P(I,2) = X\n2730 GOSUB 300\n2740 PRINT\n2750 GOSUB 100\n2760 PRINT \"SECOND HAND RECEIVES A\";\n2770 I = I1\n2780 GOSUB 700\n2790 P(I,2) = X\n2800 GOSUB 300\n2810 PRINT\n2820 I = I1 - D1\n2830 IF P(I,1) = 1 THEN 2900\n2840 REM--NOW PLAY THE TWO HANDS\n2850 PRINT \"HAND\";1 - (I > D1);\n2860 GOSUB 800\n2870 I = I + D1\n2880 IF I = I1 THEN 2850\n2890 I = I1 - D1\n2900 NEXT I\n2910 GOSUB 300\n2920 REM--TEST FOR PLAYING DEALER'S HAND\n2930 FOR I = 1 TO N\n2940 IF R(I) > 0 OR R(I + D1) > 0 THEN 3010\n2950 NEXT I\n2960 PRINT \"DEALER HAD A\";\n2970 X = P(D1,2)\n2980 GOSUB 700\n2990 PRINT \" CONCEALED.\"\n3000 GOTO 3140\n3010 PRINT \"DEALER HAS A\";MID$(D$,3 * P(D1,2) - 2,3);\" CONCEALED \";\n3020 I = D1\n3030 AA=Q(I): GOSUB 3400\n3035 PRINT \"FOR A TOTAL OF\";AA\n3040 IF AA > 16 THEN 3130\n3050 PRINT \"DRAWS\";\n3060 GOSUB 100\n3070 GOSUB 750\n3080 GOSUB 1100\n3090 AA = Q: GOSUB 3400\n3095 IF Q > 0 AND AA < 17 THEN 3060\n3100 Q(I) = Q - (Q < 0) / 2\n3110 IF Q < 0 THEN 3140\n3120 AA = Q: GOSUB 3400\n3125 PRINT \"---TOTAL IS\";AA\n3130 PRINT\n3140 REM--TALLY THE RESULT\n3150 REM \n3160 Z$ = \"LOSES PUSHES WINS \"\n3165 PRINT\n3170 FOR I = 1 TO N\n3180 AA = Q(I): GOSUB 3400\n3182 AB = Q(I + D1): GOSUB 3410\n3184 AC = Q(D1): GOSUB 3420\n3186 S(I) = S(I) + B(I) * SGN(AA - AC) + B(I + D1) * SGN(AB - AC)\n3188 B(I + D1)=0\n3200 PRINT \"PLAYER\";I;\n3210 PRINT MID$(Z$,SGN(S(I)) * 6 + 7,6);\" \";\n3220 IF S(I) <> 0 THEN 3250\n3230 PRINT \"      \";\n3240 GOTO 3260\n3250 PRINT ABS(S(I));\n3260 T(I) = T(I) + S(I)\n3270 PRINT \"TOTAL=\";T(I)\n3280 GOSUB 1200\n3290 T(D1) = T(D1) - S(I)\n3300 I = I + D1\n3310 GOSUB 1200\n3320 I = I - D1\n3330 NEXT I\n3340 PRINT \"DEALER'S TOTAL=\";T(D1)\n3345 PRINT\n3350 GOSUB 1200\n3360 GOTO 1810\n3400 AA = AA + 11 * (AA >= 22): RETURN\n3410 AB = AB + 11 * (AB >= 22): RETURN\n3420 AC = AC + 11 * (AC >= 22): RETURN\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample25(MouseEventArgs mouse)
+    {
+        iText.inputText = "10 PRINT TAB(33);\"BATNUM\"\n20 PRINT TAB(15);\"CREATIVE COMPUTING MORRISTOWN, NEW JERSEY\"\n30 PRINT:PRINT:PRINT\n110 PRINT \"THIS PROGRAM IS A 'BATTLE OF NUMBERS' GAME, WHERE THE\"\n120 PRINT \"COMPUTER IS YOUR OPPONENT.\"\n130 PRINT \n140 PRINT \"THE GAME STARTS WITH AN ASSUMED PILE OF OBJECTS. YOU\"\n150 PRINT \"AND YOUR OPPONENT ALTERNATELY REMOVE OBJECTS FROM THE PILE.\"\n160 PRINT \"WINNING IS DEFINED IN ADVANCE AS TAKING THE LAST OBJECT OR\"\n170 PRINT \"NOT. YOU CAN ALSO SPECIFY SOME OTHER BEGINNING CONDITIONS.\"\n180 PRINT \"DON'T USE ZERO, HOWEVER, IN PLAYING THE GAME.\"\n190 PRINT \"ENTER A NEGATIVE NUMBER FOR NEW PILE SIZE TO STOP PLAYING.\"\n200 PRINT\n210 GOTO 330\n220 FOR I = 1 TO 10\n230 PRINT\n240 NEXT I\n330 INPUT \"ENTER PILE SIZE\";N\n350 IF N >= 1 THEN 370\n360 GOTO 330\n370 IF N <> INT(N) THEN 220\n380 IF N < 1 THEN 220\n390 INPUT \"ENTER WIN OPTION - 1 TO TAKE LAST, 2 TO AVOID LAST: \";M\n410 IF M = 1 THEN 430\n420 IF M <> 2 THEN 390\n430 INPUT \"ENTER MIN AND MAX \";A,B\n450 IF A > B THEN 430\n460 IF A < 1 THEN 430\n470 IF A <> INT(A) THEN 430\n480 IF B <> INT(B) THEN 430\n490 INPUT \"ENTER START OPTION - 1 COMPUTER FIRST, 2 YOU FIRST \";S\n500 PRINT:PRINT\n510 IF S = 1 THEN 530\n520 IF S <> 2 THEN 490\n530 C = A + B\n540 IF S = 2 THEN 570\n550 GOSUB 600\n560 IF W = 1 THEN 220\n570 GOSUB 810\n580 IF W = 1 THEN 220\n590 GOTO 550\n600 Q = N\n610 IF M = 1 THEN 630\n620 Q = Q - 1\n630 IF M = 1 THEN 680\n640 IF N > A THEN 720\n650 W = 1\n660 PRINT \"COMPUTER TAKES\";N;\"AND LOSES.\"\n670 RETURN\n680 IF N > B THEN 720\n690 W = 1\n700 PRINT \"COMPUTER TAKES\";N;\"AND WINS.\"\n710 RETURN\n720 P = Q - C * INT(Q / C)\n730 IF P >= A THEN 750\n740 P = A\n750 IF P <= B THEN 770\n760 P = B\n770 N = N - P\n780 PRINT \"COMPUTER TAKES\";P;\"AND LEAVES\";N\n790 W = 0\n800 RETURN\n810 PRINT:PRINT \"YOUR MOVE \";\n820 INPUT P\n830 IF P <> 0 THEN 870\n840 PRINT \"I TOLD YOU NOT TO USE ZERO! COMPUTER WINS BY FORFEIT.\"\n850 W = 1\n860 RETURN\n870 IF P <> INT(P) THEN 920\n880 IF P >= A THEN 910\n890 IF P = N THEN 960\n900 GOTO 920\n910 IF P <= B THEN 940\n920 PRINT \"ILLEGAL MOVE, REENTER IT \";\n930 GOTO 820\n940 N = N - P\n950 IF N <> 0 THEN 1030\n960 IF M = 1 THEN 1000\n970 PRINT \"TOUGH LUCK, YOU LOSE.\"\n980 W = 1\n990 RETURN\n1000 PRINT \"CONGRATULATIONS, YOU WIN.\"\n1010 W = 1\n1020 RETURN\n1030 IF N >= 0 THEN 1060\n1040 N = N + P\n1050 GOTO 920\n1060 W = 0\n1070 RETURN\n1080 END\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private void onOpenExample26(MouseEventArgs mouse)
+    {
+        iText.inputText = "1 REM *** SUPER STAR TREK ***\n2 REM INTELLEC MDS VERSION\n3 REM WRITTEN IN BASIC BY RON WILLIAMS\n4 REM INTEL CORP. - 5/15/76\n5 REM ADAPTED FROM A FORTRAN VERSION WRITTEN\n6 REM FOR THE CDC 6600 IN 1974.\n7 REM RE-WRITTEN FOR THE CHLOE280SE\n8 REM BY SIMON HARWOOD - JUNE 2022\n9 DIM G1$(16), V$(5, 5), C$(20), G(8, 8), D$(12), Q$(10, 10), D4(12), D9(106)\n10 DIM S2(8, 8): Q$ = \"?\"\n15 DATA \"S.R. SENSORS\",\"L.R. SENSORS\",\"PHASERS\",\"PHOTON TUBES\",\"LIFE SUPPORT\"\n20 DATA \"WARP ENGINES\",\"IMPULSE ENGINES\",\"SHIELDS\",\"SUBSPACE RADIO\"\n21 DATA \"SHUTTLE CRAFT\",\"COMPUTER\",\"TRANSFER PANEL\",\"ABANDON\",\"CHART\",\"COMPUTER\"\n22 DATA \"DAMAGES\",\"DESTRUCT\",\"DOCK\",\"IDLE\",\"IMPULSE\",\"LRSCAN\",\"NAVIGATE\",\"PHASERS\",\"QUIT\"\n23 DATA \"SHIELDS\",\"SOS\",\"SRSCAN\",\"STATUS\",\"TORPEDO\",\"TRANSFER\",\"VISUAL\",\"WARP\",\"SHORT\"\n24 DATA \"MEDIUM\",\"LONG\",\"BEGINNER\",\"NOVICE\",\"SENIOR\",\"EXPERT\",\"COURSE\",\"WCOST\",\"ICOST\"\n25 DATA \"PERFECT\",\"SCORE\",\"END\",\"ANTARES\",\"SIRIUS\",\"RIGEL\",\"MERAK\",\"PROCYON\",\"CAPELLA\"\n26 DATA \"VEGA\",\"DENEB\",\"CANOPUS\",\"ALDEBARAN\",\"ALTAIR\",\"REGULUS\",\"BELLATRIX\",\"ARCTURUS\"\n27 DATA \"POLLUX\",\"SPICA\",10.5,12,1.5,9,0,3,7.5,6,4.5\n28 DEF FNA (X) = INT(8 * RND(X)) + 1: DEF FNB (X) = INT(10 * RND(X)) + 1\n29 DEF FND (X) = X / 60\n30 DEF FNFR(X) = INT(X * 10 + .5) / 10: DEF FNFS(X) = INT(X * 100 + .5) / 100\n40 FOR I = 1 TO 12: READ D$(I): NEXT: FOR I = 1 TO 20: READ C$(I): NEXT\n43 FOR I = 1 TO 3: READ T$(I): NEXT: FOR I = 1 TO 4: READ S$(I): NEXT: FOR I = 1 TO 6\n44 READ C2$(I): NEXT: FOR I = 1 TO 16: READ G1$(I): NEXT: FOR I = 1 TO 9: READ C5(I): NEXT\n45 REM CALL SETUP\n46 GOSUB 15850: S7$(1) = \"\": S7$(2) = \"  \": S7$(3) = \" \": S7$(4) = \"\"\n70 IF A2 <> 0 THEN 900\n75 J4 = 0: T1 = 0: PRINT : INPUT \"COMMAND?\"; A$: IF LEN(A$) > 1 THEN 110\n80 PRINT \"USE AT LEAST 2 LETTERS, PLEASE.\": GOTO 75\n110 FOR I = 1 TO 20\n120 IF A$ = LEFT$(C$(I), LEN(A$)) THEN 150\n130 NEXT\n135 INPUT \"ILLEGAL COMMAND - DO YOU NEED A LIST?\"; B$\n136 IF LEFT$(B$, 1) = \"N\" THEN 70\n140 PRINT : FOR I = 1 TO 20 STEP 4\n141 PRINT C$(I); TAB(12); C$(I + 1); TAB(22); C$(I + 2); TAB(32); C$(I + 3)\n142 NEXT: PRINT: GOTO 70\n150 ON I GOTO 200, 225, 250, 275, 290, 300, 325, 350, 375, 400\n160 ON I - 10 GOTO 425, 450, 475, 500, 525, 540, 550, 575, 600, 625\n170 PRINT \"ERROR AT 170 - SHOULD NOT BE HERE\"\n180 STOP\n200 REM-ABANDON\n201 GOSUB 14425\n210 GOTO 70\n225 REM-CHART\n226 GOSUB 3000\n230 GOTO 70\n250 REM-COMPUTER\n251 GOSUB 5000\n260 GOTO 70\n275 REM-DAMAGES\n276 GOSUB 8000\n280 GOTO 70\n290 REM - DESTRUCT\n291 GOSUB 14500: GOTO 70\n300 REM-DOCK\n301 GOSUB 7000\n310 GOTO 70\n325 REM-IOLE\n326 GOSUB 14360\n330 IF J3 = 0 THEN 70\n331 IF A2 <> 0 THEN 900\n332 IF G(Q1, Q2) = 1000 THEN 750\n340 GOSUB 1000\n345 GOTO 70\n350 REM-IMPULSE\n351 GOSUB 13000\n352 IF J3 = 0 THEN 70\n353 GOTO 700\n375 REM-LRSCAN\n376 GOSUB 14000\n377 GOTO 70\n400 REM-NAVIGATE\n401 GOSUB 14375\n402 IF J3 = 0 THEN 70\n410 GOTO 700\n425 REM-PHASERS\n426 GOSUB 15600\n427 IF J3 = 0 THEN 70\n428 GOSUB 1000\n429 GOTO 70\n450 REM-QUIT\n455 GOTO 900\n460 PRINT \"TOO BAD - WE HATE TO LOSE GOOD ASTRONAUTS!\"\n465 GOTO 14552\n475 REM-SHIELDS\n476 GOSUB 15930\n477 IF J3 = 0 THEN 70\n478 IF A2 <> 0 THEN 900\n479 GOSUB 1000\n480 S9 = 0\n485 GOTO 70\n500 REM-SOS\n501 GOSUB 11000\n502 GOTO 70\n525 REM-SRSCAN\n526 GOSUB 14220\n530 GOTO 70\n540 REM - STATUS\n541 PRINT\n545 GOSUB 14550: GOTO 70\n550 REM- TORPEDOS\n551 GOSUB 15650\n552 IF J3 = 0 THEN 70\n555 GOTO 700\n575 REM-TRANSFER\n576 GOSUB 14275\n580 IF J3 = 0 THEN 70\n585 IF A2 <> 0 THEN 900\n590 IF G(Q1, Q2) <> 1000 THEN 70\n595 GOTO 750\n600 REM-VISUAL\n601 GOSUB 14300\n602 IF J3 = 0 THEN 70\n603 IF A2 <> 0 THEN 900\n610 IF G(Q1, Q2) <> 1000 THEN 70\n615 GOTO 750\n625 REM-WARP\n627 GOSUB 15910\n630 GOTO 70\n700 REM-AFTERMOVINGSTARSHIP\n710 IF A2 <> 0 THEN 900\n720 IF T1 <> 0 THEN GOSUB 9000\n730 IF A2 <> 0 THEN 900\n740 IF G(Q1, Q2) < 1000 THEN 790\n750 GOSUB 2000\n760 IF A2 <> 0 THEN 900\n770 GOTO 740\n790 GOSUB 1000\n795 GOTO 70\n900 REM-WE'RE FINISHED\n901 PRINT : PRINT : INPUT \"WOULD YOU LIKE TO TRY AGAIN?\"; A$\n910 IF LEFT$(A$, 1) = \"Y\" THEN 45\n920 GOTO 460\n940 REM-BEGINSUBROUTINES\n1000 REM-ATTACK\n1010 IF (C3 <> 0) AND (J4 = 0) THEN GOSUB 16000\n1020 IF K3 = 0 THEN RETURN\n1030 IF A2 <> 0 THEN RETURN\n1040 P2 = 1 / I8\n1050 J5 = 0\n1060 PRINT\n1070 IF C5$ = \"DOCKED\" THEN 1780\n1080 H2 = 0: H3 = 0: C6 = 1\n1090 IF S9 = 1 THEN C6 = .5 + .5 * RND(1)\n1100 A3 = 0\n1110 FOR L = 1 TO K3\n1120 IF K6(L) < 0 THEN 1540\n1130 A3 = 1\n1140 D6 = .8 + .05 * RND(1)\n1150 H4 = K6(L) * D6 ^ K8(L)\n1160 IF (S4 = 0) AND (S9 = 0) THEN 1230\n1170 P3 = .1: IF P2 * S3 > P3 THEN P3 = P2 * S3\n1180 H5 = P3 * C6 * H4 + 1\n1190 IF H5 > S3 THEN H5 = S3\n1195 S3 = S3 - H5\n1200 H4 = H4 - H5\n1210 IF (P3 > .1) AND (H4 < .005 * E1) THEN 1540\n1230 J5 = 1\n1240 PRINT FR(H4); \"UNIT HIT ON THE \"; S5$; \" FROM \";\n1250 J6 = K4(L): J7 = K5(L)\n1260 IF Q$(J6, J7) = \"K\" THEN PRINT \"KLINGON AT\";\n1270 IF Q$(J6, J7) = \"C\" THEN PRINT \"COMMANDER AT\";\n1280 PRINT J6; \"-\"; J7\n1290 IF H4 > H2 THEN H2 = H4\n1300 H3 = H3 + H4\n1310 IF H4 < (275 - 25 * S8) * (1 + .5 * RND(1)) THEN 1530\n1320 N4 = 1 + INT(H4 / (500 + 100 * RND(1)))\n1330 PRINT \"*** CRITICAL HIT --\";\n1340 K9 = 1\n1350 FOR W4 = 1 TO N4\n1360 J9 = INT(12 * RND(1)) + 1\n1370 C5(W4) = J9\n1380 E3 = (H4 * D5) / (N4 * (75 + 25 * RND(1)))\n1390 IF J9 = 6 THEN E3 = E3 / 3\n1395 D4(J9) = D4(J9) + E3\n1400 IF W4 = 1 THEN 1470\n1420 FOR V = 1 TO W4\n1430 IF J9 = C5(V - 1) THEN 1480\n1440 NEXT V\n1450 K9 = K9 + 1\n1460 IF K9 = 3 THEN PRINT\n1465 PRINT \" AND \";\n1470 PRINT D$(J9);\n1480 NEXT W4\n1490 PRINT \" DAMAGED.\"\n1500 IF D4(8) = 0 THEN 1530\n1510 IF S4 <> 0 THEN PRINT \"*** SHIELDS KNOCKED DOWN.\"\n1520 S4 = 0\n1530 E1 = E1 - H4\n1540 NEXT L\n1550 IF A3 = 0 THEN RETURN\n1560 IF E1 <= 0 THEN 1750\n1570 P4 = 100 * P2 * S3 + .5\n1580 IF J5 <> 0 THEN 1610\n1590 PRINT \"KLINGONS ATTACK - SHIELD STRENGTH REDUCED TO \";\n1600 GOTO 1650\n1610 PRINT \"ENERGY LEFT:\"; FS(E1); \" SHIELDS \";\n1620 IF S4 <> 0 THEN PRINT \"UP,\";\n1630 IF (S4 = 0) AND (D4(8) = 0) THEN PRINT \"DOWN, \";\n1640 IF D4(8) > 0 THEN PRINT \"DAMAGED, \";\n1650 PRINT INT(P4); \"%\"\n1660 IF (H2 < 200) AND (H3 < 500) THEN 1800\n1670 J8 = INT(H3 * RND(1) * .015)\n1680 IF J8 < 2 THEN 1800\n1690 PRINT\n1700 PRINT \"MCCOY - 'SICKBAY TO BRIDGE. WE SUFFERED \";\n1710 PRINT J8; \" CASUALTIES\"\n1720 PRINT \"IN THAT LAST ATTACK'\"\n1730 C4 = C4 + J8\n1740 GOTO 1800\n1750 F9 = 5\n1760 GOSUB 10000\n1770 RETURN\n1780 PRINT \"*** KLINGONS ATTACK - STARBASE SHIELDS PROTECT \";\n1790 PRINT \"THE \"; S5$\n1800 FOR W4 = 1 TO K3\n1810 K8(W4) = K7(W4)\n1820 NEXT W4\n1830 GOSUB 14200\n1840 RETURN\n2000 REM-AUTO VER\n2001 PRINT\n2010 IF J4 = 0 THEN 2050\n2020 PRINT \"*** RED ALERT!  RED ALERT!\"\n2030 PRINT \"***THE \"; S5$; \" HAS STOPPED IN A QUADRANT \";\n2040 PRINT \"CONTAINING A SUPERNOVA.\"\n2050 PRINT \"*** EMERGENCY AUTO-OVERRIDE ATTEMPTS TO HURL \";\n2060 PRINT S5$\n2070 PRINT \" SAFELY OUT OF THE QUADRANT.\"\n2080 S2(Q1, Q2) = 1\n2090 GOSUB 15400\n2100 IF D4(6) = 0 THEN 2290\n2110 PRINT\n2120 PRINT \"WARP ENGINES DAMAGED.\"\n2130 PRINT\n2140 PRINT \"ATTEMPTING TO ENGAGE IMPULSE ENGINES...\"\n2150 IF D4(7) = 0 THEN 2190\n2160 PRINT \"IMPULSE ENGINES DAMAGED.\"\n2165 F9 = 8\n2170 GOSUB 10000\n2180 RETURN\n2190 P2 = .75 * E1\n2200 D6 = .004 * (P2 - 50)\n2210 D7 = 1.4142 + 1.2 * RND(1)\n2220 D1 = D6\n2230 IF D6 > D7 THEN D1 = D7\n2240 T1 = D1 / .4\n2250 D2 = 12 * RND(1)\n2260 J4 = 0\n2270 GOSUB 13200\n2280 GOTO 2400\n2290 W1 = 6 + 2 * RND(1)\n2300 W2 = W1 * W1\n2310 P2 = .75 * E1\n2320 D6 = P2 / (W1 * W1 * W1 * (S4 + 1))\n2330 D7 = 1.4142 + 2 * RND(1)\n2340 D1 = D6\n2350 IF D6 > D7 THEN D1 = D7\n2360 T1 = 10 * D1 / W2\n2370 D2 = 12 * RND(1)\n2380 J4 = 0\n2390 GOSUB 14397\n2400 IF J4 <> 0 THEN 2440\n2410 F9 = 8\n2420 GOSUB 10000\n2430 RETURN\n2440 IF R1 <> 0 THEN RETURN\n2450 F9 = 1\n2460 GOSUB 10000\n2470 RETURN\n3000 REM-CHART\n3001 PRINT : PRINT \"      1   2   3   4   5   6   7   8\"\n3010 PRINT \"     --- --- --- --- --- --- --- ---\"\n3020 FOR I = 1 TO 8\n3030 PRINT I; \" \";\n3040 FOR J = 1 TO 8\n3060 ON SGN(S2(I, J)) + 2 GOTO 3070, 3090, 3110\n3065 PRINT \"ERR AT 3065\": STOP\n3070 PRINT \" .1.\";\n3080 GOTO 3160\n3090 PRINT \" ...\";\n3100 GOTO 3160\n3110 IF S2(I, J) > 1000 THEN 3150\n3120 IF G(I, J) < 1000 THEN PRINT S7$(LEN(STR$(G(I, J)))); STR$(G(I, J));\n3130 IF G(I, J) = 1000 THEN PRINT \" ***\";\n3140 GOTO 3160\n3150 PRINT S2(I, J) - 1000;\n3160 NEXT J\n3170 PRINT\n3180 NEXT I: GOSUB 15450\n3185 PRINT\n3190 PRINT \"THE \"; S5$; \" IS CURRENTLY IN \"; G2$; \" (\"; Q1; \"-\"; Q2; \")\"\n3200 RETURN\n4000 REM-CHOOSE\n4001 FOR I = 1 TO 10: PRINT : NEXT: FOR I = 1 TO 41: PRINT \"*\"; : NEXT: PRINT\n4002 PRINT \"**\"; TAB(39); \"**\"\n4003 PRINT \"**  WELCOME TO THE WORLD OF STAR TREK  **\"\n4008 PRINT \"**\"; TAB(39); \"**\": FOR I = 1 TO 41: PRINT \"*\"; : NEXT: PRINT\n4010 PRINT : PRINT\n4070 S8 = 0: L2 = 0\n4090 PRINT \"HOW LONG A GAME WOULD YOU LIKE?\";\n4095 INPUT A$\n4100 FOR I = 1 TO 3\n4110 IF A$ = LEFT$(T$(I), LEN(A$)) THEN 4150\n4120 NEXT I\n4130 PRINT \"WOULD YOU LIKE A SHORT, MEDIUM OR LONG GAME?\";\n4140 GOTO 4095\n4150 L2 = I\n4160 PRINT \"ARE YOU A BEGINNER, NOVICE, SENIOR OR EXPERT PLAYER?\";\n4170 INPUT A$\n4180 FOR I = 1 TO 4\n4190 IF A$ = LEFT$(S$(I), LEN(A$)) THEN 4220\n4200 NEXT I\n4210 GOTO 4160\n4220 S8 = I\n4230 INPUT \"ENTER YOUR MISSION PASSWORD...\"; X$\n4244 PRINT\n4245 PRINT \"....SETTING UP THE GALAXY....\"\n4250 J = RND(1)\n4260 REM-INITIALIZE\n4270 D5 = .5 * S8\n4280 I2 = INT(L2 + 1 + RND(1) * 3)\n4290 IF I2 > 5 THEN I2 = 5\n4300 R3 = I2\n4310 I5 = 7 * L2\n4320 R5 = I5\n4340 R7 = (S8 - 2 * RND(1) + 1) * S8 * .1 + .1\n4350 IF R7 < .2 THEN R7 = R7 + .1\n4360 I1 = INT(2 * R7 * I5)\n4370 R1 = I1\n4380 I4 = INT(S8 + .0625 * I1 * RND(1))\n4390 R2 = I4\n4400 I3 = (I1 + 4 * I4) * I5\n4410 R4 = I3\n4420 RETURN\n5000 REM-COMPUTE\n5001 IF D4(11) = 0 THEN 5030\n5010 PRINT \"LIBRARY COMPUTER DISABLED\"\n5020 RETURN\n5030 PRINT \"----LIBRARY COMPUTER ACTIVE----\"\n5040 INPUT \"PROGRAM NAME:\"; B$\n5050 FOR I = 1 TO 6\n5060 IF B$ = LEFT$(C2$(I), LEN(B$)) THEN 5120\n5070 NEXT\n5080 PRINT \"VALID PROGRAMS ARE:\"\n5090 PRINT \"  COURSE    WCOST   ICOST\"\n5100 PRINT \"  PEFFECT   SCORE   END\"\n5110 GOTO 5040\n5120 ON I GOTO 5200, 5300, 5400, 5500, 5600, 5700\n5200 REM-COURSE&DIRECTION\n5210 INPUT \"ENTER QUADRANT AND SECTOR:\"; A3, A4\n5220 IF (A3 <> INT(A3)) OR (A4 <> INT(A4)) THEN 5990\n5221 IF A3 < 0 THEN 5040\n5222 IF A3 = 0 THEN A3 = 10 * Q1 + Q2\n5223 A3 = A3 + .5\n5225 K = INT(A3 / 10)\n5226 IF (K < 1) OR (K > 8) THEN 5990\n5227 C6(1) = K: K = INT(A3 - C6(1) * 10)\n5228 IF (K < 1) OR (K > 8) THEN 5990\n5229 C6(2) = K: A4 = A4 + .5\n5230 K = INT(A4 / 100)\n5231 IF (K < 1) OR (K > 10) THEN 5990\n5232 C6(1) = C6(1) + (K - 1) / 10: K = INT(A4 - K * 100)\n5233 IF (K < 1) OR (K > 10) THEN 5990\n5234 C6(2) = C6(2) + (K - 1) / 10\n5235 X = Q1 + ((S6 - 1) / 10) - C6(1): Y = Q2 + ((S7 - 1) / 10) - C6(2)\n5236 D1 = 0: D2 = 0: IF (X = 0) AND (Y = 0) THEN 5250\n5237 D1 = SQR(X * X + Y * Y)\n5238 IF X < 0 THEN Z7 = SGN(Y) * (3.1416 - ATN(ABS(Y / X)))\n5239 IF X = 0 THEN Z7 = SGN(Y) * 1.5708\n5240 IF X > 0 THEN Z7 = ATN(Y / X)\n5245 D2 = 12 - Z7 * 1.9098593: IF D2 > 12 THEN D2 = D2 - 12\n5250 PRINT \"COURSE IS \"; FS(D2); \" FOR A DISTANCE OF \";\n5260 PRINT FS(D1); \" QUADRANTS.\": GOTO 5040\n5300 REM-COST FOR WARP DRIVE\n5302 INPUT \"ENTER DISTANCE AND WARP FACTOR:\"; D1, A4\n5304 IF (D1 < 0) THEN 5040\n5310 C7 = D1 * A4 * A4 * A4\n5315 T1 = (10 * D1) / (A4 * A4)\n5320 PRINT \"IT WOULD TAKE \"; FS(T1); \" STARDATES AND USE\"\n5325 PRINT FR(C7); \" UNITS OF ENERGY (\"; FR(C7 + C7); \" IF SHIELDS ARE UP)\"\n5330 GOTO 5040\n5400 REM-COST FOR IMPULSE POWER\n5410 INPUT \"ENTER DISTANCE:\"; D1\n5420 IF D1 < 0 THEN 5040\n5430 C7 = 250 * D1 + 50: T1 = D1 / .4\n5440 PRINT \"IT WOULD TAKE \"; FR(T1); \" STARDATES AND USE\"\n5450 PRINT C7; \" UNITS OF ENERGY\"\n5460 GOTO 5040\n5500 REM-PHASER EFFECTIVENESS\n5510 INPUT \"ENTER PHASER RANGE IN QUADRANTS:\"; A3\n5520 IF A3 < 0 THEN 5040\n5530 A3 = A3 * 10: C7 = (.9 ^ A3) * 100\n5540 PRINT \"PHASERS ARE \"; LEFT$(STR$(C7), 5); \"% EFFECTIVE AT THAT RANGE\"\n5550 GOTO 5040\n5600 REM- SCORE\n5610 GOSUB 15800\n5620 GOTO 5040\n5700 RETURN\n5990 PRINT \"FORMAT IS MN,XXYY...WHERE MN IS THE QUADRANT\"\n5991 PRINT \"AND XXYY IS THE SECTOR...E.G. 64,0307 REFERS\"\n5992 PRINT \"TO QUADRANT 6-4, SECTOR 3-7.\"\n5993 PRINT \"NOTE: SECTOR COORDINATES MUST BE 4 DIGITS.\"\n5995 GOTO 5040\n6000 REM - DEADKL\n6001 IF T2$ <> \"C\" THEN 6100\n6010 C3 = 0: PRINT \"***COMMANDER AT\";\n6020 FOR F = 1 TO R2\n6030 IF (C1(F) = Q1) AND (C2(F) = Q2) THEN 6050\n6040 NEXT F\n6050 C1(F) = C1(R2): C2(F) = C2(R2): C1(R2) = 0: C2(R2) = 0\n6060 R2 = R2 - 1: F1(2) = 1E30\n6070 IF R2 <> 0 THEN F1(2) = D0 - (I4 / R2) * LOG(RND(1))\n6080 K2 = K2 + 1\n6090 GOTO 6120\n6100 PRINT \"***KLINGON AT\";\n6110 K1 = K1 + 1\n6120 PRINT A5; \"-\"; A6; \"DESTROYED.\"\n6130 Q$(A5, A6) = \".\": R1 = R1 - 1\n6140 IF R1 = 0 THEN RETURN\n6150 R5 = R4 / (R1 + 4 * R2)\n6160 G(Q1, Q2) = G(Q1, Q2) - 100\n6170 FOR F = 1 TO K3\n6180 IF (K4(F) = A5) AND (K5(F) = A6) THEN 6200\n6190 NEXT F\n6200 K3 = K3 - 1\n6210 IF F > K3 THEN 6250\n6220 FOR G = F TO K3\n6230 K4(G) = K4(G + 1): K5(G) = K5(G + 1): K6(G) = K6(G + 1)\n6235 K7(G) = K7(G + 1): K8(G) = K7(G)\n6240 NEXT G\n6250 K4(K3 + 1) = 0: K5(K3 + 1) = 0: K7(K3 + 1) = 0: K8(K3 + 1) = 0: K6(K3 + 1) = 0\n6260 RETURN\n7000 REM-DOCK\n7001 IF C5$ = \"DOCKED\" THEN 7100\n7010 IF B6 = 0 THEN 7020\n7015 IF (ABS(S6 - B6) <= 1) AND (ABS(S7 - B7) <= 1) THEN 7040\n7020 PRINT S5$; \" NOT ADJACENT TO A BASE.\"\n7030 RETURN\n7040 C5$ = \"DOCKED\"\n7050 PRINT \"HELMSMAN SULU - 'DOCKING MANEUVER COMPLETED.'\"\n7060 E1 = I7: S3 = I8: T4 = I9: L1 = J1\n7070 RETURN\n7100 PRINT \"MR. SULU - 'BUT CAPTAIN, WE'RE ALREADY DOCKED!'\"\n7110 RETURN\n8000 REM-DREPORT\n8001 J = 0\n8003 PRINT\n8005 FOR I = 1 TO 12\n8010 IF D4(I) <= 0 THEN 8070\n8020 IF J <> 0 THEN 8060\n8030 PRINT \"     DEVICE\"; SPC(12); \"-REPAIR TIMES-\"\n8040 PRINT SPC(21); \"IN FLIGHT    DOCKED\"\n8050 J = 1\n8060 PRINT \"  \"; D$(I); TAB(23); FS(D4(I)); TAB(33); FS(D3 * D4(I))\n8070 NEXT I\n8080 IF J = 0 THEN PRINT \"MR. SPOCK - 'ALL DEVICES FUNCTIONAL, CAPTAIN'\"\n8090 RETURN\n9000 REM-EVENTS\n9001 M = 0: D7 = D0 + T1\n9010 FOR L = 1 TO 5\n9020 IF F1(L) > D7 THEN 9040\n9030 M = L: D7 = F1(L)\n9040 NEXT L\n9050 X6 = D7 - D0: D0 = D7\n9060 R4 = R4 - (R1 + 4 * R2) * X6\n9070 R5 = R4 / (R1 + 4 * R2)\n9080 IF R5 > 0 THEN 9120\n9090 F9 = 2\n9100 GOSUB 10000\n9110 RETURN\n9120 IF (D4(5) = 0) OR (C5$ = \"DOCKED\") THEN 9180\n9130 IF (L1 >= X6) OR (D4(5) <= L1) THEN 9160\n9140 F9 = 3: GOSUB 10000\n9150 RETURN\n9160 L1 = L1 - X6\n9170 IF D4(5) <= X6 THEN L1 = J1\n9180 R = X6\n9190 IF C5$ = \"DOCKED\" THEN R = X6 / D3\n9200 FOR L = 1 TO 12\n9210 IF D4(L) <= 0 THEN 9230\n9220 D4(L) = D4(L) - R\n9225 IF D4(L) < 0 THEN D4(L) = 0\n9226 IF D4(L) <> 0 THEN 9230\n9227 PRINT : PRINT \"DAMAGE CONTROL - '\"; D$(L); \" NOW OPERATIONAL.'\"\n9230 NEXT L\n9240 IF M = 0 THEN RETURN\n9250 T1 = T1 - X6\n9260 ON M GOTO 9270, 9290, 9340, 9350, 9470\n9270 REM-SUPERNOVA\n9280 X2 = 0: Y2 = 0: GOSUB 15950\n9285 F1(1) = D0 - .5 * I5 * LOG(RND(1))\n9286 IF G(Q1, Q2) = 1000 THEN RETURN\n9287 GOTO 9001\n9290 REM-TRACTOR BEAM\n9291 IF R2 = 0 THEN 9330\n9292 IF C5$ = \"DOCKED\" THEN 9325\n9293 I = INT(RND(1) * R2) + 1\n9294 Y6 = (C1(I) - Q1) ^ 2 + (C2(I) - Q2) ^ 2\n9295 IF Y6 = 0 THEN 9325\n9296 Y6 = SQR(Y6): T1 = .17778 * Y6\n9297 PRINT : PRINT \"***\"; S5$; \" CAUGHT IN LONG-RANGE TRACTOR BEAM -\"\n9298 Q1 = C1(I): Q2 = C2(I)\n9299 S6 = FNB(1): S7 = FNB(1)\n9300 PRINT \"PULLED TO QUADRANT \"; Q1; \"-\"; Q2; \", SECTOR \"; S6; \"-\"; S7\n9301 IF R6 <> 0 THEN PRINT \"(REMAINDER OF IDLE PERIOD CANCELLED)\"\n9302 R6 = 0\n9303 IF S4 <> 0 THEN 9320\n9304 IF (D4(8) = 0) AND (S3 > 0) THEN 9310\n9305 PRINT \"(SHIELDS NOT CURRENTLY USABLE.)\"\n9307 GOTO 9320\n9310 GOSUB 15933\n9315 S9 = 0\n9320 GOSUB 15400\n9325 F1(2) = D0 + T1 - 1.5 * (I5 / R2) * LOG(RND(1))\n9326 GOTO 9001\n9330 F1(2) = 1E30: GOTO 9001\n9340 D9(1) = D0: D9(2) = R1: D9(3) = R2: D9(4) = R3: D9(5) = R4: D9(6) = R5\n9342 D9(7) = S1: D9(8) = B1: D9(9) = K1: D9(10) = K2\n9343 FOR I = 1 TO 8: FOR J = 1 TO 8: D9(I - 1 + 8 * (J - 1) + 11) = G(I, J): NEXT J: NEXT I\n9344 FOR I = 75 TO 84: D9(I) = C1(I - 74): NEXT\n9345 FOR I = 85 TO 94: D9(I) = C2(I - 84): NEXT\n9346 FOR I = 95 TO 99: D9(I) = B2(I - 94): NEXT\n9347 FOR I = 100 TO 104: D9(I) = B3(I - 99): NEXT\n9348 D9(105) = B4: D9(106) = B5\n9349 S0 = 1: F1(3) = D0 - .3 * I5 * LOG(RND(1)): GOTO 9001\n9350 REM - STARBASE ATTACK\n9355 IF (R2 = 0) OR (R3 = 0) THEN 9400\n9360 FOR I = 1 TO R3: FOR J = 1 TO R2: IF (B2(I) = C1(J)) AND (B3(I) = C2(J)) THEN 9410\n9370 NEXT J: NEXT I\n9380 F1(4) = D0 + .5 + 3 * RND(1)\n9390 F1(5) = 1E30: GOTO 9001\n9400 F1(4) = 1E30: F1(5) = 1E30: GOTO 9001\n9410 B4 = B2(I): B5 = B3(I)\n9420 IF (B4 = Q1) AND (B5 = Q2) THEN 9380\n9430 F1(5) = D0 + .5 + 3 * RND(1)\n9440 F1(4) = F1(5) - .3 * I5 * LOG(RND(1))\n9450 IF D4(9) > 0 THEN 9001\n9455 PRINT\n9460 PRINT \"LT. UHURA - 'CAPTAIN, THE STARBASE IN \"; B4; \"-\"; B5\n9461 PRINT \"REPORTS THAT IT IS UNDER ATTACK AND CAN HOLD OUT\"\n9462 PRINT \"ONLY UNTIL STARDATE \"; FR(F1(5)); \"'\"\n9465 IF R6 = 0 THEN 9001\n9466 PRINT\n9467 INPUT \"MR. SPOCK - 'CAPTAIN, SHALL WE CANCEL THE IDLE PERIOD?\"; B$\n9468 IF LEFT$(B$, 1) = \"Y\" THEN R6 = 0\n9469 GOTO 9001\n9470 REM - STARBASE DESTROYED\n9475 F1(5) = 1E30: IF (R2 = 0) OR (R3 = 0) THEN 9001\n9485 K = INT(G(B4, B5) / 100): IF G(B4, B5) - K * 100 < 10 THEN 9001\n9490 FOR I = 1 TO R2: IF (C1(I) = B4) AND (C2(I) = B5) THEN 9520\n9510 NEXT: GOTO 9001\n9520 IF S2(B4, B5) = -1 THEN S2(B4, B5) = 0\n9530 IF S2(B4, B5) > 999 THEN S2(B4, B5) = S2(B4, B5) - 10\n9540 IF (B4 <> Q1) OR (B5 <> Q2) THEN 9630\n9550 FOR I = 1 TO K3: K = K4(I): L = K5(I)\n9560 IF Q$(K, L) = \"C\" THEN 9570\n9565 NEXT\n9570 IF K6(I) < 25 + 50 * RND(1) THEN 9001\n9580 Q$(B6, B7) = \".\": B6 = 0: B7 = 0\n9590 GOSUB 16375\n9600 PRINT : PRINT \"MR. SPOCK - 'CAPTAIN, I BELIEVE THE STARBASE HAS\";\n9610 PRINT \" BEEN DESTROYED.'\"\n9620 GOTO 9680\n9630 IF (R3 = 1) OR (D4(9) > 0) THEN 9680\n9640 PRINT\n9650 PRINT \"LT. UHURA - 'CAPTAIN, STARFLEET COMMAND REPORTS THAT\"\n9660 PRINT \"THE STARBASE IN QUADRANT \"; B4; \"-\"; B5; \" HAS BEEN\"\n9670 PRINT \"DESTROYED BY A KLINGON COMMANDER.'\"\n9680 G(B4, B5) = G(B4, B5) - 10\n9690 IF R3 <= 1 THEN 9730\n9700 FOR I = 1 TO R3: IF (B2(I) = B4) AND (B3(I) = B5) THEN 9720\n9710 NEXT\n9720 B2(I) = B2(R3): B3(I) = B3(R3)\n9730 R3 = R3 - 1\n9740 GOTO 9001\n10000 REM-FINISH\n10001 A2 = 1: PRINT : PRINT \"IT IS STARDATE \"; FR(D0): PRINT\n10010 ON F9 GOTO 10020, 10130, 10160, 10185, 10195, 10205, 10220, 10235\n10015 ON F9 - 8 GOTO 10245, 10270, 10280\n10020 REM-THE GAME HAS BEEN WON\n10025 PRINT \"YOU HAVE DESTROYED THE KLINGON INVASION FLEET\"\n10027 PRINT\n10030 PRINT \"***THE FEDERATION IS SAVED***\": G1 = 1\n10035 IF (A1 = 0) OR (B1 <> 0) THEN 10110\n10040 IF LEFT$(S5$, 1) <> \"E\" THEN 10110\n10045 IF 3 * S1 + 35 * N1 + C4 >= 100 THEN 10110\n10050 IF D0 - J2 <= 6 THEN 10070\n10060 R8 = .1 * S8 * (S8 + 1) + .1\n10065 IF (K1 + K2) / (D0 - J2) < R8 THEN 10110\n10070 PRINT\n10075 PRINT \"IN FACT, YOU HAVE DONE SO WELL THAT STARFLEET COMMAND\"\n10076 IF S8 = 4 THEN 10090\n10080 PRINT \"PROMOTES YOU ONE STEP IN RANK, \";\n10085 IF S8 = 1 THEN PRINT \"FROM BEGINNER TO NOVICE CLASS!\"\n10086 IF S8 = 2 THEN PRINT \"FROM NOVICE TO SENIOR CLASS!\"\n10087 IF S8 = 3 THEN PRINT \"FROM SENIOR TO EXPERT CLASS!\"\n10088 PRINT \"***CONGRATULATIONS***\": GOTO 10110\n10090 PRINT \"PROMOTES YOU TO 'COMMODORE EMERITUS'.\"\n10095 PRINT\n10100 PRINT \"NOW YOU CAN RETIRE AND WRITE YOUR OWN STAR TREK GAME!\"\n10110 GOSUB 15800\n10120 RETURN\n10130 REM-FED RESOURCES DEPLETED\n10135 PRINT \"YOUR TIME HAS RUN OUT, AND THE\"\n10136 PRINT \"FEDERATION HAS BEEN CONQUERED.\": PRINT\n10137 PRINT \"YOUR STARSHIP IS NOW KLINGON PROPERY, AND YOU ARE PUT\"\n10138 PRINT \"ON TRIAL AS A WAR CRIMINAL. ON THE BASIS OF YOUR RECORD,\"\n10139 IF R1 * 3 > I1 THEN 10150\n10140 PRINT \"YOU ARE FOUND GUILTY AND SENTENCED TO DEATH!\"\n10145 A1 = 0: GOSUB 15800: RETURN\n10150 PRINT \"YOU ARE ACQUITTED\": GOSUB 15800: RETURN\n10160 REM- L.S. FAILURE\n10165 PRINT \"YOUR LIFE SUPPORT RESERVES HAVE RUN OUT, AND\"\n10170 PRINT \"YOU WILL SOON DIE OF ASPHYXIATION\"\n10172 PRINT\n10175 PRINT \"YOUR STARSHIP IS A DERELICT IN SPACE.\"\n10180 GOTO 10300\n10185 REM-ENERGY GONE\n10190 PRINT \"YOUR ENERGY SUPPLY IS EXHAUSTED.\": GOTO 10172\n10195 REM-BATTLE DEFEAT\n10200 PRINT \"THE \"; S5$; \" HAS BEEN DESTROYED IN BATTLE.\"\n10201 GOTO 10300\n10205 PRINT \"F9=6 INVALID\": RETURN\n10220 REM-NOVA\n10225 PRINT \"YOUR STARSHIP HAS BEEN DESTROYED BY A NOVA.\"\n10230 PRINT \"NICE SHOT, YOU HOCKEY PUCK!\": GOTO 10300\n10235 REM-SUPERNOVA\n10240 PRINT \"THE \"; S5$; \" HAS BEEN INCINERATED BY A SUPERNOVA.\"\n10241 GOTO 10300\n10245 REM-ABANDON(NO BASES)\n10250 PRINT \"YOU HAVE BEEN CAPTURED BY THE KLINGONS. IF YOU STILL\"\n10255 PRINT \"HAD A STARBASE TO BE RETURNED TO, YOU WOULD HAVE BEEN\"\n10260 PRINT \"REPATRIATED AND GIVEN ANOTHER CHANCE. SINCE YOU HAVE\"\n10265 PRINT \"NO STARBASES, YOU WILL BE MERCILESSLY TORTURED TO DEATH!\"\n10266 GOTO 10300\n10270 REM - SELF-DESTRUCT\n10271 PRINT : PRINT \"THE \"; S5$; \" IS NOW AN EXPANDING CLOUD\"\n10272 PRINT \"OF SUB-ATOMIC PARTICLES...\": GOTO 10300\n10280 REM-NOT REMATERIALIZED\n10285 PRINT \"STARBASE WAS UNABLE TO RE-MATERIALIZE YOUR STARSHIP.\"\n10300 PRINT\n10310 IF LEFT$(S5$, 1) = \"F\" THEN S5$ = \"\"\n10315 IF LEFT$(S5$, 1) = \"E\" THEN S5$ = \"FAERIE QUEENE\"\n10316 A1 = 0\n10320 IF R1 = 0 THEN 10355\n10325 G3 = R4 / I3: B8 = (R1 + 2 * R2) / (I1 + 2 * I4)\n10326 A3 = G3 / B8\n10327 IF A3 < 1 + .5 + RND(1) THEN 10345\n10330 PRINT \"AS A RESULT OF YOUR ACTIONS, A TREATY WITH THE KLINGON\"\n10331 PRINT \"EMPIRE HAS BEEN SIGNED. THE TERMS OF THE TREATY ARE\"\n10332 IF A3 < 3 * RND(1) THEN 10340\n10335 PRINT \"FAVORABLE TO THE FEDERATION.\": PRINT\n10336 PRINT \"CONGRATULATIONS.\": GOTO 10350\n10340 PRINT \"HIGHLY UNFAVORABLE TO THE FEDERATION.\": GOTO 10350\n10345 PRINT \"THE FEDERATION WILL BE DESTROYED!\"\n10350 GOSUB 15800: RETURN\n10355 PRINT \"SINCE YOU TOOK THE LAST KLINGON WITH YOU, YOU ARE\"\n10360 PRINT \"A MARTYR AND A HERO. SOMEDAY MAYBE THEY'LL ERECT\"\n10370 PRINT \"A STATUE IN YOUR MEMORY. REST IN PEACE AND TRY NOT\"\n10380 PRINT \"TO THINK ABOUT PIGEONS!\": G1 = 1: A1 = 0\n10390 GOSUB 15800: RETURN\n11000 REM - HELP\n11001 IF C5$ <> \"DOCKED\" THEN 11020\n11010 PRINT \"ENSIGN CHEKOV - 'BUT CAPTAIN, WE'RE ALREADY DOCKED!'\"\n11015 RETURN\n11020 IF D4(9) = 0 THEN 11030\n11025 PRINT \"SUBSPACE RADIO DAMAGED...CANNOT TRANSMIT.\": RETURN\n11030 IF R3 <> 0 THEN 11050\n11040 PRINT \"LT. UHURA - 'CAPTAIN, I'M NOT GETTING ANY RESPONSE\";\n11045 PRINT \" FROM STARBASE!'\": RETURN\n11050 N1 = N1 + 1: IF B6 = 0 THEN 11070\n11060 GOTO 11130\n11070 D1 = 1E30\n11080 FOR L = 1 TO R3: X = 10 * SQR((B2(L) - Q1) ^ 2 + (B3(L) - Q2) ^ 2)\n11090 IF X > D1 THEN 11110\n11100 D1 = X: K = L\n11110 NEXT L\n11120 Q1 = B2(K): Q2 = B3(K): GOSUB 15400\n11130 Q$(S6, S7) = \".\"\n11135 PRINT\n11140 PRINT \"STARBASE IN QUADRANT \"; Q1; \"-\"; Q2; \" RESPONDS --\";\n11145 PRINT \"  \"; S5$; \" DEMATERIALIZES.\"\n11146 P2 = (1 - .98 ^ D1) ^ .333333\n11150 FOR L = 1 TO 3\n11155 IF L = 1 THEN PRINT \"1ST \";\n11160 IF L = 2 THEN PRINT \"2ND \";\n11170 IF L = 3 THEN PRINT \"3RD \";\n11180 PRINT \"ATTEMPT TO RE-MATERIALIZE THE \"; S5$; \". . . . .\";\n11190 IF RND(1) > P2 THEN 11220\n11200 PRINT \"FAILS.\": NEXT L\n11210 F9 = 11: GOSUB 10000: RETURN\n11220 FOR L = 1 TO 5: I = B6 + INT(3 * RND(1)) - 1\n11230 IF (I < 1) OR (I > 10) THEN 11260\n11235 J = B7 + INT(3 * RND(1)) - 1\n11240 IF (J < 1) OR (J > 10) THEN 11260\n11250 IF Q$(I, J) = \".\" THEN 11270\n11260 NEXT L: PRINT \"FAILS.\": GOTO 11210\n11270 PRINT \"SUCCEEDS.\": S6 = I: S7 = J: Q$(I, J) = LEFT$(S5$, 1)\n11280 GOSUB 7000: PRINT \"LT. UHURA - 'CAPTAIN, WE MADE IT!'\": RETURN\n12000 REM-HITEM\n12001 P4 = 2: L5 = K3: N = 1\n12010 FOR K = 1 TO L5\n12020 IF H3(K) = 0 THEN 12240\n12030 D6 = .9 + .01 * RND(1): H2 = H3(K) * D6 ^ K7(N)\n12040 P3 = K6(N)\n12050 P = ABS(P3): IF P4 * H2 < P THEN P = P4 * H2\n12060 K6(N) = P3 - SGN(P3) * ABS(P)\n12070 X8 = K4(N): Y8 = K5(N)\n12080 IF H2 > 4.99 THEN 12100\n12090 PRINT \"VERY SMALL HIT ON \": GOTO 12110\n12100 PRINT FR(H2); \"UNIT HIT ON \";\n12110 M$ = Q$(X8, Y8)\n12120 IF M$ = \"K\" THEN PRINT \"KLINGON AT\";\n12125 IF M$ = \"C\" THEN PRINT \"COMMANDER AT\";\n12130 PRINT X8; \"-\"; Y8\n12140 IF K6(N) <> 0 THEN 12180\n12150 A5 = X8: A6 = Y8: T2$ = Q$(X8, Y8): GOSUB 6000\n12160 IF R1 <> 0 THEN 12250\n12170 F9 = 1: GOSUB 10000: GOTO 12250\n12180 IF K6(N) < 0 THEN 12240\n12190 IF RND(1) < .9 THEN 12240\n12200 IF K6(N) > (.4 + .4 * RND(1)) * P3 THEN 12240\n12205 PRINT\n12210 PRINT \"***MR. SPOCK - 'CAPTAIN, THE VESSEL AT SECTOR \";\n12215 PRINT X8; \"-\"; Y8\n12220 PRINT \"HAS JUST LOST ITS FIREPOWER.'\"\n12225 PRINT\n12230 K6(N) = -K6(N)\n12240 N = N + 1\n12250 NEXT K\n12260 RETURN\n13000 REM - IMPULSE\n13001 J3 = 0\n13010 IF D4(7) <> 0 THEN 13250\n13020 IF E1 <= 75 THEN 13070\n13030 INPUT \"ENTER COURSE AND DISTANCE:\"; D2, D1\n13040 IF D2 < 0 THEN RETURN\n13050 P3 = 50 + 250 * D1\n13060 IF P3 < E1 THEN 13140\n13070 PRINT\n13080 PRINT \"MR SPOCK - 'CAPTAIN, THE IMPULSE ENGINES\"\n13090 PRINT \"REQUIRE 50 UNITS OF ENERGY TO ENGAGE, PLUS 250 UNITS\"\n13091 PRINT \"PER \";\n13100 IF E1 > 75 THEN 13120\n13110 PRINT \"QUADRANT. THEY ARE, THEREFORE, USELESS NOW.'\": RETURN\n13120 PRINT \"QUADRANT. WE CAN GO, THEREFORE, A MAXIMUM OF \";\n13130 PRINT FR(.004 * (E1 - 50) - .05); \" QUADRANTS.'\": RETURN\n13140 T1 = D1 / .4\n13150 IF T1 < R5 THEN 13200\n13160 PRINT \"MR SPOCK - 'CAPTAIN, OUR SPEED UNDER IMPULSE\"\n13170 PRINT \"POWER IS ONLY 4 SECTORS PER STARDATE. ARE YOU SURE\"\n13180 INPUT \"WE DARE SPEND THE TIME?'\"; B$\n13190 IF LEFT$(B$, 1) <> \"Y\" THEN RETURN\n13200 GOSUB 15000: J3 = 1\n13210 IF A2 <> 0 THEN RETURN\n13220 E1 = E1 - P3\n13230 IF E1 > 0 THEN RETURN\n13240 F9 = 4: GOSUB 10000: RETURN\n13250 PRINT \"IMPULSE ENGINES DAMAGED.\": RETURN\n14000 REM - LRSCAN\n14001 N$ = \"    #\"\n14005 PRINT\n14010 IF D4(2) <> 0 THEN 14180\n14020 PRINT \"L.R. SCAN FOR QUADRANT \"; Q1; \"-\"; Q2: PRINT\n14030 I = Q1 - 1: J = Q1 + 1: K = Q2 - 1: L = Q2 + 1\n14040 FOR M = I TO J: FOR N = K TO L\n14050 IF (M <= 0) OR (M > 8) THEN 14110\n14060 IF (N <= 0) OR (N > 8) THEN 14110\n14070 IF D4(11) = 0 THEN S2(M, N) = 1\n14080 IF G(M, N) >= 1000 THEN PRINT \"  ***\";\n14090 IF G(M, N) < 1000 THEN PRINT SPC(5 - LEN(STR$(G(M, N)))); G(M, N);\n14100 GOTO 14120\n14110 PRINT N$;\n14120 NEXT N\n14130 PRINT\n14140 NEXT M\n14150 IF D4(11) = 0 THEN RETURN\n14155 PRINT\n14160 PRINT \"***WARNING*** - COMPUTER DISABLED - SCAN NOT RECORDED.\"\n14170 RETURN\n14180 PRINT \"LONG RANGE SENSORS DAMAGED.\": RETURN\n14200 REM - SORTKL\n14201 IF K3 <= 1 THEN RETURN\n14202 Z4 = 0\n14203 FOR O = 1 TO K3 - 1: IF K7(O) <= K7(O + 1) THEN 14210\n14204 K = K7(O): K7(O) = K7(O + 1): K7(O + 1) = K\n14205 K = K8(O): K8(O) = K8(O + 1): K8(O + 1) = K\n14206 K = K4(O): K4(O) = K4(O + 1): K4(O + 1) = K\n14207 K = K5(O): K5(O) = K5(O + 1): K5(O + 1) = K\n14208 K = K6(O): K6(O) = K6(O + 1): K6(O + 1) = K\n14209 Z4 = 1\n14210 NEXT O\n14211 IF Z4 <> 0 THEN 14202\n14212 RETURN\n14220 REM-SRSCAN\n14221 IF D(1) <> 0 THEN 14245\n14222 PRINT : PRINT \"    1 2 3 4 5 6 7 8 9 10\"\n14223 FOR I = 1 TO 10: IF I < 10 THEN PRINT \" \";\n14224 PRINT I; : FOR J = 1 TO 10: PRINT Q$(I, J); \" \"; : NEXT J\n14225 ON I GOTO 14227, 14228, 14230, 14231, 14236\n14226 ON I - 5 GOTO 14237, 14238, 14239, 14242, 14243\n14227 PRINT \" STARDATE      \"; FR(D0): GOTO 14244\n14228 IF C5$ <> \"DOCKED\" THEN GOSUB 16375\n14229 PRINT \" CONDITION      \"; C5$: GOTO 14244\n14230 PRINT \" POSITION      \"; Q1; \"-\"; Q2; \", \"; S6; \"-\"; S7: GOTO 14244\n14231 PRINT \" LIFE SUPPORT   \"; : IF D4(5) <> 0 THEN 14233\n14232 PRINT \"ACTIVE\": GOTO 14244\n14233 IF C5$ <> \"DOCKED\" THEN 14235\n14234 PRINT \"DAMAGED, SUPPORTED BY STARBASE \": GOTO 14244\n14235 PRINT \"DAMAGED, RESERVES=\"; FS(L1): GOTO 14244\n14236 PRINT \" WARP FACTOR   \"; FR(W1): GOTO 14244\n14237 PRINT \" ENERGY\"; SPC(8); .01 * INT(100 * E1): GOTO 14244\n14238 PRINT \" TORPEDOS      \"; T4: GOTO 14244\n14239 PRINT \" SHIELDS        \"; : B$ = \"DOWN,\": IF S4 <> 0 THEN B$ = \"UP,\"\n14240 IF D4(8) > 0 THEN B$ = \"DAMAGED,\"\n14241 PRINT B$; INT(100 * S3 / I8 + .5); \"%\": GOTO 14244\n14242 PRINT \" KLINGONS LEFT \"; R1: GOTO 14244\n14243 PRINT \" TIME LEFT     \"; FS(R5)\n14244 NEXT I: RETURN\n14245 PRINT \"SHORT RANGE SENSORS DAMAGED.\": RETURN\n14250 REM - TIMEWARP\n14251 PRINT : PRINT \"*** TIME WARP ENTERED ***\": PRINT \"YOU ARE TRAVELING\";\n14252 IF S0 <> 0 THEN 14256\n14253 T1 = -.5 * I5 * LOG(RND(1))\n14254 PRINT \"FORWARD IN TIME \"; FR(T1); \" STARDATES.\"\n14255 F1(2) = F1(2) + T1: GOTO 14272\n14256 M = D0: D0 = D9(1)\n14257 PRINT \"BACKWARD IN TIME \"; FR(M - D0); \" STARDATES.\": S0 = 0\n14258 R1 = D9(2): R2 = D9(3): R3 = D9(4): R4 = D9(5): R5 = D9(6)\n14259 S1 = D9(7): B1 = D9(8): K1 = D9(9): K2 = D9(10)\n14260 FOR I = 1 TO 8: FOR J = 1 TO 8: G(I, J) = D9(I - 1 + 8 * (J - 1) + 11): NEXT J: NEXT I\n14261 FOR I = 75 TO 84: C1(I - 74) = D9(I): NEXT\n14262 FOR I = 85 TO 94: C2(I - 84) = D9(I): NEXT\n14263 FOR I = 95 TO 99: B2(I - 94) = D9(I): NEXT\n14264 FOR I = 100 TO 104: B3(I - 99) = D9(I): NEXT: B4 = D9(105): B5 = D9(106)\n14265 F1(1) = D0 - .5 * I5 * LOG(RND(1))\n14266 IF R2 <> 0 THEN F1(2) = D0 - (I5 / R2) * LOG(RND(1))\n14267 F1(3) = D0 - .5 * I5 * LOG(RND(1))\n14268 FOR I = 1 TO 8: FOR J = 1 TO 8: IF 1 < S2(I, J) THEN S2(I, J) = 1\n14269 NEXT J: NEXT I\n14270 PRINT\n14271 PRINT \"SPOCK HAS RECONSTRUCTED A CORRECT STAR CHART FROM MEMORY.\"\n14272 GOSUB 15400: RETURN\n14275 REM - TRANSFER\n14276 J3 = 0\n14277 IF D4(12) <> 0 THEN 14290\n14278 INPUT \"NUMBER OF UNITS TO SHIELDS?\"; Z3\n14279 IF Z3 < 0 THEN RETURN\n14280 IF E1 + S3 - Z3 > 0 THEN 14283\n14281 PRINT \"SCOTT HERE - 'WE ONLY HAVE \"; FR(E1 + S3); \" UNITS LEFT.'\"\n14282 RETURN\n14283 E1 = E1 + S3 - Z3: S3 = Z3: PRINT \"--ENERGY TRANSFER COMPLETE--\"\n14284 PRINT \"(SHIP ENERGY=\"; FR(E1); \"    SHIELD ENERGY=\"; FR(S3); \")\"\n14285 J3 = 1\n14286 T1 = .1: P5 = (K3 + 4 * C3) / 48: IF P5 < .1 THEN P5 = .1\n14287 IF P5 > RND(1) THEN GOSUB 1000\n14288 IF A2 <> 0 THEN RETURN\n14289 GOSUB 9000: RETURN\n14290 PRINT \"TRANSFER PANEL DAMAGED.\": RETURN\n14300 REM - VISUAL\n14301 INPUT \"WHICH DIRECTION?\"; Z\n14302 PRINT\n14303 J3 = 0: IF Z < 0 THEN RETURN\n14304 IF Z <= 12 THEN 14306\n14305 PRINT \"DIRECTIONS ARE FROM 0 TO 12 ONLY!\": GOTO 14301\n14306 T1 = .05: P = (K3 + 4 * C3) / 48: IF P < .05 THEN P = .05\n14307 IF P > RND(1) THEN GOSUB 1000\n14308 IF A2 <> 0 THEN RETURN\n14309 GOSUB 9000: J3 = 1: IF A2 <> 0 THEN RETURN\n14310 D5 = INT((Z / 12) * 8 + 1.5): IF D5 > 8 THEN D5 = 1\n14311 FOR I = 1 TO 5: FOR J = 1 TO 5: V$(I, J) = \" \": NEXT J: NEXT I: N = 0\n14312 V$(3, 3) = LEFT$(S5$, 1)\n14313 ON D5 GOTO 14314, 14318, 14322, 14326, 14330, 14334, 14338, 14342\n14314 I = S6 - 2: J = S7 - 2: V$(1, 1) = Q$: IF (J > 0) AND (I > 0) THEN V$(1, 1) = Q$(I, J)\n14315 I = S6 - 1: J = S7 - 1: V$(2, 2) = Q$: IF (I > 0) AND (J > 0) THEN V$(2, 2) = Q$(I, J)\n14316 N = N + 1: IF N = 3 THEN 14347\n14317 I = S6 - 2: V$(1, 2) = Q$: IF (I > 0) AND (J > 0) THEN V$(1, 2) = Q$(I, J)\n14318 I = S6 - 2: V$(1, 3) = Q$: IF I > 0 THEN V$(1, 3) = Q$(I, S7)\n14319 I = S6 - 1: V$(2, 3) = Q$: IF I > 0 THEN V$(2, 3) = Q$(I, S7)\n14320 N = N + 1: IF N = 3 THEN 14347\n14321 I = S6 - 2: J = S7 + 1: V$(1, 4) = Q$: IF (I > 0) AND (J < 11) THEN V$(1, 4) = Q$(I, J)\n14322 I = S6 - 2: J = S7 + 2: V$(1, 5) = Q$: IF (I > 0) AND (J < 11) THEN V$(1, 5) = Q$(I, J)\n14323 I = S6 - 1: J = S7 + 1: V$(2, 4) = Q$: IF (I > 0) AND (J < 11) THEN V$(2, 4) = Q$(I, J)\n14324 N = N + 1: IF N = 3 THEN 14347\n14325 J = S7 + 2: V$(2, 5) = Q$: IF (I > 0) AND (J < 11) THEN V$(2, 5) = Q$(I, J)\n14326 J = S7 + 2: V$(3, 5) = Q$: IF J < 11 THEN V$(3, 5) = Q$(S6, J)\n14327 J = S7 + 1: V$(3, 4) = Q$: IF J < 11 THEN V$(3, 4) = Q$(S6, J)\n14328 N = N + 1: IF N = 3 THEN 14347\n14329 I = S6 + 1: J = S7 + 2: V$(4, 5) = Q$: IF (I < 11) AND (J < 11) THEN V$(4, 5) = Q$(I, J)\n14330 I = S6 + 2: J = S7 + 2: V$(5, 5) = Q$: IF (I < 11) AND (J < 11) THEN V$(5, 5) = Q$(I, J)\n14331 I = S6 + 1: J = S7 + 1: V$(4, 4) = Q$: IF (I < 11) AND (J < 11) THEN V$(4, 4) = Q$(I, J)\n14332 N = N + 1: IF N = 3 THEN 14347\n14333 I = S6 + 2: V$(5, 4) = Q$: IF (I < 11) AND (J < 11) THEN V$(5, 4) = Q$(I, J)\n14334 I = S6 + 2: V$(5, 3) = Q$: IF I < 11 THEN V$(5, 3) = Q$(I, S7)\n14335 I = S6 + 1: V$(4, 3) = Q$: IF I < 11 THEN V$(4, 3) = Q$(I, S7)\n14336 N = N + 1: IF N = 3 THEN 14347\n14337 I = S6 + 2: J = S7 - 1: V$(5, 2) = Q$: IF (I < 11) AND (J > 0) THEN V$(5, 2) = Q$(I, J)\n14338 I = S6 + 2: J = S7 - 2: V$(5, 1) = Q$: IF (I < 11) AND (J > 0) THEN V$(5, 1) = Q$(I, J)\n14339 I = S6 + 1: J = S7 - 1: V$(4, 2) = Q$: IF (I < 11) AND (J > 0) THEN V$(4, 2) = Q$(I, J)\n14340 N = N + 1: IF N = 3 THEN 14347\n14341 J = S7 - 2: V$(4, 1) = Q$: IF (I < 11) AND (J > 0) THEN V$(4, 1) = Q$(I, J)\n14342 J = S7 - 2: V$(3, 1) = Q$: IF J > 0 THEN V$(3, 1) = Q$(S6, J)\n14343 J = S7 - 1: V$(3, 2) = Q$: IF J > 0 THEN V$(3, 2) = Q$(S6, J)\n14344 N = N + 1: IF N = 3 THEN 14347\n14345 I = S6 - 1: J = S7 - 2: V$(2, 1) = Q$: IF (I > 0) AND (J > 0) THEN V$(2, 1) = Q$(I, J)\n14346 GOTO 14314\n14347 FOR I = 1 TO 5\n14348 IF (V$(I, 1) = \" \") AND (V$(I, 3) = \" \") AND (V$(I, 5) = \" \") THEN 14351\n14349 PRINT \"  \";\n14350 FOR J = 1 TO 5: PRINT V$(I, J); \" \"; : NEXT J: PRINT\n14351 NEXT I: RETURN\n14360 REM - WAIT\n14361 J3 = 0: INPUT \"HOW MANY STARDATES?\"; Z5\n14362 IF (Z5 < R5) AND (K3 = 0) THEN 14364\n14363 INPUT \"ARE YOU SURE?\"; B$: IF LEFT$(B$, 1) <> \"Y\" THEN RETURN\n14364 R6 = 1\n14365 IF Z5 <= 0 THEN R6 = 0\n14366 IF R6 = 0 THEN RETURN\n14367 T1 = Z5: Z6 = Z5\n14368 IF K3 = 0 THEN 14371\n14369 T1 = 1 + RND(1): IF Z5 < T1 THEN T1 = Z5\n14370 Z6 = T1\n14371 IF T1 < Z5 THEN GOSUB 1000\n14372 IF A2 <> 0 THEN RETURN\n14373 GOSUB 9000: J3 = 1: IF A2 <> 0 THEN RETURN\n14374 Z5 = Z5 - Z6: GOTO 14365\n14375 REM:WARP\n14376 J3 = 0: IF D4(6) <> 0 THEN 14423\n14377 INPUT \"ENTER COURSE AND DISTANCE:\"; D2, D1\n14378 IF D2 < 0 THEN RETURN\n14379 P = (D1 + .05) * W1 * W1 * W1 * (S4 + 1): IF P < E1 THEN 14391\n14380 J3 = 0: PRINT : PRINT \"ENGINEERING TO BRIDGE -\"\n14381 IF (S4 = 0) OR (.5 * P > E1) THEN 14384\n14382 PRINT \" WE HAVEN'T THE ENERGY TO GO THAT FAR WITH\";\n14383 PRINT \" THE SHIELDS UP.\": RETURN\n14384 W = INT((E1 / (D1 + .05)) ^ .333333): IF W <= 0 THEN 14389\n14385 PRINT \"WE HAVEN'T THE ENERGY. BUT WE COULD DO IT AT WARP \"; W\n14386 IF S4 <> 0 THEN 14388\n14387 RETURN\n14388 PRINT \"IF YOU'LL LOWER THE SHIELDS.\": RETURN\n14389 PRINT \"WE CAN'T DO IT, CAPTAIN. WE HAVEN'T GOT THE ENERGY.\"\n14390 RETURN\n14391 T1 = 10 * D1 / W2: IF T1 < .8 * R5 THEN 14397\n14392 PRINT : PRINT \"MR. SPOCK - 'CAPTAIN, I COMPUTE THAT SUCH A TRIP\"\n14393 PRINT \"WILL REQUIRE APPROXIMATELY \"; FR(100 * T1 / R5);\n14394 PRINT \" PERCENT\": PRINT \" OF OUR REMAINING TIME. ARE YOU SURE \";\n14395 INPUT \"THIS IS WISE?\"; B$: IF LEFT$(B$, 1) = \"Y\" THEN 14397\n14396 J3 = 0: RETURN\n14397 Q4 = 0: W = 0: IF W1 <= 6 THEN 14413\n14398 P = D1 * (6 - W1) ^ 2 / 66.66666: IF P > RND(1) THEN Q4 = 1\n14399 IF Q4 <> 0 THEN D1 = RND(1) * D1\n14400 W = 0: IF W1 < 10 THEN 14402\n14401 IF .25 * D1 > RND(1) THEN W = 1\n14402 IF (Q4 = 0) AND (W = 0) THEN 14413\n14403 A = (15 - D2) * .5235998: X1 = -SIN(A): X2 = COS(A)\n14404 B8 = ABS(X1): IF ABS(X2) > ABS(X1) THEN B8 = ABS(X2)\n14405 X1 = X1 / B8: Y1 = Y1 / B8: N = INT(10 * D1 * B8 + .5): X = S6: Y = S7\n14406 IF N = 0 THEN 14413\n14407 FOR L = 1 TO N\n14408 X = X + X1: Q = INT(X + .5): IF (Q < 1) OR (Q > 10) THEN 14413\n14409 Y = Y + Y1: R = INT(Y + .5): IF (R < 1) OR (R > 10) THEN 14413\n14410 IF Q$(Q, R) = \".\" THEN 14412\n14411 Q4 = 0: W = 0\n14412 NEXT L\n14413 GOSUB 15000: IF A2 <> 0 THEN RETURN\n14414 E1 = E1 - D1 * W1 * W1 * W1 * (S4 + 1): IF E1 > 0 THEN 14416\n14415 F9 = 4: GOSUB 10000: RETURN\n14416 T1 = 10 * D1 / W2: IF W <> 0 THEN GOSUB 14250\n14417 IF Q4 = 0 THEN 14422\n14418 PRINT : PRINT \"ENGINEERING TO BRIDGE --\": PRINT \"SCOTT HERE - \";\n14419 PRINT \"WE'VE JUST BLOWN THE WARP ENGINES.\"\n14420 PRINT \"WE'LL HAVE TO SHUT 'ER DOWN HERE, CAPTAIN.'\"\n14421 D4(6) = D5 * (3 * RND(1) + 1)\n14422 J3 = 1: RETURN\n14423 PRINT \"WARP ENGINES DAMAGED.\": RETURN\n14425 REM - ABANDON\n14426 ON SGN(D4(10)) + 2 GOTO 14427, 14429, 14428\n14427 PRINT \"YE FAERIE QUEENE HAS NO SHUTTLE CRAFT.\": RETURN\n14428 PRINT \"SHUTTLE CRAFT DAMAGED.\": RETURN\n14429 PRINT : PRINT \"***ABANDON SHIP!  ABANDON SHIP!\"\n14430 PRINT \"***ALL HANDS ABANDON SHIP!\": PRINT\n14431 PRINT \"YOU AND THE BRIDGE CREW ESCAPE IN THE GALILEO.\"\n14432 PRINT \"THE REMAINDER OF THE CREW BEAMS DOWN\"\n14433 PRINT \"TO THE NEAREST HABITABLE PLANET.\": IF R3 <> 0 THEN 14435\n14434 F9 = 9: GOSUB 10000: RETURN\n14435 PRINT : PRINT \"YOU ARE CAPTURED BY KLINGONS AND RELEASED TO\"\n14436 PRINT \"THE FEDERATION IN A PRISONER-OF-WAR EXCHANGE.\"\n14437 PRINT \"STARFLEET PUTS YOU IN COMMAND OF ANOTHER SHIP,\"\n14438 PRINT \"THE FAERIE QUEENE WHICH IS ANTIQUATED, BUT\"\n14439 PRINT \"STILL USABLE.\": N = INT(RND(1) * R3 + 1): Q1 = B2(N): Q2 = B3(N)\n14440 S6 = 5: S7 = 5: GOSUB 15400: Q$(S6, S7) = \".\"\n14441 FOR L = 1 TO 3: S6 = INT(3 * RND(1) - 1 + B6)\n14442 IF (S6 < 1) OR (S7 > 10) THEN 14445\n14443 S7 = INT(3 * RND(1) - 1 + B7): IF (S7 < 1) OR (S7 > 10) THEN 14445\n14444 IF Q$(S6, S7) = \".\" THEN 14446\n14445 NEXT L: GOTO 14440\n14446 S5$ = \"FAERIE QUEENE\": Q$(S6, S7) = LEFT$(S5$, 1): C5$ = \"DOCKED\"\n14447 FOR L = 1 TO 12: D4(L) = 0: NEXT: D4(10) = -1: E1 = 3000: I7 = E1\n14448 S3 = 1500: I8 = S3: T4 = 6: I9 = T4: L1 = 3: J1 = L1: S4 = 0: W1 = 5: W2 = 25\n14449 RETURN\n14500 REM - DESTRUCT\n14501 IF D4(11) = 0 THEN 14504\n14502 PRINT \"COMPUTER DAMAGED - CANNOT EXECUTE DESTRUCT SEQUENCE\"\n14503 RETURN\n14504 PRINT : PRINT \"    ---WORKING---\"\n14505 PRINT \"IDENTIFICATION-POSITIVE\"\n14506 PRINT \"SELF-DESTRUCT-SEQUENCE-ACTIVATED\": J = 3\n14507 FOR I = 10 TO 6 STEP -1: PRINT SPC(J); I: GOSUB 14522: J = J + 3: NEXT\n14508 PRINT \"ENTER-YOUR-MISSION-PASSWORD-TO-CONTINUE\"\n14509 PRINT \"SELF-DESTRUCT-SEQUENCE-OTHERWISE-DESTRUCT\"\n14510 PRINT \"SEQUENCE-WILL-BE-ABORTED\"\n14511 INPUT B$: IF B$ <> X$ THEN 14520\n14512 PRINT \"PASSWORD-ACCEPTED\": J = 10\n14513 FOR I = 5 TO 1 STEP -1: PRINT SPC(J); I: GOSUB 14522: J = J + 3: NEXT\n14514 PRINT : PRINT \"*****ENTROPY OF \"; S5$; \" MAXIMIZED*****\"\n14515 PRINT : IF K3 = 0 THEN 14519\n14516 W = 20 * E1: FOR L = 1 TO K3: IF K6(L) * K7(L) > W THEN 14518\n14517 A5 = K4(L): A6 = K5(L): T2$ = Q$(A5, A6): GOSUB 6000\n14518 NEXT L\n14519 F9 = 10: GOSUB 10000: RETURN\n14520 PRINT \"PASSWORD-REJECTED\"\n14521 PRINT \"CONTINUITY-EFFECTED\": PRINT : RETURN\n14522 K = 12345: FOR M = 1 TO 90: K = K + 1: NEXT M: RETURN\n14550 REM - STATUS\n14551 FOR I = 1 TO 10: NEXT I: GOTO 14225: RETURN\n14552 END\n15000 REM - MOVE\n15001 A5 = (15 - D2) * .5235988\n15010 D4 = -SIN(A5): D6 = COS(A5)\n15020 B8 = ABS(D4)\n15030 IF ABS(D6) > B8 THEN B8 = ABS(D6)\n15040 D4 = D4 / B8: D6 = D6 / B8: T5 = 0: T6 = 0\n15050 IF D0 + T1 < F1(2) THEN 15080\n15060 T5 = 1: C5$ = \"RED\": D1 = D1 * (F1(2) - D0) / T1 + .1\n15070 T1 = F1(2) - D0 + .00001\n15080 Q$(S6, S7) = \".\": X7 = S6: Y7 = S7: H9 = INT(10 * D1 * B8 + .5)\n15090 IF H9 = 0 THEN 15115\n15100 FOR L = 1 TO H9\n15102 X7 = X7 + D4: X1 = INT(X7 + .5): Y7 = Y7 + D6: Y1 = INT(Y7 + .5)\n15105 IF (X1 < 1) OR (X1 > 10) THEN 15150\n15106 IF (Y1 < 1) OR (Y1 > 10) THEN 15150\n15108 IF Q$(X1, Y1) = \"O\" THEN 15111\n15109 IF Q$(X1, Y1) <> \".\" THEN 15125\n15110 NEXT L\n15111 D1 = .1 * SQR((S6 - X1) ^ 2 + (S7 - Y1) ^ 2)\n15112 S6 = X1: S7 = Y1\n15115 F4 = S6: F5 = S7\n15116 IF Q$(X1, Y1) <> \"O\" THEN 15320\n15120 T2 = FNA(1): T3 = FNA(1)\n15122 Q1 = FNA(1): Q2 = FNA(1): S6 = FNB(1): S7 = FNB(1): PRINT\n15123 PRINT \"*** SPACE PORTAL ENTERED ***\": GOTO 15307\n15125 T6 = 1: K = 50 * D1 / T1: D1 = .1 * SQR((S6 - X1) ^ 2 + (S7 - Y1) ^ 2)\n15127 IF (Q$(X1, Y1) = \"K\") OR (Q$(X1, Y1) = \"C\") THEN 15145\n15129 PRINT : PRINT S5$; \" BLOCKED BY \";\n15130 IF Q$(X1, Y1) = \"*\" THEN PRINT \"STAR AT\";\n15131 IF Q$(X1, Y1) = \"B\" THEN PRINT \"STARBASE AT\";\n15132 PRINT \" SECTOR \"; X1; \"-\"; Y1; \" . - \"\n15133 PRINT \"EMERGENCY STOP REQUIRED \"; FR(K); \" UNITS OF ENERGY.\"\n15135 E1 = E1 - K\n15137 S6 = INT(X7 - D4 + .5): F4 = S6: S7 = INT(Y7 - D6 + .5): F5 = S7\n15140 IF E1 > 0 THEN 15320\n15141 F9 = 4: GOSUB 10000: RETURN\n15145 S6 = X1: S7 = Y1: GOSUB 15750: F4 = S6: F5 = S7: GOTO 15320\n15150 IF K3 = 0 THEN 15165\n15155 FOR L = 1 TO K3\n15156 F3 = SQR((X1 - K4(L)) ^ 2 + (Y1 - K5(L)) ^ 2)\n15158 K8(L) = .5 * (F3 + K7(L)): NEXT L\n15160 IF G(Q1, Q2) <> 1000 THEN GOSUB 1000\n15162 IF A2 <> 0 THEN RETURN\n15165 X7 = 10 * (Q1 - 1) + S6: Y7 = 10 * (Q2 - 1) + S7\n15170 X1 = INT(X7 + 10 * D1 * B8 * D4 + .5)\n15175 Y1 = INT(Y7 + 10 * D1 * B8 * D6 + .5): L6 = 0\n15180 L5 = 0\n15185 IF X1 > 0 THEN 15195\n15190 X1 = -X1 + 1: L5 = 1\n15195 IF Y1 > 0 THEN 15210\n15200 Y1 = -Y1 + 1: L5 = 1\n15210 IF X1 <= 80 THEN 15220\n15215 X1 = 161 - X1: L5 = 1\n15220 IF Y1 <= 80 THEN 15230\n15225 Y1 = 161 - Y1: L5 = 1\n15230 IF L5 = 0 THEN 15240\n15235 L6 = 1: GOTO 15180\n15240 IF L6 = 0 THEN 15270\n15260 PRINT : PRINT \"*** MESSAGE FROM STARFLEET COMMAND.....STARDATE\";\n15261 PRINT FR(D0): PRINT : PRINT \"'PERMISSION TO CROSS GALACTIC \";\n15262 PRINT \"PERIMETER IS HEREBY DENIED.'\"\n15263 PRINT \"'SHUT DOWN ENGINES IMMMEDIATELY!'\"\n15264 PRINT\n15265 PRINT \"SCOTT HERE - 'ENGINES SHUT DOWN AT \";\n15266 Z1 = INT((X1 + 9) / 10): Z2 = INT((Y1 + 9) / 10)\n15267 PRINT \"QUADRANT\"; Z1; \"-\"; Z2; \",  \";\n15268 PRINT \"SECTOR\"; X1 - 10 * (Z1 - 1); \"-\"; Y1 - 10 * (Z2 - 1); \"'\"\n15270 IF T5 <> 0 THEN RETURN\n15295 Q1 = INT((X1 + 9) / 10): Q2 = INT((Y1 + 9) / 10)\n15296 S6 = X1 - 10 * (Q1 - 1): S7 = Y1 - 10 * (Q2 - 1)\n15307 GOSUB 15450\n15310 PRINT : PRINT \"ENTERING THE \"; G2$; \" QUADRANT  (\"; Q1; \"-\"; Q2; \")\"\n15315 Q$(S6, S7) = LEFT$(S5$, 1): GOSUB 15400: RETURN\n15320 Q$(S6, S7) = LEFT$(S5$, 1)\n15321 IF L6 = 1 THEN RETURN\n15325 IF K3 = 0 THEN 15390\n15330 FOR L = 1 TO K3\n15340 F3 = SQR((F4 - K4(L)) ^ 2 + (F5 - K5(L)) ^ 2)\n15350 K8(L) = .5 * (K7(L) + F3)\n15360 K7(L) = F3\n15370 NEXT L\n15380 GOSUB 14200\n15390 GOSUB 16375: RETURN\n15400 REM- NEW QUAD\n15401 J4 = 1: B6 = 0: B7 = 0: K3 = 0: C3 = 0\n15402 U = G(Q1, Q2)\n15403 IF U > 999 THEN 15440\n15404 K3 = INT(.01 * U): FOR A = 1 TO 10: FOR B = 1 TO 10: Q$(A, B) = \".\": NEXT B: NEXT A\n15405 Q$(S6, S7) = LEFT$(S5$, 1): U = G(Q1, Q2): IF U < 100 THEN 15417\n15406 U = U - 100 * K3: FOR A = 1 TO K3\n15407 S = FNB(1): K4(A) = S: T = FNB(1): K5(A) = T\n15408 IF Q$(S, T) <> \".\" THEN 15407\n15409 Q$(S, T) = \"K\": K7(A) = SQR((S6 - S) ^ 2 + (S7 - T) ^ 2): K8(A) = K7(A)\n15410 K6(A) = RND(1) * 150 + 325: NEXT A\n15411 IF R2 = 0 THEN 15416\n15412 FOR A = 1 TO R2\n15413 IF (C1(A) = Q1) AND (C2(A) = Q2) THEN 15415\n15414 NEXT A: GOTO 15416\n15415 Q$(S, T) = \"C\": K6(K3) = 1000 + 400 * RND(1): C3 = 1\n15416 GOSUB 14200\n15417 IF U < 10 THEN 15421\n15418 U = U - 10\n15419 B6 = FNB(1): B7 = FNB(1): IF Q$(B6, B7) <> \".\" THEN 15419\n15420 Q$(B6, B7) = \"B\"\n15421 GOSUB 16375: IF U < 1 THEN RETURN\n15422 FOR A = 1 TO U\n15423 S = FNB(1): T = FNB(1): IF Q$(S, T) <> \".\" THEN 15423\n15424 Q$(S, T) = \"*\": NEXT A\n15425 IF (T2 <> Q1) OR (T3 <> Q2) THEN RETURN\n15426 S = FNB(1): T = FNB(1): IF Q$(S, T) <> \".\" THEN 15426\n15427 Q$(S, T) = \"O\": PRINT\n15428 PRINT \"MR. SPOCK - 'CAPTAIN, THE SHORT-RANGE SENSORS DETECT A\"\n15429 PRINT \"SPACE WARP SOMEWHERE IN THIS QUADRANT.'\"\n15430 RETURN\n15440 FOR A = 1 TO 10: FOR B = 1 TO 10: Q$(A, B) = \".\": NEXT B: NEXT A\n15441 Q$(S6, S7) = LEFT$(S5$, 1): RETURN\n15450 G4$ = \"III\": L = 2: IF Q2 >= 5 THEN 15452\n15451 L = 1\n15452 G2$ = G1$(2 * (Q1 - 1) + L): L = Q2\n15453 IF L <= 4 THEN 15455\n15454 L = Q2 - 4\n15455 G3$ = \"IV\": IF L = 4 THEN 15457\n15456 G3$ = LEFT$(G4$, L)\n15457 G2$ = G2$ + \" \" + G3$: RETURN\n15500 REM - NOVA\n15501 IF RND(1) > .1 THEN 15503\n15502 GOSUB 15950: RETURN\n15503 Q$(A5, A6) = \".\": PRINT \"***STAR AT SECTOR \"; A5; \"-\"; A6; \" NOVAS.\"\n15504 G(Q1, Q2) = G(Q1, Q2) - 1: S1 = S1 + 1\n15505 B9 = 1: T6 = 1: T7 = 1: K = 0: X1 = 0: Y1 = 0\n15506 H4(B9, 1) = A5: H4(B9, 2) = A6\n15507 FOR M = B9 TO T6: FOR Q = 1 TO 3: FOR J = 1 TO 3\n15508 IF J * Q = 4 THEN 15552\n15509 J5 = H4(M, 1) + Q - 2: J6 = H4(M, 2) + J - 2\n15510 IF (J5 < 1) OR (J5 > 10) THEN 15552\n15511 IF (J6 < 1) OR (J6 > 10) THEN 15552\n15512 IF Q$(J5, J6) = \".\" THEN 15552\n15513 IF Q$(J5, J6) = \"O\" THEN 15552\n15514 IF Q$(J5, J6) <> \"*\" THEN 15520\n15515 IF RND(1) >= .1 THEN 15517\n15516 X2 = J5: Y2 = J6: GOSUB 15950: RETURN\n15517 T7 = T7 + 1: H4(T7, 1) = J5: H4(T7, 2) = J6: G(Q1, Q2) = G(Q1, Q2) - 1\n15518 S1 = S1 + 1: PRINT \"***STAR AT SECTOR\"; J5; \"-\"; J6; \"NOVAS.\"\n15519 GOTO 15551\n15520 IF Q$(J5, J6) <> \"B\" THEN 15527\n15521 G(Q1, Q2) = G(Q1, Q2) - 10: FOR V = 1 TO R3\n15522 IF (B2(V) <> Q1) OR (B3(V) <> Q2) THEN 15524\n15523 B2(V) = B2(R3): B3(V) = B3(R3)\n15524 NEXT V: R3 = R3 - 1: B6 = 0: B7 = 0: B1 = B1 + 1: GOSUB 16375\n15525 PRINT \"***STARBASE AT SECTOR \"; J5; \"-\"; J6; \" DESTROYED.\"\n15526 GOTO 15551\n15527 IF (S6 <> J5) OR (S7 <> J6) THEN 15537\n15528 PRINT \"***STARSHIP BUFFETED BY NOVA.\": IF S4 <> 0 THEN 15530\n15529 E1 = E1 - 1000: GOTO 15533\n15530 IF S3 >= 1000 THEN 15535\n15531 D6 = 1000 - S3: E1 = E1 - D6: GOSUB 16375: S3 = 0: S4 = 0\n15532 PRINT \"***STARSHIP SHIELDS KNOCKED OUT.\": D4(8) = .005 * D5 * RND(1) * D6\n15533 IF E1 > 0 THEN 15536\n15534 F9 = 7: GOSUB 10000: RETURN\n15535 S3 = S3 - 1000\n15536 X1 = X1 + S6 - H4(M, 1): Y1 = Y1 + S7 - H4(M, 2): K = K + 1: GOTO 15552\n15537 IF Q$(J5, J6) <> \"C\" THEN 15550\n15538 FOR V = 1 TO K3\n15539 IF (K4(V) = J5) AND (K5(V) = J6) THEN 15541\n15540 NEXT V\n15541 K6(V) = K6(V) - 800: IF K6(V) <= 0 THEN 15550\n15542 N5 = J5 + J5 - H4(M, 1): N6 = J6 + J6 - H4(M, 2)\n15543 PRINT \"***COMMANDER AT SECTOR \"; J5; \"-\"; J6; \" DAMAGED\";\n15544 IF (N5 < 1) OR (N5 > 10) OR (N6 < 1) OR (N6 > 10) THEN 15549\n15545 PRINT \" AND BUFFETED TO SECTOR \"; N5; \"-\"; N6\n15546 Q$(N5, N6) = \"C\": K4(V) = N5: K5(V) = N6\n15547 K7(V) = SQR((S6 - N5) ^ 2 + (S7 - N6) ^ 2): K8(V) = K7(V)\n15548 Q$(J5, J6) = \".\"\n15549 PRINT : GOTO 15552\n15550 A5 = J5: A6 = J6: T2$ = Q$(J5, J6): GOSUB 6000: GOTO 15552\n15551 PRINT : Q$(J5, J6) = \".\"\n15552 NEXT J: NEXT Q: NEXT M\n15553 IF T6 = T7 THEN 15555\n15554 B9 = T6 + 1: T6 = T7: GOTO 15507\n15555 IF K = 0 THEN RETURN\n15556 D1 = K * .1\n15557 IF X1 <> 0 THEN X1 = SGN(X1)\n15558 IF Y1 <> 0 THEN Y1 = SGN(Y1)\n15559 I = 3 * (X1 + 1) + Y1 + 2\n15560 D2 = C5(I)\n15561 IF D2 = 0 THEN D1 = 0\n15562 IF D1 = 0 THEN RETURN\n15563 PRINT : PRINT \"FORCE OF NOVA DISPLACES STARSHIP.\"\n15564 GOSUB 15000: RETURN\n15600 REM-PHASERS\n15601 P = 2: J3 = 1\n15602 IF C5$ <> \"DOCKED\" THEN 15604\n15603 PRINT \"PHASERS CAN'T BE FIRED THRU BASE SHIELDS.\": GOTO 15612\n15604 IF D4(3) = 0 THEN 15606\n15605 PRINT \"PHASER BANKS DAMAGED.\": GOTO 15612\n15606 IF S4 = 0 THEN 15608\n15607 PRINT \"SHIELDS MUST BE DOWN TO FIRE PHASERS.\": GOTO 15612\n15608 IF K3 > 0 THEN 15613\n15609 PRINT\n15610 PRINT \"MR. SPOCK - 'CAPTAIN, THE SHORT-RANGE SENSORS\"\n15611 PRINT \"DETECT NO KLINGONS IN THIS QUADRANT.'\"\n15612 J3 = 0: RETURN\n15613 PRINT \"PHASERS LOCKED ON TARGET. ENERGY AVAILABLE=\";\n15614 PRINT .01 * INT(100 * E1)\n15615 INPUT \"UNITS TO FIRE:\"; P1: IF P1 < E1 THEN 15617\n15616 PRINT \"ENERGY AVAILABLE =\"; : GOTO 15614\n15617 IF P1 > 0 THEN 15619\n15618 J3 = 0: RETURN\n15619 E1 = E1 - P1\n15620 IF D4(11) = 0 THEN 15623\n15621 P1 = P1 * (RND(1) * .5 + .5)\n15622 PRINT : PRINT \"COMPUTER MALFUNCTION HAMPERS PHASER ACCURACY.\": PRINT\n15623 E = P1: IF K3 = 0 THEN 15640\n15624 E = 0: T5 = (K3 * (K3 + 1)) / 2\n15625 FOR I = 1 TO K3: H3(I) = ((K3 + 1 - I) / T5) * P1\n15626 H5(I) = ABS(K6(I)) / (P * .9 ^ K7(I))\n15627 IF H3(I) <= H5(I) THEN 15629\n15628 E = E + (H3(I) - H5(I)): H3(I) = H5(I)\n15629 NEXT I\n15630 IF E = 0 THEN 15637\n15631 FOR I = 1 TO K3: R7 = H5(I) - H3(I)\n15632 IF R7 <= 0 THEN 15635\n15633 IF R7 >= E THEN 15636\n15634 H3(I) = H5(I): E = E - R7\n15635 NEXT I: GOTO 15637\n15636 H3(I) = H3(I) + E: E = 0\n15637 GOSUB 12000\n15638 IF (E <> 0) AND (A2 = 0) THEN 15640\n15639 J3 = 1: RETURN\n15640 PRINT FR(E); \"EXPENDED ON EMPTY SPACE.\": J3 = 1: RETURN\n15650 REM - PHOTONS\n15651 J3 = 1: IF D4(4) = 0 THEN 15653\n15652 PRINT \"PHOTON TUBES DAMAGED.\": GOTO 15657\n15653 IF T4 <> 0 THEN 15655\n15654 PRINT \"NO TORPEDOS LEFT.\": GOTO 15657\n15655 INPUT \"TORPEDO COURSE:\"; C6\n15656 IF C6 >= 0 THEN 15658\n15657 J3 = 0: RETURN\n15658 INPUT \"BURST OF 3\"; B$: N = 1\n15659 IF LEFT$(B$, 1) = \"N\" THEN 15668\n15660 IF LEFT$(B$, 1) <> \"Y\" THEN 15658\n15661 IF T4 > 2 THEN 15663\n15662 PRINT \"NO BURST. ONLY \"; T4; \" TORPEDOS LEFT.\": GOTO 15657\n15663 INPUT \"SPREAD ANGLE (3 - 30 DEG):\"; G2\n15664 IF G2 < 0 THEN 15657\n15665 IF (G2 < 3) OR (G2 > 30) THEN 15663\n15666 G2 = FND(G2)\n15667 N = 3\n15668 REM - CONTINUE\n15669 FOR Z6 = 1 TO N\n15670 IF C5$ <> \"DOCKED\" THEN T4 = T4 - 1\n15671 Z7 = Z6: R = RND(1)\n15672 R = (R + RND(1)) * .5 - .5\n15673 IF (R >= -.4) AND (R <= .4) THEN 15680\n15674 R = (RND(1) + 1.2) * R: IF N = 3 THEN 15676\n15675 PRINT \"*** TORPEDO MISFIRES...\": GOTO 15677\n15676 PRINT \"*** TORPEDO NUMBER \"; Z6; \" MISFIRES...\"\n15677 IF RND(1) > .2 THEN 15680\n15678 PRINT \"***PHOTON TUBES DAMAGED BY MISFIRE.\"\n15679 D4(4) = D5 * (1 + 2 * RND(1)): GOTO 15746\n15680 IF (S4 <> 0) OR (C5$ = \"DOCKED\") THEN R = R + .001 * S3 * R\n15681 A3 = C6 + .25 * R: IF N = 1 THEN 15684\n15682 A8 = (15 - A3 + (2 - Z6) * G2) * .5235988: PRINT\n15683 PRINT \"TRACK FOR TORPEDO NUMBER \"; Z7; \" --\": GOTO 15685\n15684 PRINT : PRINT \" TORPEDO TRACK - \": A8 = (15 - A3) * .5235988\n15685 X4 = -SIN(A8): Y4 = COS(A8): B8 = ABS(X4)\n15686 IF ABS(Y4) > ABS(X4) THEN B8 = ABS(Y4)\n15687 X4 = X4 / B8: Y4 = Y4 / B8: X5 = S6: Y5 = S7\n15688 FOR L9 = 1 TO 15: X5 = X5 + X4: A5 = INT(X5 + .5)\n15689 IF (A5 < 1) OR (A5 > 10) THEN 15744\n15690 Y5 = Y5 + Y4: A6 = INT(Y5 + .5)\n15691 IF (A6 < 1) OR (A6 > 10) THEN 15744\n15692 IF (L9 = 5) OR (L9 = 9) THEN PRINT\n15693 PRINT FR(X5); \"-\"; FR(Y5); \", \";\n15694 IF Q$(A5, A6) <> \".\" THEN 15696\n15695 GOTO 15743\n15696 PRINT : IF Q$(A5, A6) = \"K\" THEN 15701\n15697 IF Q$(A5, A6) <> \"C\" THEN 15723\n15698 IF RND(1) > .1 THEN 15701\n15699 PRINT \"***COMMANDER AT SECTOR \"; A5; \"-\"; A6; \" USES ANTI-PHOTON\";\n15700 PRINT \" DEVICE!\": PRINT \" TORPEDO NEUTRALIZED.\": GOTO 15745\n15701 FOR V = 1 TO K3\n15702 IF (A5 = K4(V)) AND (A6 = K5(V)) THEN 15704\n15703 NEXT V\n15704 K = K6(V): W3 = 200 + 800 * RND(1)\n15705 IF ABS(K) < W3 THEN W3 = ABS(K)\n15706 K6(V) = K - SGN(K) * ABS(W3): IF K6(V) <> 0 THEN 15708\n15707 T2$ = Q$(A5, A6): GOSUB 6000: GOTO 15745\n15708 IF Q$(A5, A6) = \"K\" THEN PRINT \"***KLINGON AT\";\n15709 IF Q$(A5, A6) = \"C\" THEN PRINT \"***COMMANDER AT\";\n15710 PRINT A5; \"-\"; A6;\n15711 A7 = A8 + 2.5 * (RND(1) - .5)\n15712 W3 = ABS(-SIN(A7)): IF ABS(COS(A7)) > W3 THEN W3 = ABS(COS(A7))\n15713 X7 = -SIN(A7) / W3: Y7 = COS(A7) / W3\n15714 P = INT(A5 + X7 + .5): Q = INT(A6 + Y7 + .5)\n15715 IF (P < 1) OR (P > 10) OR (Q < 1) OR (Q > 10) THEN 15722\n15716 IF Q$(P, Q) <> \".\" THEN 15722\n15717 Q$(P, Q) = Q$(A5, A6): Q$(A5, A6) = \".\": PRINT \"DAMAGED--\"\n15718 PRINT \" DISPLACED BY BLAST TO SECTOR\"; P; \"-\"; Q\n15719 K4(V) = P: K5(V) = Q: K7(V) = SQR((S6 - P) ^ 2 + (S7 - Q) ^ 2)\n15720 K8(V) = K7(V)\n15721 GOSUB 14200: GOTO 15745\n15722 PRINT \"DAMAGED, BUT NOT DESTROYED.\": GOTO 15745\n15723 IF Q$(A5, A6) <> \"B\" THEN 15731\n15724 PRINT \"***STARBASE DESTROYED - CONGRATULATIONS -  YOU TURKEY!\"\n15725 IF S2(Q1, Q2) < 0 THEN S2(Q1, Q2) = 0\n15726 FOR W = 1 TO R3\n15727 IF (B2(W) <> Q1) OR (B3(W) <> Q2) THEN 15729\n15728 B2(W) = B2(R3): B3(W) = B3(R3)\n15729 NEXT W: Q$(A5, A6) = \".\": R3 = R3 - 1: B6 = 0: B7 = 0\n15730 G(Q1, Q2) = G(Q1, Q2) - 10: B1 = B1 + 1: GOSUB 16375: GOTO 15745\n15731 IF Q$(A5, A6) <> \"*\" THEN 15739\n15732 IF RND(1) > .15 THEN 15735\n15733 PRINT \"***STAR AT SECTOR \"; A5; \"-\"; A6; \" UNAFFECTED BY PHOTON BLAST\"\n15734 GOTO 15745\n15735 X2 = A5: Y2 = A6: GOSUB 15500: A5 = X2: A6 = Y2\n15736 IF G(Q1, Q2) = 1000 THEN RETURN\n15737 IF A2 <> 0 THEN RETURN\n15738 GOTO 15745\n15739 PRINT : PRINT \"AAAAAIIIIIIIEEEEEEEAAAAAAAUUUUUUGGGGGGGHHHHHHHHHH!!!\"\n15740 PRINT \"HACK!     HACK!    COUGH!      *CHOKE!*\"\n15741 PRINT : PRINT \"MR. SPOCK - 'FASCINATING!' \": Q$(A5, A6) = \".\"\n15742 T2 = 0: T3 = 0: GOTO 15745\n15743 NEXT L9\n15744 PRINT : PRINT \" TORPEDO MISSED! \";\n15745 NEXT Z6\n15746 IF R1 <> 0 THEN RETURN\n15747 F9 = 1: GOSUB 10000: RETURN\n15750 REM - RAM\n15751 PRINT : PRINT \"*** RED ALERT!!   RED ALERT!! ***\": PRINT\n15752 PRINT \"*** COLLISION IMMINENT!!\": PRINT\n15753 PRINT \"*** \"; S5$; \" RAMS \"; : W7 = 1: IF Q$(S6, S7) = \"C\" THEN W7 = 2\n15754 IF W7 = 1 THEN PRINT \"KLINGON AT \";\n15755 IF W7 = 2 THEN PRINT \"COMMANDER AT \";\n15756 PRINT \"SECTOR\"; S6; \"-\"; S7: A5 = S6: A6 = S7: T2$ = Q$(S6, S7)\n15757 GOSUB 6000: PRINT \"***\"; S5$; \" HEAVILY DAMAGED.\"\n15758 K = INT(5 + RND(1) * 20): PRINT \"***SICKBAY REPORTS \"; K; \" CASUALTIES!\"\n15759 C4 = C4 + K: FOR L = 1 TO 12: I = RND(1)\n15760 J = (3.5 * W7 * (RND(1) + I) + 1) * D5\n15761 IF L = 6 THEN J = J / 3\n15762 D4(L) = D4(L) + T1 + J: NEXT L: D4(6) = D4(6) - 3\n15763 IF D4(6) < 0 THEN D4(6) = 0\n15764 S4 = 0: IF R1 <> 0 THEN RETURN\n15765 F9 = 1: GOSUB 10000: RETURN\n15800 REM - SCORE\n15801 P = D0 - J2: IF (P <> 0) AND (R1 = 0) THEN 15803\n15802 IF P < 5 THEN P = 5\n15803 N = (K2 + K1) / P: K = INT(500 * N + .5): L = 0\n15804 IF G1 <> 0 THEN L = 100 * S8\n15805 I = 0\n15806 IF LEFT$(S5$, 1) = \"E\" THEN M = 0\n15807 IF LEFT$(S5$, 1) = \"F\" THEN M = 1\n15808 IF LEFT$(S5$, 1) = \"\" THEN M = 2\n15809 IF A1 = 0 THEN I = 200\n15810 J = 10 * K1 + 50 * K2 + K + L - I - 100 * B1 - 100 * M - 35 * N1 - 3 * S1 - C4\n15811 PRINT : IF J <> 0 THEN 15813\n15812 PRINT \"AS YET, YOU HAVE NO SCORE.\": RETURN\n15813 PRINT \"YOUR SCORE --\": PRINT : IF K1 = 0 THEN 15815\n15814 PRINT K1; TAB(5); \"ORDINARY KLINGON(S) DESTROYED \"; TAB(36); 10 * K1\n15815 IF K2 = 0 THEN 15817\n15816 PRINT K2; TAB(5); \"KLINGON COMMANDER(S) DESTROYED \"; TAB(36); 50 * K2\n15817 IF K = 0 THEN 15820\n15818 PRINT FR(N); TAB(5); \"KLINGONS PER STARDATE, AVERAGE \";\n15819 PRINT TAB(36); K\n15820 IF S1 = 0 THEN 15822\n15821 PRINT S1; TAB(5); \"STAR(S) DESTROYED \"; TAB(36); -3 * S1\n15822 IF B1 = 0 THEN 15824\n15823 PRINT B1; TAB(5); \"STARBASES DESTROYED \"; TAB(36); -100 * B1\n15824 IF N1 = 0 THEN 15826\n15825 PRINT N1; TAB(5); \"SOS CALL(S) TO A STARBASE \"; TAB(36); -35 * N1\n15826 IF C4 = 0 THEN 15828\n15827 PRINT C4; TAB(5); \"CASUALTIES INCURRED \"; TAB(36); -C4\n15828 IF M = 0 THEN 15830\n15829 PRINT M; TAB(5); \"SHIP(S) LOST OR DESTROYED \"; TAB(36); -100 * M\n15830 IF A1 <> 0 THEN 15832\n15831 PRINT \"PENALTY FOR GETTING YOURSELF KILLED \"; TAB(36); -200\n15832 IF G1 = 0 THEN 15834\n15833 PRINT TAB(5); \"BONUS FOR WINNING \"; S$(S8); \" GAME \"; TAB(36); L\n15834 PRINT TAB(5); \"-------------------------------------\"\n15835 PRINT TAB(28); \"TOTAL\"; TAB(36); J; \"**\": RETURN\n15850 REM-SETUP\n15851 A2 = 0: G1 = 0: GOSUB 4000: S5$ = \"ENTERPRISE\"\n15852 I7 = 5000: E1 = I7: I8 = 2500: S3 = I8: S4 = 0: S9 = S4: J1 = 4: L1 = J1\n15853 Q1 = FNA(1): Q2 = FNA(1): S6 = FNB(1): S7 = FNB(1): I9 = 10: T4 = I9\n15854 W1 = 5: W2 = 25: FOR I = 1 TO 12: D4(I) = 0: NEXT\n15855 J2 = 100 * INT(31 * RND(1) + 20): D0 = J2: K1 = 0: K2 = 0: N1 = 0: N2 = 0: R6 = 0: C4 = 0\n15856 A1 = 1: D3 = .25: FOR I = 1 TO 8: FOR J = 1 TO 8: S2(I, J) = 0: NEXT J: NEXT I\n15857 F1(1) = D0 - .5 * I5 * LOG(RND(1)): F1(5) = 1E30\n15858 F1(2) = D0 - 1.5 * (I5 / R2) * LOG(RND(1)): I6 = 0\n15859 F1(3) = D0 - .3 * I5 * LOG(RND(1)): F1(4) = D0 - .3 * I5 * LOG(RND(1))\n15860 FOR I = 1 TO 8: FOR J = 1 TO 8: K = INT(RND(1) * 9 + 1): I6 = I6 + K\n15861 G(I, J) = K: NEXT J: NEXT I: S1 = 0\n15862 FOR I = 1 TO I2\n15863 X = INT(RND(1) * 6 + 2): Y = INT(RND(1) * 6 + 2)\n15864 IF G(X, Y) >= 10 THEN 15863\n15865 IF I < 2 THEN 15869\n15866 K = I - 1: FOR J = 1 TO K: D1 = SQR((B2(J) - X) ^ 2 + (B3(J) - Y) ^ 2)\n15867 IF D1 < 2 THEN 15863\n15868 NEXT J\n15869 B2(I) = X: B3(I) = Y: S2(X, Y) = -1: G(X, Y) = G(X, Y) + 10: NEXT I\n15870 B1 = 0: K = I1 - I4: L = INT(.25 * S8 * (9 - L2) + 1)\n15871 M = INT((1 - RND(1) ^ 2) * L): IF M > K THEN M = K\n15872 N = 100 * M\n15873 X = FNA(1): Y = FNA(1): IF G(X, Y) + N > 999 THEN 15873\n15874 G(X, Y) = G(X, Y) + N: K = K - M: IF K <> 0 THEN 15871\n15875 FOR I = 1 TO I4\n15876 X = FNA(1): Y = FNA(1): IF (G(X, Y) < 99) AND (RND(1) < .75) THEN 15876\n15877 IF G(X, Y) > 899 THEN 15876\n15878 IF I = 1 THEN 15881\n15879 M = I - 1: FOR J = 1 TO M: IF (C1(J) = X) AND (C2(J) = Y) THEN 15876\n15880 NEXT J\n15881 G(X, Y) = G(X, Y) + 100: C1(I) = X: C2(I) = Y: NEXT I\n15882 I = INT(D0): PRINT : S0 = 0\n15883 T2 = FNA(1): T3 = FNA(1): IF G(T2, T3) < 100 THEN 15883\n15884 IF S8 <> 1 THEN 15896\n15885 PRINT \"IT IS STARDATE \"; I; \" ...THE ORGANIAN PEACE TREATY BETWEEN\"\n15886 PRINT \"THE UNITED FEDERATION OF PLANETS AND THE KLINGON EMPIRE\"\n15887 PRINT \"HAS COLLAPSED AND THE FEDERATION IS BEING ATTACKED BY A\"\n15888 PRINT \"DEADLY KLINGON INVASION FLEET. AS CAPTAIN OF THE STARSHIP\"\n15889 PRINT \"U.S.S. ENTERPRISE, IT IS YOUR MISSION TO SEEK OUT AND\"\n15890 PRINT \"DESTROY THIS INVASION FORCE OF \"; I1; \" BATTLE CRUISERS.\"\n15891 PRINT : PRINT \"YOU HAVE AN INITIAL ALLOTMENT OF \"; INT(I5);\n15892 PRINT \" STARDATES\": PRINT \"TO COMPLETE YOUR MISSION.\"\n15893 PRINT \"AS THE MISSION PROCEEDS, YOU MAY BE GIVEN MORE TIME.\"\n15894 PRINT : PRINT \"YOU WILL HAVE \"; I2; \" SUPPORTING STARBASE(S).\": PRINT\n15895 GOTO 15904\n15896 PRINT \"STARDATE..............\"; I\n15897 PRINT \"NUMBER OF KLINGONS....\"; I1\n15898 PRINT \"NUMBER OF STARDATES...\"; INT(I5)\n15899 PRINT \"NUMBER OF STARBASES...\"; I2\n15900 PRINT \"STARBASE LOCATIONS....\";\n15901 FOR I = 1 TO I2: PRINT B2(I); \"-\"; B3(I);\n15902 IF I <> I2 THEN PRINT \", \";\n15903 NEXT I: PRINT : PRINT\n15904 GOSUB 15450\n15905 PRINT \"THE \"; S5$; \" IS CURRENTLY IN THE \"; G2$; \" QUADRANT.\"\n15906 GOSUB 15400: RETURN\n15910 REM - SETWARP\n15911 INPUT \"WARP FACTOR\"; K\n15912 PRINT\n15913 IF K < 1 THEN 15926\n15914 IF K > 10 THEN 15927\n15915 J = W1: W1 = K: W2 = W1 * W1\n15916 IF (W1 <= J) OR (W1 <= 6) THEN 15919\n15917 IF W1 <= 8 THEN 15920\n15918 IF W1 > 8 THEN 15922\n15919 PRINT \"ENSIGN CHEKOV - 'WARP FACTOR \"; W1; \" CAPTAIN'\": RETURN\n15920 PRINT \"ENGINEER SCOTT - 'AYE, BUT OUR MAXIMUM SAFE SPEED\";\n15921 PRINT \" IS WARP 6.'\": RETURN\n15922 IF W1 = 10 THEN 15925\n15923 PRINT \"ENGINEER SCOTT - 'AYE, CAPTAIN, BUT OUR ENGINES MAY NOT \";\n15924 PRINT \"TAKE IT.'\": RETURN\n15925 PRINT \"ENGINEER SCOTT - 'AYE, CAPTAIN, WE'LL GIVE IT A TRY.'\": RETURN\n15926 PRINT \"ENSIGN CHEKOV - 'WE CAN'T GO BELOW WARP 1, CAPTAIN.'\": RETURN\n15927 PRINT \"ENSIGN CHEKOV - 'OUR TOP SPEED IS WARP 10, CAPTAIN.'\"\n15928 RETURN\n15930 REM - SHIELDS\n15931 J3 = 0: IF D4(8) <> 0 THEN 15943\n15932 IF S4 <> 0 THEN 15936\n15933 INPUT \"SHIELDS ARE DOWN. DO YOU WANT THEM UP?\"; B$\n15934 IF LEFT$(B$, 1) = \"Y\" THEN 15939\n15935 RETURN\n15936 INPUT \"SHIELDS ARE UP. DO YOU WANT THEM DOWN?\"; B$\n15937 IF LEFT$(B$, 1) = \"Y\" THEN 15942\n15938 RETURN\n15939 S4 = 1: S9 = 1: IF C5$ <> \"DOCKED\" THEN E1 = E1 - 50\n15940 PRINT \"SHIELDS RAISED.\": IF E1 <= 0 THEN 15944\n15941 J3 = 1: RETURN\n15942 S4 = 0: S9 = 1: PRINT \"SHIELDS LOWERED.\": J3 = 1: RETURN\n15943 PRINT \"SHIELDS DAMAGED AND DOWN.\": RETURN\n15944 PRINT : PRINT \"SHIELDS USE UP LAST OF THE ENERGY.\"\n15945 F9 = 4: GOSUB 10000: RETURN\n15950 REM - SUPERNOVA\n15951 IF X2 <> 0 THEN 15961\n15952 N = INT(RND(1) * I6 + 1): FOR X = 1 TO 8: FOR Y = 1 TO 8\n15953 N = N - (G(X, Y) - INT(G(X, Y) / 10) * 10): IF N <= 0 THEN 15955\n15954 NEXT Y: NEXT X: RETURN\n15955 IF (X <> Q1) OR (Y <> Q2) THEN 15967\n15956 IF J4 <> 0 THEN 15967\n15957 N = INT(RND(1) * (G(X, Y) - INT(G(X, Y) / 10) * 10)) + 1\n15958 FOR X3 = 1 TO 10: FOR Y3 = 1 TO 10: IF Q$(X3, Y3) <> \"*\" THEN 15960\n15959 N = N - 1: IF N = 0 THEN 15961\n15960 NEXT Y3: NEXT X3\n15961 PRINT : PRINT \"*** RED ALERT!!  RED ALERT!! ***\"\n15962 X3 = X2: Y3 = Y2\n15963 PRINT \"*** INCIPIENT SUPERNOVA DETECTED AT SECTOR \"; X3; \"-\"; Y3\n15964 X = Q1: Y = Q2: K = (X2 - S6) ^ 2 + (Y2 - S7) ^ 2\n15965 IF K > 1.5 THEN 15971\n15966 PRINT \"*** EMERGENCY AUTO-OVERRIDE JAMMED ***\": A2 = 1: GOTO 15971\n15967 IF D4(9) <> 0 THEN 15971\n15968 PRINT : PRINT \"MESSAGE FROM STARFLEET COMMAND - STARDATE \"; INT(D0)\n15969 PRINT \"'SUPERNOVA IN QUADRANT \"; X; \"-\"; Y;\n15970 PRINT \" . - CAUTION ADVISED'\"\n15971 N = G(X, Y): R = INT(N / 100): Q = 0\n15972 IF (X <> Q1) OR (Y <> Q2) THEN 15974\n15973 K3 = 0: C3 = 0\n15974 IF R = 0 THEN 15980\n15975 R1 = R1 - R: IF R2 = 0 THEN 15980\n15976 FOR L = 1 TO R2: IF (C1(L) <> X) OR (C2(L) <> Y) THEN 15979\n15977 C1(L) = C1(R2): C2(L) = C2(R2): C1(R2) = 0: C2(R2) = 0\n15978 R2 = R2 - 1: R = R - 1: Q = 1: IF R2 = 0 THEN F1(2) = 1E30\n15979 NEXT L\n15980 IF R3 = 0 THEN 15984\n15981 FOR L = 1 TO R3: IF (B2(L) <> X) OR (B3(L) <> Y) THEN 15983\n15982 B2(L) = B2(R3): B3(L) = B3(R3): B2(R3) = 0: B3(R3) = 0: R3 = R3 - 1\n15983 NEXT L\n15984 IF X2 = 0 THEN 15988\n15985 N = G(X, Y) - INT(G(X, Y) / 100) * 100\n15986 S1 = S1 + (N - INT(N / 10) * 10): B1 = B1 + INT(N / 10)\n15987 K1 = K1 + R: K2 = K2 + Q\n15988 IF (S2(X, Y) <> 0) AND (D4(9) <> 0) THEN S2(X, Y) = 1000 + G(X, Y)\n15989 IF (D4(9) = 0) OR ((Q1 = X) AND (Q2 = Y)) THEN S2(X, Y) = 1\n15990 G(X, Y) = 1000\n15991 IF (R1 <> 0) OR ((X = Q1) AND (Y = Q2)) THEN 15995\n15992 PRINT : PRINT \"MR. SPOCK - 'CAPTAIN, A SUPERNOVA IN QUADRANT \";\n15993 PRINT X; \"-\"; Y; \" HAS JUST DESTROYED THE LAST OF THE KLINGONS.'\"\n15994 F9 = 1: GOSUB 10000: RETURN\n15995 IF A2 = 0 THEN RETURN\n15996 F9 = 8: GOSUB 10000: RETURN\n16000 REM-MOVECOM\n16001 A = 1: B = 1\n16010 FOR K = 1 TO K3\n16020 C = K4(K): D = K5(K)\n16030 IF Q$(C, D) = \"C\" THEN 16050\n16040 NEXT K\n16050 N = 0: F = K6(K) + 100 * K3\n16060 IF F > 1000 THEN N = INT(RND(1) * K7(K) + 1)\n16065 IF ((C5$ = \"DOCKED\") AND ((B4 <> Q1) OR (B5 <> Q2))) THEN N = -S8\n16070 IF N = 0 THEN N = INT(((F + 200 * RND(1)) / 150) - 5)\n16071 IF N = 0 THEN RETURN\n16072 IF (N > 0) AND (K7(K) < 1.5) THEN RETURN\n16075 IF ABS(N) > S8 THEN N = SGN(N) * ABS(S8)\n16080 T = ABS(N): P = S6 - C: Q = S7 - D\n16085 IF 2 * ABS(P) < ABS(Q) THEN P = 0\n16090 IF 2 * ABS(Q) < ABS(P) THEN Q = 0\n16095 IF P <> 0 THEN P = SGN(P * N)\n16100 IF Q <> 0 THEN Q = SGN(Q * N)\n16105 R = C: S = D: Q$(C, D) = \".\"\n16110 FOR L2 = 1 TO T: L = R + P: M = S + Q\n16115 IF (L > 0) AND (L <= 10) THEN 16120\n16117 ON SGN(N) + 2 GOTO 16240, 16165, 16165\n16120 IF (M > 0) AND (M <= 10) THEN 16130\n16125 ON SGN(N) + 2 GOTO 16240, 16135, 16135\n16130 IF Q$(L, M) = \".\" THEN 16195\n16135 IF (Q = B) OR (P = 0) THEN 16165\n16140 M = S + B\n16145 IF (M > 0) AND (M <= 10) THEN 16155\n16150 ON SGN(N) + 2 GOTO 16240, 16160, 16160\n16155 IF Q$(L, M) = \".\" THEN 16195\n16160 B = -B\n16165 IF (P = A) OR (Q = 0) THEN 16200\n16170 L = R + A\n16175 IF (L > 0) AND (L <= 10) THEN 16185\n16180 ON SGN(N) + 2 GOTO 16240, 16190, 16190\n16185 IF Q$(L, M) = \".\" THEN 16195\n16190 A = -A: GOTO 16200\n16195 R = L: S = M\n16200 NEXT L2\n16205 Q$(R, S) = \"C\"\n16210 IF (R = C) AND (S = D) THEN RETURN\n16215 K4(K) = R: K5(K) = S: K7(K) = SQR((S6 - R) ^ 2 + (S7 - S) ^ 2)\n16220 K8(K) = K7(K): IF N > 0 THEN PRINT \"***COMMANDER ADVANCES  TO \";\n16225 IF N < 0 THEN PRINT \"***COMMANDER RETREATS TO\";\n16230 PRINT \" SECTOR \"; R; \"-\"; S: GOSUB 14200: RETURN\n16240 I = Q1 + INT((L + 9) / 10) - 1: J = Q2 + INT((M + 9) / 10) - 1\n16245 IF (I < 1) OR (I > 8) THEN 16350\n16250 IF (J < 1) OR (J > 8) THEN 16350\n16260 FOR L3 = 1 TO R2\n16265 IF (C1(L3) = I) AND (C2(L3) = J) THEN 16350\n16270 NEXT L3: PRINT \"***COMMANDER ESCAPES TO \";\n16275 PRINT \"QUADRANT \"; I; \"-\"; J; \" (AND REGAINS STRENGTH)\"\n16280 K4(K) = K4(K3): K5(K) = K5(K3): K7(K) = K7(K3): K8(K) = K8(K3)\n16285 K6(K) = K6(K3): K3 = K3 - 1: C3 = 0\n16290 IF C5$ <> \"DOCKED\" THEN GOSUB 16375\n16300 GOSUB 14200\n16310 G(Q1, Q2) = G(Q1, Q2) - 100: G(I, J) = G(I, J) + 100\n16320 FOR L3 = 1 TO R2\n16330 IF (C1(L3) = Q1) AND (C2(L3) = Q2) THEN 16340\n16335 NEXT L3\n16340 C1(L3) = I: C2(L3) = J: RETURN\n16350 A = -A: B = -B: GOTO 16200\n16375 REM - NEWCOND\n16376 C5$ = \"GREEN\"\n16377 IF E1 < 1000 THEN C5$ = \"YELLOW\"\n16378 IF G(Q1, Q2) > 99 THEN C5$ = \"RED\"\n16379 RETURN\n";
+        NavManager.NavigateTo("/basic");
+    }
+
+    private async Task onLoadFile(MouseEventArgs mouse)
+    {
+        FileSystemFileHandle fileHandle = null;
+
         try
         {
-            this.Output = "Working...";
-            this.StatusColor = "gray";
-            await InvokeAsync(StateHasChanged);
-
-            string s = await Http.GetStringAsync($@"http://{ServiceIP}/?goal=--v");
-            this.Output = DateTime.Now.ToLongTimeString() + "\r\n" + s;
-
-            if (s.Contains("version"))
+            OpenFilePickerOptionsStartInWellKnownDirectory options = new()
             {
-                this.StatusColor = "green";
-            }
-            else
-            {
-                this.StatusColor = "orange";
-            }
+                Types = new FilePickerAcceptType[] {
+                    new FilePickerAcceptType() {
+                        Description = "Basic Files",
+                        Accept = new() { { "text/plain", new string[] { ".bas" } } }
+                    }
+                },
+                Multiple = false,
+                StartIn = WellKnownDirectory.Downloads,
+                ExcludeAcceptAllOption = true
+            };
+
+            var fileHandles = await FileSystemAccessService.ShowOpenFilePickerAsync(options);
+            fileHandle = fileHandles.Single();
         }
-        catch (Exception ex)
+        catch (JSException ex)
         {
-            this.StatusColor = "red";
-            this.Output = DateTime.Now.ToLongTimeString() + "\r\nFailed\r\n" + ex.Message;
+            iText.inputText = "";
+
+            toastTitle = "Information";
+            toastContent = "No File Selected.";
+            toastClass = "e.toast-info";
+            toastIcon = "e-info toast-icons";
+            StateHasChanged();
+            await Task.Delay(100);
+            await this.ToastObj.ShowAsync();
         }
         finally
         {
-            await InvokeAsync(StateHasChanged);
-
-        }
-    }
-
-    private async Task<string> Run(string orgProgram, string goal, bool printOutput)
-    {
-        try
-        {
-            if (printOutput)
+            if (fileHandle is not null)
             {
-                this.Output = "Working...";
-            }
+                var file = await fileHandle.GetFileAsync();
+                string fName = file.Name.Substring(file.Name.Length - 3);
 
-            this.StatusColor = "gray";
-            await InvokeAsync(StateHasChanged);
-
-
-            try
-            {
-                await this._astEditor.UpdateDeclarations(orgProgram);
-            }
-            catch (Exception ex)
-            {
-                await this._astEditor.ConsoleError(ex.Message);
-            }
-
-            if (string.IsNullOrWhiteSpace(ServiceIP))
-            {
-                if (printOutput)
+                if (fName != "bas")
                 {
-                    this.Output = "No service IP";
+                    toastTitle = "Error";
+                    toastClass = "e.toast-danger";
+                    toastContent = "You did not select a .bas file\nPlease try again.";
+                    toastIcon = "e-error toast-icons";
+                    StateHasChanged();
+                    await Task.Delay(100);
+                    await this.ToastObj.ShowAsync();
                 }
-
-                return "No service IP";
-            }
-
-            string program = WebUtility.UrlEncode(orgProgram);
-
-            string s = await Http.GetStringAsync($@"http://{ServiceIP}/?goal={WebUtility.UrlEncode(goal)}&program={program}");
-            this.StatusColor = "green";
-            int errors = await this._astEditor.UpdateErrors(s);
-            if (errors > 0 || printOutput)
-            {
-                this.Output = DateTime.Now.ToLongTimeString() + "\r\nPicat> " + goal + "\r\n" + s;
-            }
-
-            return s;
-        }
-        catch (Exception ex)
-        {
-            this.StatusColor = "red";
-            this.Output = DateTime.Now.ToLongTimeString() + "\r\nFailed\r\n" + ex.Message;
-            return ex.Message;
-        }
-        finally
-        {
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-
-    private async Task RunGoal(MouseEventArgs mouse)
-    {
-        string orgProgram = await _editor.GetValue();
-        string goal = Goal.Trim();
-
-        _ = await Run(orgProgram, goal, true);
-    }
-
-
-    private async Task OnKeyDown(KeyboardEvent keyboard)
-    {
-
-        if (keyboard.CtrlKey && keyboard.KeyCode == KeyCode.Space)
-        {
-            await this._astEditor.RefreshCompletions();
-        }
-
-        if (!_initializedSuggestionDetail)
-        {
-            _initializedSuggestionDetail = true;
-            await Task.Delay(1000);
-            using JsonDocument doc2 = JsonDocument.Parse(@"{}");
-            JsonElement root2 = doc2.RootElement;
-            await _editor.Trigger("api", "toggleSuggestionDetails", root2);
-        }
-    }
-
-    private async Task OnKeyUp(KeyboardEvent keyboard)
-    {
-        // remove previous one
-        aTimer.Stop();
-
-        // new timer
-        aTimer.Start();
-    }
-
-    private async Task RunKeyPress(KeyboardEventArgs keyboard)
-    {
-        if (keyboard.Key != "Enter")
-        {
-            return;
-        }
-
-        await this.RunGoal(null);
-    }
-
-    private async Task SampleSelected(ChangeEventArgs ev)
-    {
-        string selection = ev.Value.ToString();
-        string code = this.Samples.SingleOrDefault(x => x.Item1 == selection).Item2;
-
-        if (code != null)
-        {
-            await this._editor.SetValue(code);
-            await this._astEditor.UpdateDeclarations(code);
-        }
-    }
-
-    private async Task OutputDoubleClick(MouseEventArgs mouse)
-    {
-        int pos = await _astEditor.GetSelectionStart(this.outputElement);
-        var lineIndex = this.Output.Take(pos).Count(c => c == '\n');
-        string[] lines = this.Output.Split("\n");
-        await _astEditor.MoveToError(lines[lineIndex]);
-    }
-
-    private async Task OnTestDoubleClick((string, bool?, int) test)
-    {
-        await _astEditor.Select(test.Item3);
-    }
-
-    private async Task RunAllTests(MouseEventArgs mouse)
-    {
-        if (this._astEditor.TestResults.Count == 0)
-        {
-            await InvokeAsync(StateHasChanged);
-            return;
-        }
-
-        string orgProgram = await _editor.GetValue();
-        string testAll = "\r\ntestt___all =>";
-        foreach(var test in this._astEditor.TestResults.OrderBy(x => Guid.NewGuid()))
-        {
-            testAll += $@"
-if (catch({test.Item1},_,writeln('{test.Item1}-'))) then writeln('{test.Item1}+') else writeln('{test.Item1}-') end,";
-        }
-
-        string res = await Run(orgProgram + testAll.Substring(0, testAll.Length - 1) + ".", "testt___all", false);
-
-        List<(string, bool?, int)> newTestResults = new List<(string, bool?, int)>();
-        foreach (var test in this._astEditor.TestResults)
-        {
-            newTestResults.Add((test.Item1, (bool?)!res.Contains(test.Item1 + "-"), test.Item3));
-        }
-
-        this._astEditor.TestResults = newTestResults;
-
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private void OnUserFinish(Object source, ElapsedEventArgs e)
-    {
-        InvokeAsync(async () =>
-        {
-            try
-            {
-                string program = await _editor.GetValue();
-                if (this._oldProgramUserStopTyping == program)
+                else
                 {
-                    return;
+                    iText.inputText = await file.TextAsync();
+                    StateHasChanged();
+                    NavManager.NavigateTo("/basic");
                 }
-
-                this._oldProgramUserStopTyping = program;
-                await this._astEditor.UpdateDeclarations(program);
-
-
-                if (string.IsNullOrWhiteSpace(ServiceIP))
-                {
-                    return;
-                }
-
-                program = WebUtility.UrlEncode(program);
-                string s = await Http.GetStringAsync($@"http://{ServiceIP}/?goal=--c&program={program}");
-                this.Output = DateTime.Now.ToLongTimeString() + "\r\n" + s;
-                this.StatusColor = "green";
-                _ = await this._astEditor.UpdateErrors(s);
             }
-
-            catch (Exception ex)
-            {
-                this.StatusColor = "red";
-                await this._astEditor.ConsoleError(ex.Message);
-            }
-            finally
-            {
-                StateHasChanged();
-            }
-        });
+        }
     }
 }

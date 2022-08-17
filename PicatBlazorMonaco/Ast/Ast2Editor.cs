@@ -8,8 +8,6 @@ using PicatBlazorMonaco.Ast;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Ast2
@@ -27,11 +25,11 @@ namespace Ast2
 
         private string[] _currentBuiltinReferenceDecors;
 
-        private List<DeclarationParser.Declaration> _currentDeclarations = new List<DeclarationParser.Declaration>();
+        private List<DeclarationParser.Declaration> _currentDeclarations = new();
 
-        private IntervalTree<int, DeclarationParser.Reference> _currentReferences = new IntervalTree<int, DeclarationParser.Reference>();
+        private readonly IntervalTree<int, DeclarationParser.Reference> _currentReferences = new();
 
-        public List<(string, bool?, int)> TestResults = new List<(string, bool?, int)>();
+        public List<(string, bool?, int)> TestResults = new();
 
         public Ast2Editor(MonacoEditor monacoEditor, IJSRuntime jsRuntime)
         {
@@ -61,16 +59,21 @@ namespace Ast2
 
         public static StandaloneEditorConstructionOptions GetEditorOptions()
         {
+            EditorMinimapOptions miniOpts = new();
+            miniOpts.Enabled = false;
+
             return new StandaloneEditorConstructionOptions
             {
-                Language = "picat",
-                Theme = "picatTheme",
+                Language = "sebasiciv",
+                Theme = "sebasicivThemeL",
                 InsertSpaces = true,
-                FormatOnPaste = true,
-                FormatOnType = true,
-                DetectIndentation = true,
+                FormatOnPaste = false,
+                FormatOnType = false,
+                DetectIndentation = false,
                 TabSize = 4,
-                GlyphMargin = true
+                GlyphMargin = true,
+                Minimap = miniOpts,
+                LineNumbers = "off"
             };
         }
 
@@ -91,10 +94,21 @@ namespace Ast2
             return await this._monacoEditor.GetSelection();
         }
 
+        public async Task<string> GetValue()
+        {
+            return await this._monacoEditor.GetValue();
+        }
+
+        public async Task SetValue(string inStr)
+        {
+            await this._monacoEditor.SetValue(inStr);
+        }
+
         public async Task<BlazorMonaco.Range> GetDefinition(Position pos)
         {
             int offset = await this._model.GetOffsetAt(pos);
             DeclarationParser.Reference reff = this._currentReferences.Query(offset).FirstOrDefault();
+
             if (reff != null)
             {
                 Position p = await this._model.GetPositionAt(reff.FirstMatch.NameOffset);
@@ -129,7 +143,6 @@ namespace Ast2
             return await _model.GetPositionAt(offset);
         }
 
-
         public async Task<int> GetSelectionStart(ElementReference element)
         {
             int pos = await _jsRuntime.InvokeAsync<int>("getSelectedStart", element);
@@ -143,13 +156,15 @@ namespace Ast2
             {
                 int open = line.IndexOf("(");
                 int close = line.IndexOf(")");
+
                 if (open > 0 && close > 0 && open + 1 < close)
                 {
                     string range = line.Substring(open + 1, close - open - 1);
                     string[] lines = range.Split("-");
+
                     if (lines.Length == 2 && int.TryParse(lines[0], out int start) && int.TryParse(lines[1], out int end) && start >= 0 && start <= end)
                     {
-                        Position pos = new Position { LineNumber = start, Column = 1 };
+                        Position pos = new() { LineNumber = start, Column = 1 };
                         await SetAndRevealPosition(pos);
                     }
                 }
@@ -158,7 +173,8 @@ namespace Ast2
 
         public async Task<int> UpdateErrors(string output)
         {
-            List<(int startLine, int endLine, string hoverMessage)> errors = new List<(int startLine, int endLine, string hoverMessage)>();
+            List<(int startLine, int endLine, string hoverMessage)> errors = new();
+
             foreach(string line in output.Split(new char[] { '\r', '\n'}, StringSplitOptions.RemoveEmptyEntries))
             {
                 // *** SYNTAX ERROR *** (222-228) wrong head.
@@ -166,10 +182,12 @@ namespace Ast2
                 {
                     int open = line.IndexOf("(");
                     int close = line.IndexOf(")");
+
                     if (open > 0 && close > 0 && open + 1 < close)
                     {
                         string range = line.Substring(open + 1, close - open - 1);
                         string[] lines = range.Split("-");
+
                         if (lines.Length == 2 && int.TryParse(lines[0], out int start) && int.TryParse(lines[1], out int end) && start >= 0 && start <= end)
                         {
                             errors.Add((start, end, line));
@@ -178,17 +196,19 @@ namespace Ast2
                 }
             }
 
-            List<ModelDeltaDecoration> decors = new List<ModelDeltaDecoration>(1);
-            foreach ((int startLine, int endLine, string hoverMessage) error in errors)
+            List<ModelDeltaDecoration> decors = new(1);
+
+            foreach ((int startLine, int endLine, string hoverMessage) in errors)
             {
-                ModelDeltaDecoration d = new ModelDeltaDecoration
+                ModelDeltaDecoration d = new()
                 {
-                    Range = new BlazorMonaco.Range { StartColumn = 1, StartLineNumber = error.startLine, EndColumn = 1, EndLineNumber = error.endLine },
+                    Range = new BlazorMonaco.Range { StartColumn = 1, StartLineNumber = startLine, EndColumn = 1, EndLineNumber = endLine },
+
                     Options = new ModelDecorationOptions
                     {
                         IsWholeLine = true,
                         LinesDecorationsClassName = "decorationGlyphMarginClass",
-                        HoverMessage = new[] { new MarkdownString { Value = error.hoverMessage } },
+                        HoverMessage = new[] { new MarkdownString { Value = hoverMessage } },
                         Minimap = new ModelDecorationMinimapOptions { Color = "red" },
                         OverviewRuler = new ModelDecorationOverviewRulerOptions { Color = "red" }
                     }
@@ -204,24 +224,28 @@ namespace Ast2
 
         public async Task UpdateDeclarations(string program)
         {
-            if(_model == null)
+            if (_model == null)
             {
                 return;
             }
 
-            List<DeclarationParser.Reference> references = new List<DeclarationParser.Reference>();
-            List<DeclarationParser.Declaration> declarations = new List<DeclarationParser.Declaration>();
-            List <ModelDeltaDecoration> decors = new List<ModelDeltaDecoration>(1);
+            List<DeclarationParser.Reference> references = new();
+            List<DeclarationParser.Declaration> declarations = new();
+            List <ModelDeltaDecoration> decors = new(1);
             this.TestResults.Clear();
+
             try
             {
                 declarations = DeclarationParser.ParseDeclarations(program);
+
                 foreach (DeclarationParser.Declaration decl in declarations)
                 {
                     Position pos = await _model.GetPositionAt(decl.NameOffset);
-                    ModelDeltaDecoration d = new ModelDeltaDecoration
+
+                    ModelDeltaDecoration d = new()
                     {
                         Range = new BlazorMonaco.Range { StartColumn = pos.Column, StartLineNumber = pos.LineNumber, EndColumn = pos.Column + decl.Name.Length, EndLineNumber = pos.LineNumber },
+
                         Options = new ModelDecorationOptions
                         {
                             InlineClassName = "declarationDecoration",
@@ -248,22 +272,27 @@ namespace Ast2
 
             this._currentDeclarations = declarations;
             this._currentReferences.Clear();
+
             foreach (DeclarationParser.Reference reff in references)
             {
                 this._currentReferences.Add(reff.NameOffset, reff.NameOffset + reff.FirstMatch.Name.Length, reff);
             }
 
             // Built-in refences for hover
-            List<ModelDeltaDecoration> builtinRefDecors = new List<ModelDeltaDecoration>(1);
+            List<ModelDeltaDecoration> builtinRefDecors = new(1);
+
             try
             {
-                List<DeclarationParser.Reference> builtinReferences = DeclarationParser.ParseReferences(program, BuiltIns.BuiltinsDeclarations);
+                List<DeclarationParser.Reference> builtinReferences = DeclarationParser.ParseReferences(program, BuiltIns.BuiltinsDeclarationsBasic);
+
                 foreach (DeclarationParser.Reference reff in builtinReferences)
                 {
                     Position pos = await _model.GetPositionAt(reff.NameOffset);
-                    ModelDeltaDecoration d = new ModelDeltaDecoration
+
+                    ModelDeltaDecoration d = new()
                     {
                         Range = new BlazorMonaco.Range { StartColumn = pos.Column, StartLineNumber = pos.LineNumber, EndColumn = pos.Column + reff.FirstMatch.Name.Length, EndLineNumber = pos.LineNumber },
+
                         Options = new ModelDecorationOptions
                         {
                             HoverMessage = new[] { new MarkdownString { Value = reff.FirstMatch.Comment } },
@@ -281,8 +310,12 @@ namespace Ast2
 
         public async Task RefreshCompletions()
         {
-            List<object> jsCompletions = new List<object>();
-            foreach ((string, string, string) o in BuiltIns.Operators)
+            List<object> jsCompletions = new();
+
+            // TDOD: need to include option for Z80 here as well i.e. call Builtins.Operators_z80 instead
+            jsCompletions.Clear();
+
+            foreach ((string, string, string) o in BuiltIns.Operators_basic)
             {
                 // Schema: https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
                 dynamic compl = new System.Dynamic.ExpandoObject();
@@ -291,11 +324,11 @@ namespace Ast2
                 compl.detail = "[" + o.Item2 + "]";
                 compl.documentation = o.Item3;
                 compl.kind = CompletionItemKind.Operator;
-
+                
                 jsCompletions.Add(compl);
             }
 
-            foreach ((string, string, string) o in BuiltIns.Functions)
+            foreach ((string, string, string) o in BuiltIns.FunctionsBasic)
             {
                 dynamic compl = new System.Dynamic.ExpandoObject();
                 compl.label = o.Item1;
@@ -308,14 +341,16 @@ namespace Ast2
             }
 
             DeclarationParser.Declaration prevDecl = null;
+
             foreach (DeclarationParser.Declaration d in this._currentDeclarations)
             {
                 if (prevDecl != null && prevDecl.Name == d.Name && prevDecl.Args.Count == d.Args.Count && d.Comment == null)
                 {
                     continue;
                 }
-
+                
                 string target = d.Name;
+
                 if (d.Args.Count > 0)
                 {
                     target = $"{d.Name}({string.Join(", ", d.Args)})";

@@ -1,0 +1,1600 @@
+﻿-----
+Basic
+adc a,op8: The sum of the two operands plus the carry flag (0 or 1) is calculated, and the result is written back into the first operand.
+ 
+    Allowed Instructions:
+        adc a,a
+        adc a,b
+        adc a,c
+        adc a,d
+        adc a,e
+        adc a,h
+        adc a,l
+        adc a,ixh
+        adc a,ixl
+        adc a,iyh
+        adc a,iyl
+        adc a,(hl)
+        adc a,(ix+n)
+        adc a,(iy+n)
+        adc a,n    ;8-bit constant
+ 
+    Effects:
+        The N flag is reset, P/V is interpreted as overflow.
+        The rest of the flags are modified by definition.
+ 
+    T-States:
+        r denotes an 8-bit register.
+        a,r         4
+        a,X         7
+        a,(hl)      7
+        a,(ix+X)    19
+        a,(iy+X)    19
+adc hl,op16: The sum of the two operands plus the carry flag (0 or 1) is calculated, and the result is written back into the first operand.
+ 
+    Allowed Instructions:
+        adc hl,bc
+        adc hl,de
+        adc hl,hl
+        adc hl,sp
+ 
+    Effects:
+        The N flag is reset, P/V is interpreted as overflow.
+        The rest of the flags are modified by definition.
+        The H flag is undefined.
+ 
+    T-States:
+        rr represents a two byte register pair: BC, DE, HL, SP
+ 
+        hl,rr    15
+add a,op8: The values of the two operands are added together, and the result is written back to the first one.
+ 
+    Allowed Instructions:
+        add a,a
+        add a,b
+        add a,c
+        add a,d
+        add a,e
+        add a,h
+        add a,l
+        add a,ixh
+        add a,ixl
+        add a,iyh
+        add a,ixl
+        add a,(hl)
+        add a,(ix+n)
+        add a,(iy+n)
+        add a,n    ;8-bit constant
+ 
+    Effects:
+        N flag is reset, P/V is interpreted as overflow.
+        The rest of the flags are modified by definition.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r         4
+        X         7
+        (hl)      7
+        (ix+X)    19
+        (iy+X)    19
+add op16,op16: The values of the two operands are added together, and the result is written back to the first one.
+ 
+    Allowed Instructions:
+        add hl,bc
+        add hl,de
+        add hl,hl
+        add hl,sp
+        add ix,bc
+        add ix,de
+        add ix,ix
+        add ix,sp
+        add iy,bc
+        add iy,de
+        add iy,iy
+        add iy,sp
+ 
+    Effects:
+        Preserves the S, Z and P/V flags, and H is undefined.
+        The rest of the flags are modified by definition.
+ 
+    T-States:
+        rr represents a two byte register pair: BC, DE, HL, SP
+ 
+        hl, rr    11
+        ix, rr    15
+        iy, rr    15
+and op8: AND is an instruction that takes an 8-bit input an compares it with the accumulator.
+    It checks to see if both are set. If either one is reset, the resulting bit in the accumulator is zero.
+        0 and 0 result: 0
+        0 and 1 result: 0
+        1 and 0 result: 0
+        1 and 1 result: 1
+ 
+    Allowed Instructions:
+        and a
+        and b
+        and c
+        and d
+        and e
+        and h
+        and l
+        and ixh
+        and ixl
+        and iyh
+        and iyl
+        and (hl)
+        and (ix+n)
+        and (iy+n)
+        and n    ;8 bit constant
+ 
+    Effects:
+        C and N flags cleared, P/V is parity, rest are altered by definition.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r         4
+        X         7
+        (hl)      7
+        (ix+X)    19
+        (iy+X)    19
+bit n,op8: Tests if the specified bit is set.
+ 
+    Allowed Instructions:
+        n can be any integer from [0,7]. It must be defined on compile time.
+        bit n,a
+        bit n,b
+        bit n,c
+        bit n,d
+        bit n,e
+        bit n,h
+        bit n,l
+        bit n,(hl)
+        bit n,(ix+n)
+        bit n,(iy+n)
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r         8
+        (hl)      12
+        (ix+X)    20
+        (iy+X)    20
+call label: Pushes the address after the CALL instruction (PC+3) onto the stack and jumps to the label.
+ 
+    Allowed Instructions:
+        call label
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        17
+call cond,label: Conditional call that pushes the address after the CALL instruction (PC+3) onto the stack and jumps to the label.
+ 
+    Allowed Instructions:
+        call c,label     ;calls if C flag is set
+        call nc,label    ;calls if C flag is reset
+        call z,label     ;calls if Z flag is set
+        call nz,label    ;calls if Z flag is reset
+        call m,label     ;calls if S flag is set
+        call p,label     ;calls if S flag is reset
+        call pe,label    ;calls if P/V is set
+        call po,label    ;calls if P/V is reset
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        cc is condition: NZ, Z, NC, C, PO, PE, P, M
+ 
+                 cond true    cond false
+        cc,XX    17           10
+ccf: Inverts the carry flag.
+ 
+    Allowed Instructions:
+        ccf
+ 
+    Effects:
+        C flag inverted. Also inverts H and clears N. Rest of the flags are preserved.
+ 
+    T-States:
+        4
+cp op8: CP is a subtraction from A that doesn't update A, only the flags it would have set/reset if it really was subtracted.
+ 
+    Allowed Instructions:
+        cp a
+        cp b
+        cp c
+        cp d
+        cp e
+        cp h
+        cp l
+        cp ixh
+        cp ixl
+        cp iyh
+        cp iyl
+        cp (ix+n)
+        cp (iy+n)
+        cp n    ;8 bit constant
+ 
+    Effects:
+        C, S, and Z flags modified by definition.
+        P/V detects overflow.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r         4
+        X         7
+        (hl)      7
+        (ix+X)    19
+        (iy+X)    19
+cpd: Multiple instructions combined into one. CPD does these things in this order:
+    CP (HL)
+    DEC HL
+    DEC BC
+ 
+    Allowed Instructions:
+        cpd
+ 
+    Effects:
+        C is preserved, N is set and all other flags are modified by definition.
+        P/V denotes the overflowing of BC, while the Z flag is set if A=(HL) before HL is decreased.
+ 
+    T-States:
+        16
+cpdr: Repeats CPD until either BC = 0 or A = (HL)
+ 
+    Allowed Instructions:
+        cpdr
+ 
+    Effects:
+        C is preserved, N is set and all the other flags are modified by definition.
+        P/V denotes the overflowing of BC, while the Z flag is set if A=(HL) before HL is decreased.
+ 
+    T-States:
+        BC ≠ 0 and A ≠ (HL)    21
+        BC = 0 or A = (HL)     16
+cpi: Multiple instructions combined into one. CPI does these things in this order:
+    CP (HL)
+    INC HL
+    DEC BC
+ 
+    Allowed Instructions:
+        cpi
+ 
+    Effects:
+        C is preserved, N is set and all the other flags are modified by definition.
+        P/V denotes the overflowing of BC, while the Z flag is set if A=(HL) before HL is increased.
+ 
+    T-States:
+        16
+cpir: Repeats CPI until either BC = 0 or A = HL
+ 
+    Allowed Instructions:
+        cpir
+ 
+    Effects:
+        C is preserved, N is set and all the other flags are modified by definition.
+        P/V denotes the overflowing of BC, while the Z flag is set if A=(HL) before HL is decreased.
+ 
+    T-States:
+        BC != 0 and A != (HL)    21
+        BC = 0 or A = (HL)       16
+cpl: CPL inverts all bits of A.
+ 
+    Allowed Instructions:
+        cpl
+ 
+    Effects:
+        Sets H and N, other flags are unmodified.
+ 
+    T-States:
+        4
+daa: When this instruction is executed, the A register is BCD corrected using the contents of the flags.
+    The exact process is the following:
+        if the least significant four bits of A contain a non-BCD digit (i. e. it is greater than 9)
+        or the H flag is set, then $06 is added to the register.
+        Then the four most significant bits are checked.
+        If this more significant digit also happens to be greater than 9 or the C flag is set, then $60 is added.
+ 
+    Allowed Instructions:
+        daa
+ 
+    Effects:
+        If the second addition was needed, the C flag is set after execution, otherwise it is reset.
+        The N flag is preserved, P/V is parity and the others are altered by definition.
+ 
+    T-States:
+        4
+dec op8: Decreases operand by one.
+ 
+    Allowed Instructions:
+        dec a
+        dec b
+        dec c
+        dec d
+        dec e
+        dec h
+        dec l
+        dec ixh
+        dec ixl
+        dec iyh
+        dec iyl
+        dec (hl)
+        dec (ix+n)
+        dec (iy+n)
+ 
+    Effects:
+        C flag preserved, P/V detects overflow and rest modified by definition.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r         4
+        (hl)      11
+        (ix+X)    23
+        (iy+X)    23
+dec op16: Decreases operand by one.
+ 
+    Allowed Instructions:
+        dec bc
+        dec de
+        dec hl
+        dec ix
+        dec iy
+        dec sp
+ 
+    Effects:
+        No flags altered.
+ 
+    T-States:
+        rr represents a two byte register pair: BC, DE, HL, SP
+ 
+        rr    6
+        ix    10
+        iy    10
+di: Disables the Interrupts (both mode 1 and mode 2).
+ 
+    Allowed Instructions:
+        di
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        4
+djnz: Decreases B and jumps to a label if not zero.
+    Note that DJNZ does a relative jump, so it can only jump up to 128 bytes back/ahead.
+ 
+    Allowed Instructions:
+        djnz
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        B != 0    13
+        B == 0    8
+ei: Enables the interrupts.
+ 
+    Allowed Instructions:
+        ei
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        4
+ex op16, op16: Exchanges two 16-bit values.
+ 
+    Allowed Instructions:
+        ex af,af'
+        ex de,hl
+        ex (sp),hl
+        ex (sp),ix
+        ex (sp),iy
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        de,hl      4
+        af,af'     4
+        (sp),hl    19
+        (sp),ix    19
+        (sp),iy    19
+exx: Exchanges BC, DE, and HL with shadow registers with BC', DE', and HL'.
+ 
+    Allowed Instructions:
+        exx
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        4
+halt: Suspends all actions until the next interrupt.
+    Note: Since halt does wait for the next interrupt, if you disable interrupts halt will run forever, resulting in a crash.
+    Make sure that you always either know the interrupts will be on, or turn it on right before you use the halt instruction.
+ 
+    Allowed Instructions:
+        halt
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        4
+im n: Sets the interrupt mode.
+ 
+    Mode 0
+        An external device plugged into a z80 device generates the interrupt.
+ 
+    Mode 1
+        Interrupts are generated by the internal circuitry of the processor.
+        Every time an interrupt is encountered, the OS performs an RST $28.
+ 
+    Mode 2
+        Allows user to determine when an interrupt happens, and what the interrupt does.
+ 
+    Allowed Instructions:
+        im 0
+        im 1
+        im 2
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        8
+in op8,(op8): Reads a value from a hardware port.
+ 
+    Allowed Instructions:
+        in a,(n)    ;8-bit constant
+        in a,(c)
+        in b,(c)
+        in c,(c)
+        in d,(c)
+        in e,(c)
+        in h,(c)
+        in l,(c)
+        in (c)      ;undocumented command
+ 
+    Effects:
+        in A,(N):
+            All flags are preserved.
+ 
+        Others:
+            N flag reset, P/V represents parity, C flag preserved, all other flags affected by definition.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        A,X      11
+        r,(C)    12
+inc op8: Increases operand by 1.
+ 
+    Allowed Instructions:
+        inc a
+        inc b
+        inc c
+        inc d
+        inc e
+        inc h
+        inc l
+        inc ixh
+        inc ixl
+        inc iyh
+        inc iyl
+        inc (hl)
+        inc (ix+n)
+        inc (iy+n)
+ 
+    Effects:
+        Preserves C flag, N flag is reset, P/V detects overflow and rest are modified by definition.
+ 
+    T-States:
+        r denotes an 8-bit register.
+
+        r         4
+        (hl)      11
+        (ix+X)    23
+        (iy+X)    23
+inc op16: Increases operand by 1.
+ 
+    Allowed Instructions:
+        inc bc
+        inc de
+        inc hl
+        inc ix
+        inc iy
+        inc sp
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        rr represents a two byte register pair: BC, DE, HL, SP
+ 
+        rr    6
+        ix    10
+        iy    10
+ind: Reads the (C) port and writes the result to (HL), then decrements HL and decrements B.
+ 
+    Allowed Instructions:
+        ind
+ 
+    Effects:
+        C is preserved, the N flag is set. S, H and P/V are undefined.
+        Z is set if B becomes zero after decrementing, otherwise it is reset.
+ 
+    T-States:
+        16
+indr: Reads the (C) port and writes the result to (HL). HL and B are decremented. Repeats until B = 0.
+ 
+    Allowed Instructions:
+        indr
+ 
+    Effects:
+        Z is set, C is preserved, N is set, S,H, and P/V are undefined.
+ 
+    T-States:
+        B == 0    16
+        B != 0    21
+ini: Reads the (C) port and writes the result to (HL), then increments HL and decrements B.
+ 
+    Allowed Instructions:
+        ini
+ 
+    Effects:
+        C is preserved, the N flag is reset. S, H and P/V are undefined.
+        Z is set if B becomes zero after decrementing, otherwise it is reset.
+ 
+    T-States:
+        16
+inir: Repeats until B = 0.
+ 
+    Allowed Instructions:
+        inir
+ 
+    Effects:
+        Z is set, C is reset, N is reset, S, H, and P/V are undefined.
+ 
+    T-States:
+        B == 0    16
+        B != 0    21
+jp NN: Unconditional absolute jump to the address.
+    JP takes one more byte than JR, but is also slightly faster, so decide whether speed or size is more important before choosing JP or JR.
+ 
+    Allowed Instructions:
+        jp NN
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        10
+jp cond,NN: Conditional absolute jump to the address.
+    JP takes one more byte than JR, but is also slightly faster, so decide whether speed or size is more important before choosing JP or JR.
+ 
+    Allowed Instructions:
+        jp C,NN     ;jumps if C is set
+        jp NC,NN    ;jumps if C is reset
+        jp Z,NN     ;jumps if Z is set
+        jp NZ,NN    ;jumps if Z is reset
+        jp M,NN     ;jumps if S is set
+        jp P,NN     ;jumps if S is reset
+        jp PE,NN    ;jumps if P/V is set
+        jp PO,NN    ;jumps if P/V is reset
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        cc is condition: NZ, Z, NC, C, PO, PE, P, M
+ 
+        cc,XX    10
+jp (reg16): Unconditional absolute jump to the address.
+    JP takes one more byte than JR, but is also slightly faster, so decide whether speed or size is more important before choosing JP or JR.
+    JP (HL), JP (IX), and JP (IY) are unconditional and are the fastest jumps, and do not take more bytes than other jumps.
+ 
+    Allowed Instructions:
+        jp (HL)
+        jp (IX)
+        jp (IY)
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        (hl)    4
+        (ix)    8
+        (iy)    8
+jr NN: Unconditional relative jump to the address. This means that it can only jump between 128 bytes ahead or behind.
+    JR takes up one less byte than JP, but is also slower.
+    Weigh the needs of the code at the time before choosing one over the other (speed vs. size).
+ 
+    Allowed Instructions:
+        jr NN
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        12
+jr cond,NN: Conditional relative jump to the address. This means that it can only jump between 128 bytes ahead or behind.
+    JR takes up one less byte than JP, but is also slower.
+    Weigh the needs of the code at the time before choosing one over the other (speed vs. size).
+ 
+    Allowed Instructions:
+        jr C,NN     ;jumps if C is set
+        jr NC,NN    ;jumps if C is reset
+        jr Z,NN     ;jumps if Z is set
+        jr NZ,NN    ;jumps if Z is reset
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        cc is condition: NZ, Z, NC, C, PO, PE, P, M
+ 
+                cond met    cond not met
+        cc,X    12          7
+ld op8,op8: The LD instruction is used to put the value from one place into another place.
+ 
+    Allowed Instructions:
+        ld a,X      ; X can be any one of A, B, C, D, E, H, L, I, R, IXH, IXL, IYH, IYL, (BC), (DE), (HL), (IX+n), (IY+n), n, (nn)
+        ld b,X      ; X can be any one of A, B, C, D, E, H, L, IXH, IXL, IYH, IYL, (HL), (IX+n), (IY+n), n
+        ld c,X      ; X can be any one of A, B, C, D, E, H, L, IXH, IXL, IYH, IYL, (HL), (IX+n), (IY+n), n
+        ld d,X      ; X can be any one of A, B, C, D, E, H, L, IXH, IXL, IYH, IYL, (HL), (IX+n), (IY+n), n
+        ld e,X      ; X can be any one of A, B, C, D, E, H, L, IXH, IXL, IYH, IYL, (HL), (IX+n), (IY+n), n
+        ld h,X      ; X can be any one of A, B, C, D, E, H, L, (HL), (IX+n), (IY+n), n
+        ld l,X      ; X can be any one of A, B, C, D, E, H, L, (HL), (IX+n), (IY+n), n
+        ld i,a
+        ld r,a
+        ld ixh,X    ; X can be any one of A, B, C, D, E, IXH, IXL, n
+        ld ixl,X    ; X can be any one of A, B, C, D, E, IXH, IXL, n
+        ld iyh,X    ; X can be any one of A, B, C, D, E, IYH, IYL, n
+        ld iyl,X    ; X can be any one of A, B, C, D, E, IYH, IYL, n
+        ld (bc),a
+        ld (de),a
+        ld (hl),X    ; X can be any one of A, B, C, D, E, H, L, n
+        ld (ix+n),X    ; X can be any one of A, B, C, D, E, H, L, n
+        ld (iy+n),X    ; X can be any one of A, B, C, D, E, H, L, n
+        ld (nn),X      : X can be any one of A, BC, DE, HL, SP, IX, IY
+ 
+    Effects:
+        All flags are preserved except in the cases of the I or R registers.
+        In those cases, C is preserved, H and N are reset, and Z and S are altered.
+        P/V is set if interrupts are enabled, reset otherwise.
+ 
+    T-States:
+        r denotes an 8-bit register
+  
+        r,r'        4
+        r,X         7
+        r,(hl)      7
+        r,(ix+X)    19
+        r,(iy+X)    19
+        a,(bc)      7
+        a,(de)      7
+        a,(XX)      13
+        (bc),a      7
+        (de),a      7
+        (XX),a      13
+        a,i         9
+        a,r         9
+        i,a         9
+        r,a         9
+        a,(BC)      7
+        (XX),a      13
+        (XX),hl     20
+        (XX),rr     20
+        (XX),ix     20
+        (XX),iy     20
+ld op16,op16: The LD instruction is used to put the value from one place into another place.
+    Although 16-bit register pairs cannot be directly moved between each other, they can be moved by moving the two 8-bit registers.
+    SP is a special case because it can't be addressed via 8-bit registers.
+ 
+    Allowed Instructions:
+        ld bc,X    ; X can be any one of nn, (nn)
+        ld de,X    ; X can be any one of nn, (nn)
+        ld hl,X    ; X can be any one of nn, (nn)
+        ld sp,X    ; X can be any one of HL, IX, IY, nn, (nn)
+        ld ix,X    ; X can be any one of nn, (nn)
+        ld iy,X    ; X can be any one of nn, (nn)
+ 
+    Effects:
+        All flags are preserved except in the cases of the I or R registers.
+        In those cases, C is preserved, H and N are reset, and Z and S are altered.
+        P/V is set if interrupts are enabled, reset otherwise.
+ 
+    T-States:
+        rr represents a two byte register pair: BC, DE, HL, SP
+ 
+        rr,XX      10
+        ix,XX      14
+        iy,XX      14
+        hl,(XX)    20
+        ix,(XX)    20
+        iy,(XX)    20
+        sp,hl      6
+        sp,ix      10
+        sp,iy      10
+ldd: Does a sort of 'LD (DE),(HL)', then decrements DE, HL, and BC.
+ 
+    Allowed Instructions:
+        ldd
+ 
+    Effects:
+        P/V is reset in case of overflow (if BC=0 after calling LDD).
+ 
+    T-States:
+        16
+lddr: Repeats the instruction LDD (Does a LD (DE),(HL) and decrements each of DE, HL, and BC) until BC = 0.
+    Note that if BC = 0 before the start of the routine, it will loop around until BC = 0 again.
+ 
+    Allowed Instructions:
+        lddr
+ 
+    Effects:
+        P/V is reset.
+ 
+    T-States:
+        BC != 0    21
+        BC == 0    16
+ldi: Performs a 'LD (DE),(HL)', then increments DE and HL, and decrements BC.
+ 
+    Allowed Instructions:
+        ldi
+ 
+    Effects:
+        P/V is reset in case of overflow (if BC = 0 after calling LDI).
+ 
+    T-States:
+        16
+ldir: Repeats LDI (LD (DE),(HL), then increments DE, HL, and decrements BC) until BC = 0.
+    Note that if BC = 0 before this instruction is called, it will loop around until BC = 0 again.
+ 
+    Allowed Instructions:
+        ldir
+ 
+    Effects:
+        P/V is reset.
+ 
+    T-States:
+        BC != 0    21
+        BC == 0    16
+neg: Negates the accumulator.
+ 
+    Allowed Instructions:
+        neg
+ 
+    Effects:
+        N flag is set, all other flags modified by definition.
+ 
+    T-States:
+        8
+nop: Does nothing for 4 clock cycles.
+ 
+    Allowed Instructions:
+        nop
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        4
+or op8: Takes an 8-bit input and compares it with the accumulator.
+    It checks to see if anything is set, and if neither are set, it results in a zero.
+        0 and 0 result: 0
+        0 and 1 result: 1
+        1 and 0 result: 1
+        1 and 1 result: 1
+ 
+    Allowed Instructions:
+        or a
+        or b
+        or c
+        or d
+        or e
+        or h
+        or l
+        or ixh
+        or ixl
+        or iyh
+        or iyl
+        or (hl)
+        or (ix+n)
+        or (iy+n)
+        or n    ;8 bit constant
+ 
+    Effects:
+        C and N flags cleared, P/V detects parity, and rest are modified by definition.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r         4
+        X         7
+        (hl)      7
+        (ix+X)    19
+        (iy+X)    19
+otdr: Reads from (HL) and writes to the (C) port. HL and B are then decremented.
+    Repeats until B = 0.
+ 
+    Allowed Instructions:
+        otdr
+ 
+    Effects:
+        C is preserved, Z is set, N is set, S, H, and P/V are undefined.
+ 
+    T-States:
+    B == 0    16
+    B != 0    21
+otir: Reads from (HL) and writes to the (C) port. HL is incremented and B is decremented.
+    Repeats until B = 0.
+ 
+    Allowed Instructions:
+        otir
+ 
+    Effects:
+        Z is set, C is preserved, N is reset, H, S, and P/V are undefined.
+ 
+    T-States:
+        B == 0    16
+        B != 0    21
+out (imm8),a: Writes the value of the second operand into the port given by the first operand.
+ 
+
+    Allowed Instructions:
+        out (imm8),a
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        A,X    11
+out(c),reg8: Writes the value of the second operand into the port given by the first operand.
+ 
+    Allowed Instructions:
+        out (c),a
+        out (c),b
+        out (c),c
+        out (c),d
+        out (c),e
+        out (c),h
+        out (c),l
+ 
+        out (c),0    ;Zero. Note: Undocumented
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r,(C)    12
+outd: Writes the value from (HL) to the (C) port, then decrements B and HL.
+ 
+    Allowed Instructions:
+        outd
+ 
+    Effects:
+        C is preserved, N is set, H, S, and P/V are undefined. 
+        Z is set only if B becomes zero after decrement, otherwise it is reset.
+ 
+    T-States:
+        16
+outi: Reads from (HL) and writes to the (C) port. HL is then incremented, and B is decremented.
+ 
+    Allowed Instructions:
+        outi
+ 
+    Effects:
+        C is preserved, N is reset, H, S, and P/V are undefined.
+        Z is set only if B becomes zero after decrement, otherwise it is reset.
+ 
+    T-States:
+        16
+pop reg16: Copies the two bytes from (SP) into the operand, then increases SP by 2.
+ 
+    Allowed Instructions:
+        pop af
+        pop bc
+        pop de
+        pop hl
+        pop ix
+        pop iy
+ 
+    Effects:
+        All flags are preserved except when popping AF.
+ 
+    T-States:
+        rr represents a two byte register pair: BC, DE, HL, SP
+ 
+        rr    10
+        ix    14
+        iy    14
+push reg16: Copies the operand into (SP), then increments SP by 2.
+ 
+    Allowed Instructions:
+        push af
+        push bc
+        push de
+        push hl
+        push ix
+        push iy
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        rr represents a two byte register pair: BC, DE, HL, SP
+ 
+        rr    11
+        ix    15
+        iy    15
+res n,op8: Resets the specified byte to zero.
+ 
+    Allowed Instructions:
+        res n,a
+        res n,b
+        res n,c
+        res n,d
+        res n,e
+        res n,h
+        res n,l
+        res n,(hl)
+        res n,(ix+n)
+        res n,(iy+n)
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r         8
+        (hl)      15
+        (ix+X)    23
+        (iy+X)    23
+ret: Pops the top of the stack into the program counter (unconditional).
+ 
+    Allowed Instructions:
+        ret
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        10
+ret cond: Pops the top of the stack into the program counter (conditional).
+ 
+    Allowed Instructions:
+        ret z     ; Z flag is set
+        ret nz    ; Z flag is reset
+        ret c     ; C flag is set
+        ret nc    ; C flag is reset
+        ret m     ; S flag is set
+        ret p     ; S flag is reset
+        ret pe    ; P/V is set
+        ret po    ; P/V is reset
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        cc is condition: NZ, Z, NC, C, PO, PE, P, M
+ 
+                cond true    cond false
+        ret cc  11           5
+reti: Returns from an interrupt routine. Note: RETI cannot use return conditions.
+ 
+    Allowed Instructions:
+        reti
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        14
+retn: Returns from the non-maskable interrupt (NMI). Cannot take return conditions.
+ 
+    Allowed Instructions:
+        retn
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        14
+rl op8: 9-bit rotation to the left. The register's bits are shifted left.
+    The carry value is put into 0th bit of the register, and the leaving 7th bit is put into the carry.
+ 
+    Allowed Instructions:
+        rl A
+        rl B
+        rl C
+        rl D
+        rl H
+        rl L
+        rl (HL)
+        rl (IX+n)
+        rl (IY+n)
+ 
+    Effects:
+        C is changed to the leaving 7th bit, H and N are reset, P/V is parity.
+        S and Z are modified by definition.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r         8
+        (hl)      15
+        (ix+X)    23
+        (iy+X)    23
+rla: Performs an RL A, but is much faster and S, Z, and P/V flags are preserved.
+ 
+    Allowed Instructions:
+        rla
+ 
+    Effects:
+        C is changed to the leaving 7th bit, H and N are reset.
+        P/V, S and Z are preserved.
+ 
+    T-States:
+        4
+rlc op8: 8-bit rotation to the left.
+    The bit leaving on the left is copied into the carry, and to bit 0.
+ 
+    Allowed Instructions:
+        rlc A
+        rlc B
+        rlc C
+        rlc D
+        rlc E
+        rlc H
+        rlc L
+        rlc (HL)
+        rlc (IX+n)
+        rlc (IY+n)
+ 
+    Effects:
+        H and N flags are reset, P/V is parity, S and Z are modified by definition.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r         8
+        (hl)      15
+        (ix+X)    23
+        (iy+X)    23
+rlca: Performs RLC A much quicker, and modifies the flags differently.
+ 
+    Allowed Instructions:
+        rlca
+ 
+    Effects:
+        S,Z, and P/V are preserved, H and N flags are reset.
+ 
+    T-States:
+        4 t-states
+rld: Performs a 4-bit leftward rotation of the 12-bit number whose 4 most significant bits are the 4 least significant bits of A, and its 8 least significant bits are in (HL).
+ 
+    Allowed Instructions:
+        rld
+ 
+    Effects:
+        The H and N flags are reset, P/V is parity, C is preserved.
+        S and Z are modified by definition.
+ 
+    T-States:
+        18
+rr op8: 9-bit rotation to the right. The carry is copied into bit 7, and the bit leaving on the right is copied into the carry.
+ 
+    Allowed Instructions:
+        rr A
+        rr B
+        rr C
+        rr D
+        rr E
+        rr H
+        rr L
+        rr (HL)
+        rr (IX+n)
+        rr (IY+n)
+ 
+    Effects:
+        C becomes the bit leaving on the right, H and N flags are reset.
+        P/V is parity, S and Z are modified by definition.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r         8
+        (hl)      15
+        (ix+X)    23
+        (iy+X)    23
+rra: Performs a RR A faster, and modifies the flags differently.
+ 
+    Allowed Instructions:
+        rra
+ 
+    Effects:
+        C becomes the bit leaving on the right, H, N flags are reset.
+        P/V, S, and Z are preserved.
+ 
+    T-States:
+        4
+rrc op8: 8-bit rotation to the right. the bit leaving on the right is copied into the carry, and into bit 7.
+ 
+    Allowed Instructions:
+        rrc A
+        rrc B
+        rrc C
+        rrc D
+        rrc E
+        rrc H
+        rrc L
+        rrc (HL)
+        rrc (IX+n)
+        rrc (IY+n)
+ 
+    Effects:
+        C becomes the value leaving on the right, H and N are reset.
+        P/V is parity, and S and Z are modified by definition.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r         8
+        (hl)      15
+        (ix+X)    23
+        (iy+X)    23
+rrca: Performs an RRC A faster and modifies the flags differently.
+ 
+    Allowed Instructions:
+        rrca
+ 
+    Effects:
+         becomes the value leaving on the right, H and N are reset.
+        P/V, S, and Z are preserved.
+ 
+    T-States:
+        4
+rrd: Performs a 4-bit rightward rotation of the 12-bit number whose 4 least significant bits are the 4 most significant bits of A, and its 8 most significant bits are in (HL).
+ 
+    Allowed Instructions:
+        rrd
+ 
+    Effects:
+        The H and N flags are reset, P/V is parity, C is preserved.
+        S and Z are modified by definition.
+ 
+    T-States:
+        18
+rst imm8: The current PC value plus three is pushed onto the stack.
+    The MSB is loaded with $00 and the LSB is loaded with imm8.
+ 
+    Allowed Instructions:
+        rst $00
+        rst $08
+        rst $10
+        rst $18
+        rst $20
+        rst $28
+        rst $30
+        rst $38
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        11
+sbc a, op8: Sum of second operand and carry flag is subtracted from the accumulator.
+    Results are written into the accumulator.
+ 
+    Allowed Instructions:
+        sbc a,a
+        sbc a,b
+        sbc a,c
+        sbc a,d
+        sbc a,e
+        sbc a,h
+        sbc a,l
+        sbc a,ixh
+        sbc a,ixl
+        sbc a,iyh
+        sbc a,iyl
+        sbc a,(hl)
+        sbc a,(ix+n)
+        sbc a,(iy+n)
+        sbc a,n    ;8 bits
+ 
+    Effects:
+        N flag is set, P/V detects overflow, rest modified by definition.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r         4
+        X         7
+        (hl)      7
+        (ix+X)    19
+        (iy+X)    19
+sbc hl, op16: Sum of second operand and carry flag is subtracted from HL.
+    Results are written into HL.
+ 
+    Allowed Instructions:
+        sbc hl,bc
+        sbc hl,de
+        sbc hl,hl
+        sbc hl,sp
+ 
+    Effects:
+        N flag is set, P/V detects overflow, rest modified by definition.
+        H flag is undefined.
+ 
+    T-States:
+        rr represents a two byte register pair: BC, DE, HL, SP
+ 
+        hl,rr    15
+scf: Set carry flag instruction.
+ 
+    Allowed Instructions:
+        scf
+ 
+    Effects:
+        C flag set, H and N cleared, rest are preserved.
+ 
+    T-States:
+        4
+set n,op8: Sets the specified bit.
+ 
+    Allowed Instructions:
+        set n,a
+        set n,b
+        set n,c
+        set n,d
+        set n,e
+        set n,h
+        set n,l
+        set n,(hl)
+        set n,(ix+n)
+        set n,(iy+n)
+ 
+    Effects:
+        All flags are preserved.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r         8
+        (hl)      15
+        (ix+X)    23
+        (iy+X)    23
+sla op8: Arithmetic shift left 1 bit, bit 7 goes to carry flag, bit 0 set to 0.
+ 
+    Allowed Instructions:
+        sla a
+        sla b
+        sla c
+        sla d
+        sla e
+        sla h
+        sla l
+        sla (hl)
+        sla (ix+n)
+        sla (iy+n)
+ 
+    Effects:
+        S and Z by definition, H and N reset, C from bit 7, P/V set if result is even.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r         8
+        (hl)      15
+        (ix+X)    23
+        (iy+X)    23
+sll op8: Arithmetic shift left 1 bit, bit 7 goes to carry flag, bit 0 set to 1.
+ 
+    Allowed Instructions:
+        sll a
+        sll b
+        sll c
+        sll d
+        sll e
+        sll h
+        sll l
+        sll (hl)
+        sll (ix+n)
+        sll (iy+n)
+ 
+    Effects:
+        S and Z by definition, H and N reset, C from bit 7, P/V set if result is even.
+ 
+    T-States:
+        r denotes an 8-bit register. ix and iy values assumed from SLA.
+ 
+        r         8
+        (hl)      15
+        (ix+X)    23?
+        (iy+X)    23?
+sl1 op8: Arithmetic shift left 1 bit, bit 7 goes to carry flag, bit 0 set to 1.
+ 
+    Allowed Instructions:
+        sl1 a
+        sl1 b
+        sl1 c
+        sl1 d
+        sl1 e
+        sl1 h
+        sl1 l
+        sl1 (hl)
+        sl1 (ix+n)
+        sl1 (iy+n)
+ 
+    Effects:
+        S and Z by definition, H and N reset, C from bit 7, P/V set if result is even.
+ 
+    T-States:
+        r denotes an 8-bit register. ix and iy values assumed from SLA.
+ 
+        r         8
+        (hl)      15
+        (ix+X)    23?
+        (iy+X)    23?
+sra op8: Arithmetic shift right 1 bit, bit 0 goes to carry flag, bit 7 remains unchanged.
+ 
+    Allowed Instructions:
+        sra a
+        sra b
+        sra c
+        sra d
+        sra e
+        sra h
+        sra l
+        sra (hl)
+        sra (ix+d)
+        sra (iy+d)
+ 
+    Effects:
+        S and Z set according to definition, H and N reset, C from bit 0, P/V if parity is 0.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r         8
+        (hl)      15
+        (ix+X)    23
+        (iy+X)    23
+srl op8: Arithmetic shift right 1 bit, bit 0 goes to carry flag, bit 7 is set to 0.
+ 
+    Allowed Instructions:
+        srl a
+        srl b
+        srl c
+        srl d
+        srl e
+        srl h
+        srl l
+        srl (hl)
+        srl (ix+d)
+        srl (iy+d)
+ 
+    Effects:
+        S, H, and N flags reset, Z if result is zero, P/V set if parity is even, C from bit 0.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r         8
+        (hl)      15
+        (ix+X)    23
+        (iy+X)    23
+sub op8: SUB stands for subtract but only takes one input. It subtracts the input from the accumulator and writes back to it.
+ 
+    Allowed Instructions:
+        sub a
+        sub b
+        sub c
+        sub d
+        sub e
+        sub h
+        sub l
+        sub n    ;8 bit constant
+        sub (hl)
+        sub (ix+n)
+        sub (iy+n)
+ 
+    Effects:
+        N flag set, P/V is overflow, rest modified by definition.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r         4
+        X         7
+        (hl)      7
+        (ix+X)    19
+        (iy+X)    19
+xor op8: Takes one 8-bit input and compares it with the accumulator.
+    XOR is similar to OR, except for one thing:
+        only 1 of the 2 test bits can be set or else it will result in a zero.
+    The final answer is stored to the accumulator.
+        0 and 0 result: 0
+        0 and 1 result: 1
+        1 and 0 result: 1
+        1 and 1 result: 0
+ 
+    Allowed Instructions:
+        xor a
+        xor b
+        xor c
+        xor d
+        xor e
+        xor h
+        xor l
+        xor ixh
+        xor ixl
+        xor iyh
+        xor iyl
+        xor (hl)
+        xor (ix+n)
+        xor (iy+n)
+        xor n    ;8 bit constant
+ 
+    Effects:
+        C and N flags cleared. P/V is parity, and rest are modified by definition.
+ 
+    T-States:
+        r denotes an 8-bit register.
+ 
+        r         4
+        X         7
+        (hl)      7
+        (ix+X)    19
+        (iy+X)    19
+-----
+OS
+org addr: This sets the assembler's idea of the current address.
+    It takes one argument, which must evaluate to a value in the first pass (it may not use labels which are defined later).
+    At the start, the current address is set to 0. Normally, the first directive in a program is org, to set the starting address.
+    Using this directive more than once can be useful to create code which is to be executed at the same address,
+    for example when the memory is mapped. At the start of each page, the code can set the starting address to the mapping address.
+    The previously defined pages are not overwritten.
+ 
+    Example
+        org 16384
+defb <val> [,<val>...]: 'defb' and 'db' stand for \"define byte\".
+    They allow definition of one or more literal bytes.
+    All definitions should be separated by commas.
+ 
+    Example:
+        defb 1,2,3,4,5,6
+db <val> [,<val>...]: 'defb' and 'db' stand for \"define byte\".
+    They allow definition of one or more literal bytes.
+    All definitions should be separated by commas.
+ 
+    Example:
+        db 1,2,3,4,5,6
+defm <text> [,<text>...]: 'defm' and 'dm' stand for \"define message\".
+    They allow definition of strings of bytes.
+    All definitions should be separated by commas.
+    Strings of bytes should be between double quotes.
+ 
+    Example:
+        defm \"This is text\", \"This is more text\"
+dm <text> [,<text>...]: 'defm' and 'dm' stand for \"define message\".
+    They allow definition of strings of bytes.
+    All definitions should be separated by commas.
+    Strings of bytes should be between double quotes.
+ 
+    Example:
+        dm \"This is text\", \"This is more text\"
+defs <num> [,<val>]: 'defs' and 'ds' stand for \"define space\".
+    They can take one or two arguments, 'num' and 'val'.
+    They reserve 'num' bytes of space and initializes them to 'val'.
+    If val is omitted, it defaults to 0.
+ 
+    Example:
+        buffer: defs 20
+        sevens: defs 10, 7
+ds <num> [,<val>]: 'defs' and 'ds' stand for \"define space\".
+    They can take one or two arguments, 'num' and 'val'.
+    They reserve 'num' bytes of space and initializes them to 'val'.
+    If val is omitted, it defaults to 0.
+ 
+    Example:
+        buffer: ds 20
+        sevens: ds 10, 7
+defw <text> [,<text>...]: 'defw' and 'dw' stand for \"define word\".
+    They are convenience directives for defining least significant byte first two byte words, as the Z80 uses them.
+    Multiple expressions, separated by commas, may be specified.
+ 
+    Example:
+        org 0x8000
+        pointertable: defw sub1, sub2
+        sub1: sub b
+        ret nz
+        sub2: ld h,0
+        ret
+dw <text> [,<text>...]: 'defw' and 'dw' stand for \"define word\".
+    They are convenience directives for defining least significant byte first two byte words, as the Z80 uses them.
+    Multiple expressions, separated by commas, may be specified.
+ 
+    Example:
+        org 0x8000
+        pointertable: dw sub1, sub2
+        sub1: sub b
+        ret nz
+        sub2: ld h,0
+        ret
+end: At the end of the program, it is allowed to use the 'end' directive.
+    There is no need to do this. Everything after this directive is ignored.
+    This can be useful to put comments at the end of the program."
+include <file_name>: As in C (but without the #), this includes another source file.
+    No substitution at all is done on the filename, which means that ~ cannot be used to refer to the home directory.
+    Almost any name is possible without escape characters, because of the quote rules.
+    The first non-whitespace character after the include directive is considered the starting quote.
+    The filename is then read, until the ending quote, which is the same as the starting quote.
+ 
+    Example:
+        include 'math.asm'
+        include -file'with\quotes\.asm'
+        include zletter as quotes and spaces in name.asmz
+incbin <file_name>: 'incbin' stands for \"include binary\".
+    It allows any binary data to be included verbatim into the output.
+    No substitution at all is done on the filename, which means that ~ cannot be used to refer to the home directory.
+    Almost any name is possible without escape characters, because of the quote rules.
+    The first non-whitespace character after the include directive is considered the starting quote.
+    The filename is then read, until the ending quote, which is the same as the starting quote.
+ 
+    Example:
+        incbin 'math.bin'
+seek <offset>: 'seek' is used to overwrite the generated output.
+    It will seek in the output file and start overwriting previous output.
+    This is mostly useful in combination with 'incbin' as it allows the included binary to be \patched\.
+    If the 'offset' of 'seek' is greater than the current output size, the file is extended with zeros.
+ 
+    Example:
+        incbin 'math.bin'
+        seek 1024
+macro <name> {<code>} endm: With these directives it is possible to define new commands, which will output defined code.
+    Arguments can be given as well.
+ 
+    Example:
+        callf: macro slot, address
+            rst 0x30
+            db slot
+            dw address
+        endm
+ 
+    After this definition, it is possible to use the macro, like this:
+        callf 0x8b, 0x4000
+if truth_value [statement] [else [statement]] endif: Parts of the code can be omitted using these conditional statements.
+    'else' can be repeated as many times as desired.
+ 
+    Example:
+        org 0x8000
+        include 'math.asm'
+ 
+        if $ < 0x9000 ; Only do the following if math.asm is small enough
+            ld a,3
+        else
+            ld a,6
+        else
+            ;this is also only assembled if math.asm is small enough
+            ld h,8
+        endif
+ 
+        ;this is always assembled
+        call math_init
